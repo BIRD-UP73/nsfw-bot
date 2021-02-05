@@ -130,3 +130,5 @@ dmypy.json
 
 # Jetbrains generated files
 .idea
+
+config.properties
