@@ -1,2 +1,2 @@
 # nsfw-bot
-A Discord bot that posts NSFW images
+A Discord bot that posts NSFW images.
