@@ -2,6 +2,7 @@ from discord.ext import commands
 
 from commands.danbooru import danbooru
 from commands.gelbooru import gelbooru
+from commands.github import github
 from commands.help import CustomHelpCommand
 from commands.rule34 import rule34
 
@@ -25,6 +26,7 @@ bot.add_command(rule34)
 bot.add_command(xbooru)
 bot.add_command(gelbooru)
 bot.add_command(danbooru)
+bot.add_command(github)
 
 
 async def on_ready():

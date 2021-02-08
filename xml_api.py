@@ -112,10 +112,10 @@ async def get_rule_34(ctx: Context, tags: str, score, url: str):
     total_posts, xml_post = get_xml_post(tags, url)
 
     if xml_post is None:
-        return None
-
-    post = Post(ctx, url, tags, xml_post, total_posts=total_posts)
-    await post.send_message()
+        await ctx.send('No images found')
+    else:
+        post = Post(ctx, url, tags, xml_post, total_posts=total_posts)
+        await post.send_message()
 
 
 def send_request(limit: int, tags: str, page: int, url: str) -> str:
