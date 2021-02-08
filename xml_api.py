@@ -78,9 +78,9 @@ class Post:
             content = self.to_content()
 
             if isinstance(content, str):
-                await self.msg.edit(content=self.to_content())
+                await self.msg.edit(content=self.to_content(), embed=None)
             else:
-                await self.msg.edit(embed=content)
+                await self.msg.edit(content='', embed=content)
 
             await self.msg.remove_reaction(reaction.emoji, user)
 
