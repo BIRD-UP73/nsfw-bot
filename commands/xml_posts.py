@@ -1,7 +1,8 @@
 from typing import Optional
 
+from discord import TextChannel
 from discord.ext import commands
-from discord.ext.commands import Context
+from discord.ext.commands import Context, NSFWChannelRequired
 
 from api import xml_api
 
@@ -37,9 +38,18 @@ class XmlPosts(commands.Cog):
     - For search terms, see https://gelbooru.com/index.php?page=help&topic=cheatsheet
     - To filter by score, use 'score:>=[amount]'
     """
-
     gelbooru_url = 'https://gelbooru.com/index.php'
 
     @commands.command(name='gelbooru', brief='Seach images from gelbooru.com', description=gelbooru_desc)
     async def gelbooru(self, ctx: Context, score: Optional[int] = 50, *, tags: str):
         await xml_api.show_post(ctx, tags, score, self.gelbooru_url)
+
+    def cog_check(self, ctx):
+        ch = ctx.channel
+        if not ctx.guild or (isinstance(ch, TextChannel) and ch.is_nsfw()):
+            return True
+
+        raise NSFWChannelRequired(ch)
+
+    async def cog_command_error(self, ctx, error):
+        await ctx.send(error)

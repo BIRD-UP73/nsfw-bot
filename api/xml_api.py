@@ -61,9 +61,9 @@ class Post:
         else:
             self.msg = await self.ctx.send(embed=self.to_content())
 
+        self.ctx.bot.add_listener(self.on_reaction_add)
         await self.msg.add_reaction('🗑️')
         await self.msg.add_reaction('🔁')
-        self.ctx.bot.add_listener(self.on_reaction_add)
 
     async def on_reaction_add(self, reaction: Reaction, user: User):
         if reaction.message.id != self.msg.id or user == self.ctx.bot.user:
