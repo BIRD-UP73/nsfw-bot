@@ -3,7 +3,7 @@ from typing import Optional
 from discord.ext import commands
 from discord.ext.commands import Context, is_nsfw
 
-import api_json
+from api import api_json
 
 desc = """
 Searches images from danbooru.com
@@ -16,9 +16,4 @@ Searches images from danbooru.com
 @is_nsfw()
 @commands.command(name='danbooru', aliases=['dbooru'], brief='Seach images from danbooru.com', description=desc)
 async def danbooru(ctx: Context, score: Optional[int] = 50, *, tags: str, ):
-    embed = api_json.get_posts(tags, score)
-
-    if not embed:
-        return await ctx.send('No images found')
-
-    await ctx.send(embed=embed)
+    await api_json.get_posts(ctx, tags, score)

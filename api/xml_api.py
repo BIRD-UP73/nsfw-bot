@@ -105,7 +105,7 @@ def get_xml_post(tags, url) -> Element:
     return total_posts, posts[0]
 
 
-async def get_rule_34(ctx: Context, tags: str, score, url: str):
+async def show_post(ctx: Context, tags: str, score, url: str):
     if 'score:>=' not in tags:
         tags += f' score:>{score}'
 
