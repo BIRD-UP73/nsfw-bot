@@ -8,7 +8,11 @@ class CustomHelpCommand(HelpCommand):
         embed.title = command.name.capitalize()
         embed.description = command.brief
 
-        embed.add_field(name='Description', value=command.description)
+        if command.aliases:
+            embed.add_field(name='Alias', value=' '.join(command.aliases), inline=False)
+
+        if command.description:
+            embed.add_field(name='Description', value=command.description)
 
         dest = super().get_destination()
         await dest.send(embed=embed)
@@ -18,13 +22,13 @@ class CustomHelpCommand(HelpCommand):
 
         embed = Embed()
         embed.title = 'Help'
-        embed.description = 'Commands can only be used in NSFW channels'
+        embed.description = '**Note:** Commands can only be used in NSFW channels'
 
         prefix = super().clean_prefix
 
         for cmd in commands:
-            if cmd != self:
-                embed.add_field(name=f'{prefix}{cmd.name}', value=cmd.brief, inline=False)
+            if cmd.name != 'help':
+                embed.add_field(name=f'`{prefix}{cmd.name} {cmd.signature}`', value=cmd.brief, inline=False)
 
         dest = super().get_destination()
-        return await dest.send(embed=embed)
+        await dest.send(embed=embed)
