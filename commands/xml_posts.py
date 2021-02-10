@@ -15,7 +15,7 @@ class XmlPosts(commands.Cog):
     - To filter by score, use 'score:>=[amount]'
     """
     rule34_url = 'https://rule34.xxx/index.php'
-
+ 
     @commands.command(name='rule34', aliases=['r34'], brief='Seach images from rule34.xxx', description=rule34_desc)
     async def rule34(self, ctx: Context, score: Optional[int] = 50, *, tags: str):
         await xml_api.show_post(ctx, tags, score, self.rule34_url)
@@ -53,3 +53,4 @@ class XmlPosts(commands.Cog):
 
     async def cog_command_error(self, ctx, error):
         await ctx.send(error)
+        raise error

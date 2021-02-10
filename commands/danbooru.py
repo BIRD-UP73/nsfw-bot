@@ -1,7 +1,7 @@
 from typing import Optional
 
 from discord.ext import commands
-from discord.ext.commands import Context, is_nsfw
+from discord.ext.commands import Context, is_nsfw, CommandError
 
 from api import api_json
 
@@ -16,4 +16,13 @@ Searches images from danbooru.com
 @is_nsfw()
 @commands.command(name='danbooru', aliases=['dbooru'], brief='Seach images from danbooru.com', description=desc)
 async def danbooru(ctx: Context, score: Optional[int] = 50, *, tags: str, ):
-    await api_json.get_posts(ctx, tags, score)
+    if 'loli' in tags:
+        raise CommandError('No loli allowed')
+
+    await api_json.show_post(ctx, tags, score)
+
+
+@danbooru.error
+async def on_error(ctx: Context, error):
+    await ctx.send(error)
+    raise error
