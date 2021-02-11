@@ -6,7 +6,7 @@ from commands.help import CustomHelpCommand
 
 import configparser
 
-from commands.xml_posts import XmlPosts
+from commands.xml_post_cog import XmlPosts
 
 config = configparser.RawConfigParser()
 config.read('config.properties')

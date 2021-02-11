@@ -82,8 +82,6 @@ class PostData:
 
 
 class Post:
-    total_posts = 0
-
     def __init__(self, ctx: Context, url: str, tags: str):
         self.ctx = ctx
         self.tags = tags
@@ -115,4 +113,5 @@ class Post:
             self.fetch_post()
             await self.msg.edit(**self.post_data.to_content())
 
-        await self.msg.remove_reaction(reaction.emoji, user)
+        if reaction.emoji != '🗑️':
+            await self.msg.remove_reaction(reaction.emoji, user)

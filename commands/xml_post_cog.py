@@ -2,7 +2,7 @@ from typing import Optional
 
 from discord import TextChannel
 from discord.ext import commands
-from discord.ext.commands import Context, NSFWChannelRequired
+from discord.ext.commands import Context, NSFWChannelRequired, CommandError
 
 from api import xml_api
 
@@ -43,6 +43,10 @@ class XmlPosts(commands.Cog):
     @commands.command(name='gelbooru', brief='Seach images from gelbooru.com', description=gelbooru_desc)
     async def gelbooru(self, ctx: Context, score: Optional[int] = 50, *, tags: str):
         await xml_api.show_post(ctx, tags, score, self.gelbooru_url)
+
+    async def cog_before_invoke(self, ctx):
+        if 'loli' in ctx.kwargs.get('tags'):
+            raise CommandError('No loli allowed')
 
     def cog_check(self, ctx):
         ch = ctx.channel
