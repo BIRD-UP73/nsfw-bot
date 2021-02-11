@@ -7,3 +7,4 @@ A Discord bot that posts NSFW images.
 [DEFAULT]
 token=birdup
 ```
+- Run `launcher.py`
