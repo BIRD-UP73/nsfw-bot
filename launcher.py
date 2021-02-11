@@ -13,10 +13,12 @@ config.read('config.properties')
 details_dict = dict(config.items('DEFAULT'))
 
 token = details_dict.get('token')
+prefix = details_dict.get('prefix') or '!'
+
 
 bot = commands.Bot(
     case_insensitive=True,
-    command_prefix='!',
+    command_prefix=prefix,
     help_command=CustomHelpCommand()
 )
 

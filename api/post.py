@@ -3,7 +3,7 @@ from xml.dom.minidom import Element
 
 from dateutil import parser
 from discord import Reaction, User, Embed
-from discord.ext.commands import Context, CommandError
+from discord.ext.commands import Context, CommandError, Bot
 
 import util
 
@@ -23,7 +23,7 @@ class PostData:
         post = PostData()
 
         if 'loli' in el.get('tags'):
-            raise CommandError('Bro, u just requested loli. U are going to bird down')
+            raise CommandError('No loli allowed')
 
         post.created_at = parser.parse(el.get('created_at'))
 
@@ -82,36 +82,40 @@ class PostData:
 
 
 class Post:
-    def __init__(self, ctx: Context, url: str, tags: str):
-        self.ctx = ctx
-        self.tags = tags
+    def __init__(self, bot: Bot, url: str, tags: str):
+        self.bot = bot
         self.url = url
+        self.tags = tags
         self.msg = None
         self.post_data = None
 
-    async def create_message(self):
+    async def create_message(self, ctx: Context):
         self.fetch_post()
 
         content = self.post_data.to_content()
-        self.msg = await self.ctx.send(**content)
+        self.msg = await ctx.send(**content)
 
-        self.ctx.bot.add_listener(self.on_reaction_add)
+        self.bot.add_listener(self.on_reaction_add)
         await self.msg.add_reaction('🗑️')
         await self.msg.add_reaction('🔁')
 
     def fetch_post(self) -> dict:
-        raise NotImplementedError('Class is not implementation of Post')
+        """
+        Abstract method to fetch a post
+        Should override `self.post_data`
+        """
+        raise NotImplementedError('You cannot call Post directly and your class should implement fetch_post()')
 
     async def on_reaction_add(self, reaction: Reaction, user: User):
-        if reaction.message.id != self.msg.id or user == self.ctx.bot.user:
+        if reaction.message.id != self.msg.id or user == self.bot.user:
             return
-
         if reaction.emoji == '🗑️':
             await self.msg.delete()
-            self.ctx.bot.remove_listener(self.on_reaction_add)
-        elif reaction.emoji == '🔁':
+            self.bot.remove_listener(self.on_reaction_add)
+            return
+
+        if reaction.emoji == '🔁':
             self.fetch_post()
             await self.msg.edit(**self.post_data.to_content())
 
-        if reaction.emoji != '🗑️':
-            await self.msg.remove_reaction(reaction.emoji, user)
+        await self.msg.remove_reaction(reaction.emoji, user)

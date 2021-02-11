@@ -21,7 +21,7 @@ class XmlPost(Post):
         self.post_data = PostData.from_xml(xml_post, total_posts)
 
 
-def get_xml_post(tags, url) -> Element:
+def get_xml_post(tags: str, url: str) -> Element:
     resp_text = send_request(MAX_POSTS_PER_PAGE, tags, 0, url)
     posts = et.fromstring(resp_text)
 
@@ -45,8 +45,8 @@ async def show_post(ctx: Context, tags: str, score, url: str):
     if 'score:>=' not in tags:
         tags += f' score:>{score}'
 
-    post = XmlPost(ctx, url, tags)
-    await post.create_message()
+    post = XmlPost(ctx.bot, url, tags)
+    await post.create_message(ctx)
 
 
 def send_request(limit: int, tags: str, page: int, url: str) -> str:

@@ -1,3 +1,5 @@
+from typing import Optional
+
 import requests
 from discord.ext.commands import Context
 
@@ -21,11 +23,11 @@ async def show_post(ctx: Context, tags: str, score: int):
     if 'score:>' not in tags and len(tags.split(' ')) < 2:
         tags += f' score:>={score}'
 
-    post = JsonPost(ctx, danbooru_url, tags)
-    await post.create_message()
+    post = JsonPost(ctx.bot, danbooru_url, tags)
+    await post.create_message(ctx)
 
 
-def get_json_post(tags: str):
+def get_json_post(tags: str) -> Optional[dict]:
     resp_json = send_json_request(danbooru_url, tags)
 
     if len(resp_json) == 0:
@@ -34,7 +36,7 @@ def get_json_post(tags: str):
     return resp_json[0]
 
 
-def send_json_request(url, tags, random=True):
+def send_json_request(url: str, tags: str, random: bool = True):
     params = {
         'limit': '1',
         'random': random,
