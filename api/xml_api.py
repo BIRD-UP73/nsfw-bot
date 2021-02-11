@@ -20,6 +20,9 @@ class XmlPost(Post):
 
         self.post_data = PostData.from_xml(xml_post, total_posts)
 
+        hist_cog = self.bot.get_cog('PostHist')
+        hist_cog.add_post(self.post_data.file_url)
+
 
 def get_xml_post(tags: str, url: str) -> Element:
     resp_text = send_request(MAX_POSTS_PER_PAGE, tags, 0, url)

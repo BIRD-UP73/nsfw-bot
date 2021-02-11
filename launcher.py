@@ -6,6 +6,7 @@ from commands.help import CustomHelpCommand
 
 import configparser
 
+from commands.post_hist import PostHist
 from commands.xml_post_cog import XmlPosts
 
 config = configparser.RawConfigParser()
@@ -23,6 +24,8 @@ bot = commands.Bot(
 )
 
 bot.add_cog(XmlPosts())
+bot.add_cog(PostHist())
+
 bot.add_command(danbooru)
 bot.add_command(github)
 
