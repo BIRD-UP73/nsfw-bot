@@ -11,6 +11,7 @@ import util
 class PostData:
     artist_tag = ''
     character_tag = ''
+    copyright_tag = ''
     created_at: datetime = None
     file_ext = ''
     file_url = ''
@@ -47,6 +48,7 @@ class PostData:
 
         post.artist_tag = json_dict.get('tag_string_artist')
         post.character_tag = json_dict.get('tag_string_character')
+        post.copyright_tag = json_dict.get('tag_string_copyright')
         post.created_at = json_dict.get('created_at')
         post.file_ext = json_dict.get('file_ext')
         post.file_url = json_dict.get('file_url')
@@ -66,15 +68,16 @@ class PostData:
         if self.created_at:
             embed.timestamp = parser.parse(str(self.created_at))
 
-        if self.score:
-            embed.add_field(name='Score', value=self.score)
-        if self.character_tag and len(self.character_tag) < 1024:
+        if self.copyright_tag and len(self.copyright_tag) < util.max_field_length:
+            embed.add_field(name='Copyright', value=self.copyright_tag)
+        if self.character_tag and len(self.character_tag) < util.max_field_length:
             embed.add_field(name='Characters', value=self.character_tag)
-        if self.artist_tag and len(self.artist_tag) < 1024:
-            embed.add_field(name='Characters', value=self.character_tag)
+        if self.artist_tag and len(self.artist_tag) < util.max_field_length:
+            embed.add_field(name='Artist', value=self.artist_tag)
         if self.source:
-            embed.add_field(name='Source', value=self.source)
-
+            embed.add_field(name='Source', value=self.source, inline=False)
+        if self.score:
+            embed.set_footer(text=f'Score: {self.score}')
         if self.file_url:
             embed.set_image(url=self.file_url)
 

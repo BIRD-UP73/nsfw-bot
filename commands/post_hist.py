@@ -6,7 +6,6 @@ from discord.ext import commands
 from discord.ext.commands import Context
 
 max_len = 20
-max_field_len = 1024
 
 
 class PostHist(commands.Cog):
