@@ -5,6 +5,7 @@ from xml.dom.minidom import Element
 import requests
 from discord.ext.commands import Context, CommandError
 
+import util
 from api.post import Post, PostData
 
 POST_LIMIT = 2500
@@ -43,9 +44,7 @@ def get_xml_post(tags: str, url: str) -> Element:
 
 
 async def show_post(ctx: Context, tags: str, score, url: str):
-    if 'score:>=' not in tags:
-        tags += f' score:>{score}'
-
+    tags = util.parse_tags(tags, score)
     post = XmlPost(ctx, url, tags)
     await post.create_message()
 

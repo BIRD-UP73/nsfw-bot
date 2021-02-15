@@ -3,6 +3,7 @@ from typing import Optional
 import requests
 from discord.ext.commands import Context
 
+import util
 from api.post import PostData
 from api.xml_api import Post
 
@@ -21,8 +22,8 @@ class JsonPost(Post):
 
 
 async def show_post(ctx: Context, tags: str, score: int):
-    if 'score:>' not in tags and len(tags.split(' ')) < 2:
-        tags += f' score:>={score}'
+    if len(tags.split(' ')) < 2:
+        tags = util.parse_tags(tags, score)
 
     post = JsonPost(ctx, danbooru_url, tags)
     await post.create_message()
