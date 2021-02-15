@@ -21,11 +21,23 @@ class PostHist(commands.Cog):
         embed = Embed()
         embed.title = 'History'
 
-        embed.add_field(name='Posts 1', value='\n'.join(list(channel_hist)[:10]))
-        posts_2 = list(channel_hist)[10:]
+        post_list = list(channel_hist)
 
-        if posts_2:
-            embed.add_field(name='Posts 2', value='\n'.join(posts_2))
+        parsed_posts = []
+        post_idx = 1
+
+        for url in post_list:
+            joined_txt = '\n'.join(parsed_posts)
+
+            if len(joined_txt) + len(url) > 1024:
+                embed.add_field(name=f'Posts {post_idx}', value=joined_txt)
+                post_idx += 1
+                parsed_posts = []
+            else:
+                parsed_posts.append(url)
+
+        if len(parsed_posts) > 0:
+            embed.add_field(name=f'Posts {post_idx}', value='\n'.join(parsed_posts))
 
         await ctx.send(embed=embed)
 

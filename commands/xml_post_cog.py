@@ -54,7 +54,3 @@ class XmlPosts(commands.Cog):
             return True
 
         raise NSFWChannelRequired(ch)
-
-    async def cog_command_error(self, ctx, error):
-        await ctx.send(error)
-        raise error

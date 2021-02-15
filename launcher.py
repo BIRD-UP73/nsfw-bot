@@ -1,4 +1,5 @@
 from discord.ext import commands
+from discord.ext.commands import Context
 
 from commands.danbooru import danbooru
 from commands.github import github
@@ -33,7 +34,13 @@ bot.add_command(github)
 async def on_ready():
     print(f'{bot.user} is ready')
 
+
+async def on_command_error(ctx: Context, exception: Exception):
+    await ctx.send(str(exception))
+    raise exception
+
 bot.add_listener(on_ready)
+bot.add_listener(on_command_error)
 
 if __name__ == "__main__":
     bot.run(token)
