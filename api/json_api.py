@@ -17,14 +17,15 @@ class JsonPost(Post):
             json_post = get_json_post(self.tags)
 
         self.post_data = PostData.from_json(json_post)
+        self.update_hist()
 
 
 async def show_post(ctx: Context, tags: str, score: int):
     if 'score:>' not in tags and len(tags.split(' ')) < 2:
         tags += f' score:>={score}'
 
-    post = JsonPost(ctx.bot, danbooru_url, tags)
-    await post.create_message(ctx)
+    post = JsonPost(ctx, danbooru_url, tags)
+    await post.create_message()
 
 
 def get_json_post(tags: str) -> Optional[dict]:

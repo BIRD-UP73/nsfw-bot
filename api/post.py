@@ -3,7 +3,7 @@ from xml.dom.minidom import Element
 
 from dateutil import parser
 from discord import Reaction, User, Embed
-from discord.ext.commands import Context, CommandError, Bot
+from discord.ext.commands import Context, CommandError
 
 import util
 
@@ -82,20 +82,20 @@ class PostData:
 
 
 class Post:
-    def __init__(self, bot: Bot, url: str, tags: str):
-        self.bot = bot
+    def __init__(self, ctx: Context, url: str, tags: str):
+        self.ctx = ctx
         self.url = url
         self.tags = tags
         self.msg = None
         self.post_data = None
 
-    async def create_message(self, ctx: Context):
+    async def create_message(self):
         self.fetch_post()
 
         content = self.post_data.to_content()
-        self.msg = await ctx.send(**content)
+        self.msg = await self.ctx.send(**content)
 
-        self.bot.add_listener(self.on_reaction_add)
+        self.ctx.bot.add_listener(self.on_reaction_add)
         await self.msg.add_reaction('🗑️')
         await self.msg.add_reaction('🔁')
 
@@ -106,12 +106,19 @@ class Post:
         """
         raise NotImplementedError('You cannot call Post directly and your class should implement fetch_post()')
 
+    def update_hist(self):
+        """
+        Adds the current post to the post history
+        """
+        hist_cog = self.ctx.bot.get_cog('PostHist')
+        hist_cog.add_post(self.ctx.channel, self.post_data.file_url)
+
     async def on_reaction_add(self, reaction: Reaction, user: User):
-        if reaction.message.id != self.msg.id or user == self.bot.user:
+        if reaction.message.id != self.msg.id or user == self.ctx.bot.user:
             return
         if reaction.emoji == '🗑️':
             await self.msg.delete()
-            self.bot.remove_listener(self.on_reaction_add)
+            self.ctx.bot.remove_listener(self.on_reaction_add)
             return
 
         if reaction.emoji == '🔁':

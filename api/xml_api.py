@@ -19,9 +19,7 @@ class XmlPost(Post):
             raise CommandError(f'No images found for {self.tags}')
 
         self.post_data = PostData.from_xml(xml_post, total_posts)
-
-        hist_cog = self.bot.get_cog('PostHist')
-        hist_cog.add_post(self.post_data.file_url)
+        self.update_hist()
 
 
 def get_xml_post(tags: str, url: str) -> Element:
@@ -48,8 +46,8 @@ async def show_post(ctx: Context, tags: str, score, url: str):
     if 'score:>=' not in tags:
         tags += f' score:>{score}'
 
-    post = XmlPost(ctx.bot, url, tags)
-    await post.create_message(ctx)
+    post = XmlPost(ctx, url, tags)
+    await post.create_message()
 
 
 def send_request(limit: int, tags: str, page: int, url: str) -> str:
