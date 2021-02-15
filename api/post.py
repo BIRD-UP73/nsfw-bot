@@ -128,4 +128,5 @@ class Post:
             self.fetch_post()
             await self.msg.edit(**self.post_data.to_content())
 
-        await self.msg.remove_reaction(reaction.emoji, user)
+        if self.ctx.guild:
+            await self.msg.remove_reaction(reaction.emoji, user)
