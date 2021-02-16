@@ -2,7 +2,7 @@ from datetime import datetime
 from xml.dom.minidom import Element
 
 from dateutil import parser
-from discord import Reaction, User, Embed
+from discord import Reaction, User, Embed, Color
 from discord.ext.commands import Context, CommandError
 
 import util
@@ -62,6 +62,7 @@ class PostData:
             return {'embed': None, 'content': self.file_url}
 
         embed = Embed()
+        embed.colour = Color.green()
 
         if self.total_posts:
             embed.description = f'Found {self.total_posts} images'
