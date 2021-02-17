@@ -27,6 +27,9 @@ class XmlPostData(AbstractPostData):
         self.total_posts = total_posts
 
     def to_content(self) -> dict:
+        if not util.is_image(self.file_ext):
+            return {'embed': None, 'content': self.file_url}
+
         embed = Embed()
         embed.colour = Color.green()
 

@@ -24,10 +24,6 @@ class PostError(AbstractPostData):
     def __init__(self, message: str):
         self.message = message
 
-    @property
-    def tags(self) -> str:
-        return ''
-
     def to_content(self) -> dict:
         embed = Embed()
         embed.title = 'Error'

@@ -1,5 +1,4 @@
 from discord.ext import commands
-from discord.ext.commands import Context
 
 from commands.danbooru import danbooru
 from commands.github import github
@@ -9,6 +8,7 @@ import configparser
 
 from commands.post_hist import PostHist
 from commands.xml_post_cog import XmlPosts
+from listeners import Listeners
 
 config = configparser.RawConfigParser()
 config.read('config.properties')
@@ -26,21 +26,10 @@ bot = commands.Bot(
 
 bot.add_cog(XmlPosts())
 bot.add_cog(PostHist())
+bot.add_cog(Listeners(bot))
 
 bot.add_command(danbooru)
 bot.add_command(github)
-
-
-async def on_ready():
-    print(f'{bot.user} is ready')
-
-
-async def on_command_error(ctx: Context, exception: Exception):
-    await ctx.send(str(exception))
-    raise exception
-
-bot.add_listener(on_ready)
-bot.add_listener(on_command_error)
 
 if __name__ == "__main__":
     bot.run(token)

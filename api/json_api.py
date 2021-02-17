@@ -13,14 +13,14 @@ danbooru_url = 'https://danbooru.donmai.us/posts.json'
 
 
 class JsonPostData(AbstractPostData):
-    artist_tag = ''
-    character_tag = ''
-    copyright_tag = ''
+    artist_tag: str = ''
+    character_tag: str = ''
+    copyright_tag: str = ''
     created_at: str = ''
-    file_ext = ''
-    file_url = ''
-    score = ''
-    source = ''
+    file_ext: str = ''
+    file_url: str = ''
+    score: str = ''
+    source: str = ''
 
     def __init__(self, json_dict: dict):
         self.artist_tag = json_dict.get('tag_string_artist')
