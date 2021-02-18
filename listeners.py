@@ -1,4 +1,4 @@
-from discord import RawReactionActionEvent
+from discord import RawReactionActionEvent, NotFound
 from discord.ext.commands import Bot, Cog, Context
 
 
@@ -21,7 +21,11 @@ class Listeners(Cog):
             return
         if payload.emoji.name == '🗑️':
             channel = await self.bot.fetch_channel(payload.channel_id)
-            message = await channel.fetch_message(payload.message_id)
 
-            if message.author == self.bot.user:
-                await message.delete()
+            try:
+                message = await channel.fetch_message(payload.message_id)
+
+                if message.author == self.bot.user:
+                    await message.delete()
+            except NotFound:
+                print('Error deleting message')

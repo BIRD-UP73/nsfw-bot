@@ -9,7 +9,7 @@ class CustomHelpCommand(HelpCommand):
         embed.description = command.brief
 
         if command.aliases:
-            embed.add_field(name='Aliases', value=' '.join(command.aliases), inline=False)
+            embed.add_field(name='Aliases', value=', '.join(command.aliases), inline=False)
 
         if command.description:
             embed.add_field(name='Description', value=command.description)

@@ -5,7 +5,7 @@ from xml.dom.minidom import Element
 import requests
 from dateutil import parser
 from discord import Embed, Color
-from discord.ext.commands import Context, CommandError
+from discord.ext.commands import Context
 
 import util
 from api.abstractpost import AbstractPost, AbstractPostData, PostError
@@ -87,8 +87,9 @@ def get_xml_post(tags: str, url: str) -> Element:
     return total_posts, posts[0]
 
 
-async def show_post(ctx: Context, tags: str, score, url: str):
-    tags = util.parse_tags(tags, score)
+async def show_post(ctx: Context, tags: str, score: int, url: str, skip_score=False):
+    if not skip_score:
+        tags = util.parse_tags(tags, score)
 
     post = XmlPost(ctx, url, tags)
     await post.create_message()

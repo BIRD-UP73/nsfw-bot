@@ -4,49 +4,66 @@ from discord import TextChannel
 from discord.ext import commands
 from discord.ext.commands import Context, NSFWChannelRequired, CommandError
 
+import util
 from api import xml_api
+
+short_urls = {
+    'rule34': 'rule34.xxx',
+    'gelbooru': 'gelbooru.com',
+    'xbooru': 'xbooru.com',
+    'tbib': 'tbib.org'
+}
+
+aliases = {
+    'rule34': ['r34']
+}
+
+
+def get_long_url(command_name: str):
+    return f'https://{short_urls.get(command_name)}/index.php'
+
+
+def get_data(command_name: str):
+    url = short_urls.get(command_name)
+    description = f"""
+                Searches images from {url}
+
+                - For search terms, see https://{url}/index.php?page=help&topic=cheatsheet
+                - To filter by score, use 'score:>=[amount]'
+                """
+
+    data_dict = dict(
+        name=command_name,
+        brief=f'Search images from {url}',
+        description=description,
+    )
+
+    if command_name in aliases:
+        data_dict['aliases'] = aliases.get(command_name)
+
+    return data_dict
 
 
 class XmlPosts(commands.Cog):
-    rule34_desc = """
-    Searches images from rule34.xxx
-
-    - For search terms, see https://rule34.xxx/index.php?page=help&topic=cheatsheet
-    - To filter by score, use 'score:>=[amount]'
-    """
-    rule34_url = 'https://rule34.xxx/index.php'
- 
-    @commands.command(name='rule34', aliases=['r34'], brief='Seach images from rule34.xxx', description=rule34_desc)
+    @commands.command(**get_data('rule34'))
     async def rule34(self, ctx: Context, score: Optional[int] = 50, *, tags: str):
-        await xml_api.show_post(ctx, tags, score, self.rule34_url)
+        await xml_api.show_post(ctx, tags, score, get_long_url(ctx.command.name))
 
-    xbooru_desc = """
-    Searches images from xbooru.com
-    
-    - For search terms, see https://xbooru.com/index.php?page=help&topic=cheatsheet
-    - To filter by score, use 'score:>=[amount]'
-    """
-    xbooru_url = 'https://xbooru.com/index.php'
-
-    @commands.command(name='xbooru', brief='Seach images from xbooru.com', description=xbooru_desc)
+    @commands.command(**get_data('xbooru'))
     async def xbooru(self, ctx: Context, score: Optional[int] = 50, *, tags: str):
-        await xml_api.show_post(ctx, tags, score, self.xbooru_url)
+        await xml_api.show_post(ctx, tags, score, get_long_url(ctx.command.name))
 
-    gelbooru_desc = """
-    Searches images from gelbooru.com
-
-    - For search terms, see https://gelbooru.com/index.php?page=help&topic=cheatsheet
-    - To filter by score, use 'score:>=[amount]'
-    """
-    gelbooru_url = 'https://gelbooru.com/index.php'
-
-    @commands.command(name='gelbooru', brief='Seach images from gelbooru.com', description=gelbooru_desc)
+    @commands.command(**get_data('gelbooru'))
     async def gelbooru(self, ctx: Context, score: Optional[int] = 50, *, tags: str):
-        await xml_api.show_post(ctx, tags, score, self.gelbooru_url)
+        await xml_api.show_post(ctx, tags, score, get_long_url(ctx.command.name))
+
+    @commands.command(**get_data('tbib'))
+    async def tbib(self, ctx: Context, *, tags: str):
+        await xml_api.show_post(ctx, tags, 0, get_long_url(ctx.command.name), skip_score=True)
 
     async def cog_before_invoke(self, ctx):
-        if 'loli' in ctx.kwargs.get('tags'):
-            raise CommandError('No loli allowed')
+        if util.contains_disallowed_tags(ctx.kwargs.get('tags')):
+            raise CommandError('Post contains disallowed tag')
 
     def cog_check(self, ctx):
         ch = ctx.channel

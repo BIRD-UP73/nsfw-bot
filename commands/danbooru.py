@@ -20,9 +20,3 @@ async def danbooru(ctx: Context, score: Optional[int] = 50, *, tags: str, ):
         raise CommandError('No loli allowed')
 
     await json_api.show_post(ctx, tags, score)
-
-
-@danbooru.error
-async def on_error(ctx: Context, error):
-    await ctx.send(error)
-    raise error
