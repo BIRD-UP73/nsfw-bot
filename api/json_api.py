@@ -31,7 +31,7 @@ class JsonPostData(AbstractPostData):
         self.file_url = json_dict.get('file_url')
         self.score = json_dict.get('score')
         self.source = json_dict.get('source')
-        self.tags = json_dict.get('tags')
+        self.tags = json_dict.get('tag_string')
 
     def to_content(self) -> dict:
         if not util.is_image(self.file_ext):
