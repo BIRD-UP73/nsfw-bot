@@ -8,14 +8,13 @@ class CustomHelpCommand(HelpCommand):
         embed.title = command.name
         embed.description = command.brief
 
-        if command.aliases:
-            embed.add_field(name='Aliases', value=', '.join(command.aliases), inline=False)
-
         if command.description:
             embed.add_field(name='Description', value=command.description)
 
-        dest = super().get_destination()
-        await dest.send(embed=embed)
+        if command.aliases:
+            embed.add_field(name='Aliases', value=', '.join(command.aliases), inline=False)
+
+        await self.context.send(embed=embed)
 
     async def send_bot_help(self, mapping: dict):
         embed = Embed()
@@ -27,13 +26,10 @@ class CustomHelpCommand(HelpCommand):
                 if cmd.name != 'help':
                     embed.add_field(name=self.get_signature(cmd), value=cmd.brief, inline=False)
 
-        dest = super().get_destination()
-        await dest.send(embed=embed)
+        await self.context.send(embed=embed)
 
     def get_signature(self, cmd: Command):
-        prefix = super().clean_prefix
-
         if cmd.signature:
-            return f'`{prefix}{cmd.name} {cmd.signature}`'
+            return f'`{self.clean_prefix}{cmd.name} {cmd.signature}`'
 
-        return f'`{prefix}{cmd.name}`'
+        return f'`{self.clean_prefix}{cmd.name}`'
