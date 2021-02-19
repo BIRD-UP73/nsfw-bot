@@ -1,6 +1,6 @@
 import random
-from xml.etree import ElementTree
 from xml.dom.minidom import Element
+from xml.etree import ElementTree
 
 import requests
 from dateutil import parser

@@ -1,4 +1,3 @@
-from discord import RawReactionActionEvent, NotFound
 from discord.ext.commands import Bot, Cog, Context
 
 

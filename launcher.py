@@ -1,11 +1,10 @@
+import configparser
+
 from discord.ext import commands
 
 from commands.danbooru import danbooru
 from commands.github import github
 from commands.help import CustomHelpCommand
-
-import configparser
-
 from commands.post_hist import PostHist
 from commands.xml_post_cog import XmlPosts
 from listeners import Listeners
