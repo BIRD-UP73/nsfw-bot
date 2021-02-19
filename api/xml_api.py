@@ -1,5 +1,5 @@
 import random
-import xml.etree.ElementTree as et
+from xml.etree import ElementTree
 from xml.dom.minidom import Element
 
 import requests
@@ -69,7 +69,7 @@ class XmlPost(AbstractPost):
 
 def get_xml_post(tags: str, url: str) -> Element:
     resp_text = send_request(MAX_POSTS_PER_PAGE, tags, 0, url)
-    posts = et.fromstring(resp_text)
+    posts = ElementTree.fromstring(resp_text)
 
     total_posts = int(posts.get('count'))
     max_posts_to_search = min(total_posts, POST_LIMIT)
@@ -81,7 +81,7 @@ def get_xml_post(tags: str, url: str) -> Element:
     random_page = random.randint(0, max_pages)
 
     resp_text = send_request(MAX_POSTS_PER_PAGE, tags, random_page, url)
-    posts = et.fromstring(resp_text)
+    posts = ElementTree.fromstring(resp_text)
 
     random.shuffle(posts)
     return total_posts, posts[0]

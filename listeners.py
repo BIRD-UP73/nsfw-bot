@@ -14,18 +14,3 @@ class Listeners(Cog):
     async def on_command_error(self, ctx: Context, exception: Exception):
         await ctx.send(str(exception))
         raise exception
-
-    @Cog.listener()
-    async def on_raw_reaction_add(self, payload: RawReactionActionEvent):
-        if payload.user_id == self.bot.user.id:
-            return
-        if payload.emoji.name == '🗑️':
-            channel = await self.bot.fetch_channel(payload.channel_id)
-
-            try:
-                message = await channel.fetch_message(payload.message_id)
-
-                if message.author == self.bot.user:
-                    await message.delete()
-            except NotFound:
-                print('Error deleting message')

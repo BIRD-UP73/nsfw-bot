@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from discord import Reaction, User, Embed, Message, Color
+from discord import Reaction, User, Embed, Message, Color, Emoji
 from discord.ext.commands import Context
 
 import util
@@ -59,17 +59,19 @@ class AbstractPost(ABC):
     async def on_reaction_add(self, reaction: Reaction, user: User):
         if reaction.message.id != self.msg.id or user == self.ctx.bot.user:
             return
-        if reaction.emoji == '🗑️':
+        if user == self.ctx.author:
+            await self.handle_reaction(reaction.emoji)
+        if self.ctx.guild:
+            await self.msg.remove_reaction(reaction.emoji, user)
+
+    async def handle_reaction(self, emoji: Emoji):
+        if emoji == '🗑️':
             await self.msg.delete()
             self.ctx.bot.remove_listener(self.on_reaction_add)
             return
-
-        if reaction.emoji == '🔁':
+        if emoji == '🔁':
             post_data = self.fetch_post()
             await self.msg.edit(**post_data.to_content())
-
-        if self.ctx.guild:
-            await self.msg.remove_reaction(reaction.emoji, user)
 
     @abstractmethod
     def fetch_post(self) -> AbstractPostData:
