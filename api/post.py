@@ -1,37 +1,10 @@
 from abc import ABC, abstractmethod
 
-from discord import Reaction, User, Embed, Message, Color, Emoji
+from discord import Reaction, User, Message, Emoji
 from discord.ext.commands import Context
 
-import util
-
-
-class AbstractPostData(ABC):
-    tags: str = None
-
-    @abstractmethod
-    def to_content(self) -> dict:
-        pass
-
-    def has_disallowed_tags(self):
-        return util.contains_disallowed_tags(self.tags)
-
-
-class PostError(AbstractPostData):
-    """
-    Post used to indicate something went wrong
-    """
-    def __init__(self, message: str):
-        self.message = message
-
-    def to_content(self) -> dict:
-        embed = Embed()
-        embed.title = 'Error'
-        embed.description = self.message
-
-        embed.colour = Color.red()
-
-        return {'content': None, 'embed': embed}
+import db.repo
+from api.post_data import AbstractPostData
 
 
 class AbstractPost(ABC):
@@ -42,12 +15,13 @@ class AbstractPost(ABC):
     tags: str = None
 
     async def create_message(self):
-        post_data = self.fetch_post()
-        self.msg = await self.ctx.send(**post_data.to_content())
+        self.fetch_post()
+        self.msg = await self.ctx.send(**self.post_data.to_content())
 
         self.ctx.bot.add_listener(self.on_reaction_add)
         await self.msg.add_reaction('🗑️')
         await self.msg.add_reaction('🔁')
+        await self.msg.add_reaction('⭐')
 
     def update_hist(self, post_data):
         """
@@ -60,23 +34,26 @@ class AbstractPost(ABC):
         if reaction.message.id != self.msg.id or user == self.ctx.bot.user:
             return
         if user == self.ctx.author:
-            await self.handle_reaction(reaction.emoji)
+            await self.handle_reaction(user, reaction.emoji)
         if self.ctx.guild:
             await self.msg.remove_reaction(reaction.emoji, user)
 
-    async def handle_reaction(self, emoji: Emoji):
+    async def handle_reaction(self, user: User, emoji: Emoji):
         if emoji == '🗑️':
             await self.msg.delete()
             self.ctx.bot.remove_listener(self.on_reaction_add)
             return
         if emoji == '🔁':
-            post_data = self.fetch_post()
-            await self.msg.edit(**post_data.to_content())
+            self.fetch_post()
+            await self.msg.edit(**self.post_data.to_content())
+        if emoji == '⭐':
+            if db.repo.store_favorite(user, self.post_data):
+                await self.ctx.send(f'{self.ctx.author.mention}, added post to favorites')
 
     @abstractmethod
-    def fetch_post(self) -> AbstractPostData:
+    def fetch_post(self):
         """
         Abstract method to fetch a post, should return `AbstractPostData`
-        :return: post data
+        Method should set `self.post_data`
         """
         pass

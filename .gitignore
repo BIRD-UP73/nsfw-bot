@@ -132,3 +132,5 @@ dmypy.json
 .idea
 
 config.properties
+
+sqlalchemy_example.db

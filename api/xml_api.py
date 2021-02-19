@@ -3,48 +3,43 @@ from xml.dom.minidom import Element
 from xml.etree import ElementTree
 
 import requests
-from dateutil import parser
-from discord import Embed, Color
+from discord import Embed
 from discord.ext.commands import Context
 
 import util
-from api.abstractpost import AbstractPost, AbstractPostData, PostError
+from api.post import AbstractPost
+from api.post_data import PostData, PostError
 
 POST_LIMIT = 2500
 MAX_POSTS_PER_PAGE = 100
 
 
-class XmlPostData(AbstractPostData):
-    tags = ''
+class XmlPostData(PostData):
+    total_posts = 0
 
-    def __init__(self, el: Element, total_posts):
-        self.file_url = el.get('file_url')
-        self.file_ext = self.file_url.split('.')[-1]
-        self.created_at = el.get('created_at')
-        self.score = el.get('score')
-        self.source = el.get('source')
-        self.tags = el.get('tags')
+    def __init__(self, total_posts, **kwargs):
+        super().__init__(**kwargs)
         self.total_posts = total_posts
 
-    def to_content(self) -> dict:
-        if not util.is_image(self.file_ext):
-            return {'embed': None, 'content': self.file_url}
+    @classmethod
+    def from_xml(cls, el: ElementTree, total_posts: int):
+        file_url = el.get('file_url')
 
-        embed = Embed()
-        embed.colour = Color.green()
+        data = dict(
+            file_url=file_url,
+            file_ext=file_url.split('.')[-1],
+            created_at=el.get('created_at'),
+            score=el.get('score'),
+            source=el.get('source'),
+            tags=el.get('tags')
+        )
 
-        if self.total_posts:
-            embed.description = f'Found {self.total_posts} images'
-        if self.created_at:
-            embed.timestamp = parser.parse(self.created_at)
-        if self.source:
-            embed.add_field(name='Source', value=self.source, inline=False)
-        if self.score:
-            embed.set_footer(text=f'Score: {self.score}')
-        if self.file_url:
-            embed.set_image(url=self.file_url)
+        return cls(total_posts, **data)
 
-        return {'embed': embed, 'content': None}
+    def to_embed(self) -> Embed:
+        embed = super().to_embed()
+        embed.description = f'Found {self.total_posts} images'
+        return embed
 
 
 class XmlPost(AbstractPost):
@@ -59,12 +54,12 @@ class XmlPost(AbstractPost):
         if total_posts == 0:
             return PostError(f'No images found for {self.tags}')
 
-        post_data = XmlPostData(xml_post, total_posts)
+        post_data = XmlPostData.from_xml(xml_post, total_posts)
         if post_data.has_disallowed_tags():
             return PostError('Post contains disallowed tags. Please try again.')
 
         self.update_hist(post_data)
-        return post_data
+        self.post_data = post_data
 
 
 def get_xml_post(tags: str, url: str) -> Element:
