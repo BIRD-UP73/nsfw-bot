@@ -1,10 +1,9 @@
 from abc import ABC, abstractmethod
 
-from discord import Embed, Color
 from dateutil import parser
+from discord import Embed, Color
 
 import util
-
 from db.model import Post as DBPost
 
 
@@ -13,9 +12,20 @@ class AbstractPostData(ABC):
 
     @abstractmethod
     def to_content(self) -> dict:
+        """
+        Converts this post data to a dictionary with arguments that
+        are used in `Message.send`
+
+        For example: `{'content': 'Message content', 'embed': <embed data>}
+
+        :return: the dictionary with content
+        """
         pass
 
     def has_disallowed_tags(self):
+        """
+        Checks if the tags contain disallowed tags
+        """
         return util.contains_disallowed_tags(self.tags)
 
 
@@ -71,11 +81,12 @@ class PostData(AbstractPostData):
         return db_post
 
 
-class PostError(AbstractPostData):
+class PostError(PostData):
     """
     Post used to indicate something went wrong
     """
     def __init__(self, message: str):
+        super().__init__()
         self.message = message
 
     def to_content(self) -> dict:

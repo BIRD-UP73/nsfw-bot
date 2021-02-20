@@ -4,20 +4,19 @@ from discord import Reaction, User, Message
 from discord.ext.commands import Context
 
 import db.repo
-from api.post_data import AbstractPostData, PostError
+from api.post_data import PostError, PostData
 
 
 class AbstractPost(ABC):
     ctx: Context = None
     msg: Message = None
-    post_data: AbstractPostData = None
+    post_data: PostData = None
     url: str = None
     tags: str = None
 
     async def create_message(self):
         """
-        Creates a message with the post, and
-        :return:
+        Creates a message with the post, and adds reaction listeners
         """
         self.fetch_post()
         self.msg = await self.ctx.send(**self.post_data.to_content())
@@ -38,6 +37,11 @@ class AbstractPost(ABC):
         hist_cog.add_post(self.ctx.channel, post_data.file_url)
 
     async def on_reaction_add(self, reaction: Reaction, user: User):
+        """
+        Function to handle user reactions to posts
+        :param reaction: the reaction
+        :param user: the user that reacted
+        """
         if reaction.message.id != self.msg.id or user == self.ctx.bot.user:
             return
         if reaction.emoji == '⭐':
