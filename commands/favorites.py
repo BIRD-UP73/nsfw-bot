@@ -17,7 +17,8 @@ class PostsEmbedMessage:
         self.data = data
 
     async def create_message(self):
-        self.message = await self.ctx.send(**self.get_data().to_content())
+        data = self.data[self.page]
+        self.message = await self.ctx.send(**data.to_content())
 
         await self.message.add_reaction('⬅')
         await self.message.add_reaction('➡')
@@ -31,15 +32,15 @@ class PostsEmbedMessage:
 
         if reaction.emoji == '➡':
             self.page = (self.page + 1) % len(self.data)
-            await self.message.edit(**self.get_data().to_content())
+            await self.update_message()
         if reaction.emoji == '⬅':
             self.page = (self.page - 1) % len(self.data)
-            await self.message.edit(**self.get_data().to_content())
-        if reaction.emoji == '🗑️':
+            await self.update_message()
+        if reaction.emoji == '🗑️' and user == self.ctx.author:
             if remove_favorite(self.ctx.author, self.get_data()):
                 await self.ctx.send(f'{self.ctx.author.mention}, removed favorite successfully.')
 
-            self.data.remove(self.get_data())
+            self.data.remove(self.data[self.page])
 
             if len(self.data) == 0:
                 await self.message.edit(content='No favorites found', embed=None)
@@ -47,11 +48,16 @@ class PostsEmbedMessage:
                 self.ctx.bot.remove_listener(self.on_reaction_add)
             else:
                 self.page = 0
-                await self.message.edit(**self.get_data().to_content())
+                await self.update_message()
 
-        await self.message.remove_reaction(reaction, user)
+        if self.ctx.guild:
+            await self.message.remove_reaction(reaction, user)
 
-    def get_data(self) -> PostData:
+    async def update_message(self):
+        data = self.get_data()
+        await self.message.edit(**data.to_content())
+
+    def get_data(self):
         return self.data[self.page]
 
 

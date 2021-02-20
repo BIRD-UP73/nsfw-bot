@@ -15,7 +15,7 @@ def get_favorites(user: User) -> List[PostData]:
     return [PostData.from_db_post(db_post) for db_post in db_user.posts]
 
 
-def remove_favorite(user: User, post_data: AbstractPostData):
+def remove_favorite(user: User, post_data: PostData):
     db_user = session.query(DBUser).get(user.id)
 
     if not db_user:

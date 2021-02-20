@@ -2,7 +2,6 @@ import configparser
 
 from discord.ext import commands
 
-from commands.danbooru import danbooru
 from commands.favorites import Favorites
 from commands.github import github
 from commands.help import CustomHelpCommand
@@ -29,7 +28,6 @@ bot.add_cog(PostHist())
 bot.add_cog(Listeners(bot))
 bot.add_cog(Favorites())
 
-bot.add_command(danbooru)
 bot.add_command(github)
 
 if __name__ == "__main__":

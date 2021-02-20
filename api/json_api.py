@@ -44,10 +44,15 @@ class JsonPost(AbstractPost):
     def fetch_post(self):
         json_post = get_json_post(self.tags)
 
+        if not json_post:
+            self.post_data = PostError('No posts found.')
+            return
+
         post_data = JsonPostData(**json_post)
 
         if post_data.has_disallowed_tags():
-            return PostError('Post contains disallowed tags. Please try again.')
+            self.post_data = PostError('Post contains disallowed tags. Please try again.')
+            return
 
         self.update_hist(post_data)
         self.post_data = post_data

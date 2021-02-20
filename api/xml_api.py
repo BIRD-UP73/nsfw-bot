@@ -52,11 +52,13 @@ class XmlPost(AbstractPost):
         total_posts, xml_post = get_xml_post(self.tags, self.url)
 
         if total_posts == 0:
-            return PostError(f'No images found for {self.tags}')
+            self.post_data = PostError(f'No images found for {self.tags}')
+            return
 
         post_data = XmlPostData.from_xml(xml_post, total_posts)
         if post_data.has_disallowed_tags():
-            return PostError('Post contains disallowed tags. Please try again.')
+            self.post_data = PostError('Post contains disallowed tags. Please try again.')
+            return
 
         self.update_hist(post_data)
         self.post_data = post_data

@@ -15,21 +15,8 @@ class AbstractPostData(ABC):
     def to_content(self) -> dict:
         pass
 
-    @abstractmethod
-    def to_embed(self) -> Embed:
-        pass
-
     def has_disallowed_tags(self):
         return util.contains_disallowed_tags(self.tags)
-
-    @classmethod
-    @abstractmethod
-    def from_db_post(cls, db_post: DBPost):
-        pass
-
-    @abstractmethod
-    def to_db_post(self) -> DBPost:
-        pass
 
 
 class PostData(AbstractPostData):
