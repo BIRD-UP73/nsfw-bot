@@ -2,7 +2,7 @@ from typing import Optional, List
 
 from discord import User
 from discord.ext import commands
-from discord.ext.commands import Cog, Context
+from discord.ext.commands import Cog, Context, is_nsfw
 
 from api.post_data import PostData
 from db.repo import get_favorites, remove_favorite
@@ -54,14 +54,20 @@ class PostsEmbedMessage:
             await self.message.remove_reaction(reaction, user)
 
     async def update_message(self):
-        data = self.get_data()
-        await self.message.edit(**data.to_content())
+        content = self.get_data().to_content()
+
+        if embed := content.get('embed'):
+            embed.description = f'Favorites for {self.ctx.author.mention}. Page {self.page + 1} of {len(self.data)}'
+
+        await self.message.edit(**content)
 
     def get_data(self):
         return self.data[self.page]
 
 
 class Favorites(Cog):
+
+    @is_nsfw()
     @commands.command(name='favorites', aliases=['favs'], brief='List a users favorites')
     async def favorites(self, ctx: Context, user: Optional[User] = None):
         user = user or ctx.author

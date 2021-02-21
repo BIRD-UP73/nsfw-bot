@@ -3,7 +3,7 @@ from typing import Union, Dict
 
 from discord import Embed, DMChannel, Guild
 from discord.ext import commands
-from discord.ext.commands import Context
+from discord.ext.commands import Context, is_nsfw
 
 max_len = 20
 
@@ -11,6 +11,7 @@ max_len = 20
 class PostHist(commands.Cog):
     post_hist: Dict[int, deque] = dict()
 
+    @is_nsfw()
     @commands.command(name='history', aliases=['hist'], brief='Post history')
     async def post_history(self, ctx: Context):
         channel_hist = self.get_hist(ctx.channel.id)

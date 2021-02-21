@@ -21,10 +21,13 @@ class CustomHelpCommand(HelpCommand):
         embed.title = 'Help'
         embed.description = '**Note:** Commands can only be used in NSFW channels'
 
+        cmd_names = []
+
         for commands in mapping.values():
             for cmd in commands:
-                if cmd.name != 'help':
+                if cmd.name != 'help' and cmd.name not in cmd_names:
                     embed.add_field(name=self.get_signature(cmd), value=cmd.brief, inline=False)
+                    cmd_names.append(cmd.name)
 
         await self.context.send(embed=embed)
 
