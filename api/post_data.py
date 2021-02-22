@@ -5,6 +5,7 @@ from discord import Embed, Color
 
 import util
 from db.model import Post as DBPost
+from page_embed_message import PageData
 
 
 class AbstractPostData(ABC):
@@ -29,7 +30,7 @@ class AbstractPostData(ABC):
         return util.contains_disallowed_tags(self.tags)
 
 
-class PostData(AbstractPostData):
+class PostData(AbstractPostData, PageData):
     created_at = None
     file_ext = None
     file_url = None

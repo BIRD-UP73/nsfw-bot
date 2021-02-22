@@ -6,36 +6,17 @@ from discord.ext.commands import Cog, Context, is_nsfw
 
 from api.post_data import PostData
 from db.repo import get_favorites, remove_favorite
+from page_embed_message import PageEmbedMessage
 
 
-class PostsEmbedMessage:
-    message = None
-    page = 0
+class FavoritesMessage(PageEmbedMessage):
 
     def __init__(self, ctx: Context, data: List[PostData]):
-        self.ctx = ctx
-        self.data = data
-
-    async def create_message(self):
-        data = self.data[self.page]
-        self.message = await self.ctx.send(**data.to_content())
-
-        await self.message.add_reaction('⬅')
-        await self.message.add_reaction('➡')
-        await self.message.add_reaction('🗑️')
-
-        self.ctx.bot.add_listener(self.on_reaction_add)
+        super().__init__(ctx, data)
 
     async def on_reaction_add(self, reaction, user):
-        if user == self.ctx.bot.user or self.message.id != reaction.message.id:
-            return
+        await super().on_reaction_add(reaction, user)
 
-        if reaction.emoji == '➡':
-            self.page = (self.page + 1) % len(self.data)
-            await self.update_message()
-        if reaction.emoji == '⬅':
-            self.page = (self.page - 1) % len(self.data)
-            await self.update_message()
         if reaction.emoji == '🗑️' and user == self.ctx.author:
             if remove_favorite(self.ctx.author, self.get_data()):
                 await self.ctx.send(f'{self.ctx.author.mention}, removed favorite successfully.')
@@ -61,7 +42,7 @@ class PostsEmbedMessage:
 
         await self.message.edit(**content)
 
-    def get_data(self):
+    def get_data(self) -> PostData:
         return self.data[self.page]
 
 
@@ -74,7 +55,7 @@ class Favorites(Cog):
         favorites = get_favorites(user)
 
         if favorites:
-            post_embed_message = PostsEmbedMessage(ctx, favorites)
+            post_embed_message = FavoritesMessage(ctx, favorites)
             await post_embed_message.create_message()
         else:
             await ctx.send('No favorites found')

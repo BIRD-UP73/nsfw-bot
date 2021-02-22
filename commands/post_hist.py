@@ -1,11 +1,55 @@
 from collections import deque
-from typing import Union, Dict
+from typing import Union, Dict, List
 
 from discord import Embed, DMChannel, Guild
 from discord.ext import commands
 from discord.ext.commands import Context, is_nsfw
 
+from page_embed_message import PageData, PageEmbedMessage
+
 max_len = 20
+
+
+class PostHistData(PageData):
+    def __init__(self, urls: List[str]):
+        self.urls = urls
+
+    def to_content(self) -> dict:
+        embed = Embed()
+        embed.add_field(name=f'Posts', value='\n'.join(self.urls))
+        return {'embed': embed}
+
+
+class PostHistMessage(PageEmbedMessage):
+    def __init__(self, ctx: Context, data: List[PostHistData]):
+        super().__init__(ctx, data)
+
+    async def on_reaction_add(self, reaction, user):
+        await super().on_reaction_add(reaction, user)
+
+        if user == self.ctx.bot.user or self.message.id != reaction.message.id:
+            return
+        if reaction.emoji == '🗑️':
+            await self.message.delete()
+            self.ctx.bot.remove_listener(self.on_reaction_add)
+        elif self.ctx.guild:
+            await self.message.remove_reaction(reaction.emoji, user)
+
+    async def update_message(self):
+        await self.message.edit(**self.to_content())
+
+    def to_content(self) -> dict:
+        page_data = self.data[self.page]
+        content = page_data.to_content()
+
+        print(content)
+
+        if embed := content.get('embed'):
+            embed.title = 'History'
+            embed.description = f'Page {self.page + 1} of {len(self.data)}'
+            content['embed'] = embed
+
+        return content
 
 
 class PostHist(commands.Cog):
@@ -19,28 +63,22 @@ class PostHist(commands.Cog):
         if not channel_hist:
             return await ctx.send(content='No history')
 
-        embed = Embed()
-        embed.title = 'History'
-
-        post_list = list(channel_hist)
-
         parsed_posts = []
-        post_idx = 1
+        post_data_list = []
 
-        for url in post_list:
+        for url in list(channel_hist):
             joined_txt = '\n'.join(parsed_posts)
 
             if len(joined_txt) + len(url) > 1024:
-                embed.add_field(name=f'Posts {post_idx}', value=joined_txt)
-                post_idx += 1
+                post_data_list.append(PostHistData(parsed_posts))
                 parsed_posts = []
             else:
                 parsed_posts.append(url)
 
-        if len(parsed_posts) > 0:
-            embed.add_field(name=f'Posts {post_idx}', value='\n'.join(parsed_posts))
+        post_data_list.append(PostHistData(parsed_posts))
 
-        await ctx.send(embed=embed)
+        post_hist_message = PostHistMessage(ctx, post_data_list)
+        await post_hist_message.create_message()
 
     def add_post(self, guild_or_channel: Union[Guild, DMChannel], url: str):
         self.post_hist.setdefault(guild_or_channel.id, deque(maxlen=max_len))
