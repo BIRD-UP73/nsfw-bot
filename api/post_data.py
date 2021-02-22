@@ -3,9 +3,9 @@ from abc import ABC, abstractmethod
 from dateutil import parser
 from discord import Embed, Color
 
-import util
+from util import util
 from db.model import Post as DBPost
-from page_embed_message import PageData
+from util.embed_util import PageData
 
 
 class AbstractPostData(ABC):

@@ -4,7 +4,7 @@ from discord import TextChannel
 from discord.ext import commands
 from discord.ext.commands import Context, NSFWChannelRequired, CommandError
 
-import util
+from util import util
 from api import xml_api, json_api
 
 short_urls = {

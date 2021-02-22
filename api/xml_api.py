@@ -6,7 +6,7 @@ import requests
 from discord import Embed
 from discord.ext.commands import Context
 
-import util
+from util import util
 from api.post import AbstractPost
 from api.post_data import PostData, PostError
 

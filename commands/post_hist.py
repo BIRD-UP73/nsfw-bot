@@ -5,7 +5,7 @@ from discord import Embed, DMChannel, Guild
 from discord.ext import commands
 from discord.ext.commands import Context, is_nsfw
 
-from page_embed_message import PageData, PageEmbedMessage
+from util.embed_util import PageData, PageEmbedMessage
 
 max_len = 20
 
