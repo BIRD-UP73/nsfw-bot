@@ -3,13 +3,13 @@ from abc import ABC, abstractmethod
 from discord import Reaction, User, Message
 from discord.ext.commands import Context
 
-import db.repo
-from api.post_data import PostError, PostData
+import db.post_repository
+from api.post_data import PostData, NoPostsFound, PostError
 
 
 class AbstractPost(ABC):
     ctx: Context = None
-    msg: Message = None
+    message: Message = None
     post_data: PostData = None
     url: str = None
     tags: str = None
@@ -19,15 +19,15 @@ class AbstractPost(ABC):
         Creates a message with the post, and adds reaction listeners
         """
         self.fetch_post()
-        self.msg = await self.ctx.send(**self.post_data.to_content())
+        self.message = await self.ctx.send(**self.post_data.to_content())
 
-        if isinstance(self.post_data, PostError):
+        if isinstance(self.post_data, NoPostsFound):
             return
 
         self.ctx.bot.add_listener(self.on_reaction_add)
-        await self.msg.add_reaction('🗑️')
-        await self.msg.add_reaction('🔁')
-        await self.msg.add_reaction('⭐')
+        await self.message.add_reaction('🗑️')
+        await self.message.add_reaction('🔁')
+        await self.message.add_reaction('⭐')
 
     def update_hist(self, post_data):
         """
@@ -42,21 +42,24 @@ class AbstractPost(ABC):
         :param reaction: the reaction
         :param user: the user that reacted
         """
-        if reaction.message.id != self.msg.id or user == self.ctx.bot.user:
+        if reaction.message.id != self.message.id or user == self.ctx.bot.user:
             return
-        if reaction.emoji == '⭐':
-            if db.repo.store_favorite(user, self.post_data):
+        if reaction.emoji == '⭐' and not isinstance(self.post_data, PostError):
+            if db.post_repository.store_favorite(user, self.post_data):
                 await self.ctx.send(f'{self.ctx.author.mention}, added post to favorites')
         if user == self.ctx.author:
             if reaction.emoji == '🗑️':
-                await self.msg.delete()
+                await self.message.delete()
                 self.ctx.bot.remove_listener(self.on_reaction_add)
                 return
             if reaction.emoji == '🔁':
                 self.fetch_post()
-                await self.msg.edit(**self.post_data.to_content())
+                await self.message.edit(**self.post_data.to_content())
         if self.ctx.guild:
-            await self.msg.remove_reaction(reaction.emoji, user)
+            await self.message.remove_reaction(reaction.emoji, user)
+
+    def has_star_reaction(self):
+        return '⭐' in [reaction.emoji for reaction in self.message.reactions]
 
     @abstractmethod
     def fetch_post(self):

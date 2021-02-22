@@ -8,7 +8,7 @@ from discord.ext.commands import Context
 
 from util import util
 from api.post import AbstractPost
-from api.post_data import PostData, PostError
+from api.post_data import PostData, PostError, NoPostsFound
 
 POST_LIMIT = 2500
 MAX_POSTS_PER_PAGE = 100
@@ -52,7 +52,7 @@ class XmlPost(AbstractPost):
         total_posts, xml_post = get_xml_post(self.tags, self.url)
 
         if total_posts == 0:
-            self.post_data = PostError(f'No images found for {self.tags}')
+            self.post_data = NoPostsFound(self.tags)
             return
 
         post_data = XmlPostData.from_xml(xml_post, total_posts)

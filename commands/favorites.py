@@ -5,7 +5,7 @@ from discord.ext import commands
 from discord.ext.commands import Cog, Context, is_nsfw
 
 from api.post_data import PostData
-from db.repo import get_favorites, remove_favorite
+from db.post_repository import get_favorites, remove_favorite
 from util.embed_util import PageEmbedMessage
 
 
