@@ -98,8 +98,3 @@ class PostError(PostData):
         embed.colour = Color.red()
 
         return {'content': None, 'embed': embed}
-
-
-class NoPostsFound(PostError):
-    def __init__(self, tags):
-        super().__init__(f'No posts found for {tags}')

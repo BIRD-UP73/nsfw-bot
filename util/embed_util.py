@@ -20,8 +20,7 @@ class PageEmbedMessage(ABC):
         self.data = data
 
     async def create_message(self):
-        data = self.data[self.page]
-        self.message = await self.ctx.send(**data.to_content())
+        self.message = await self.ctx.send(**self.get_data().to_content())
 
         await self.message.add_reaction('⬅')
         await self.message.add_reaction('➡')
@@ -40,6 +39,13 @@ class PageEmbedMessage(ABC):
             self.page = (self.page - 1) % len(self.data)
             await self.update_message()
 
+    async def update_message(self):
+        page = self.get_current_page()
+        await self.message.edit(**page)
+
+    def get_data(self):
+        return self.data[self.page]
+
     @abstractmethod
-    def update_message(self):
+    def get_current_page(self) -> dict:
         pass

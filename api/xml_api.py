@@ -4,11 +4,11 @@ from xml.etree import ElementTree
 
 import requests
 from discord import Embed
-from discord.ext.commands import Context
+from discord.ext.commands import Context, CommandError
 
 from util import util
 from api.post import AbstractPost
-from api.post_data import PostData, PostError, NoPostsFound
+from api.post_data import PostData, PostError
 
 POST_LIMIT = 2500
 MAX_POSTS_PER_PAGE = 100
@@ -52,8 +52,7 @@ class XmlPost(AbstractPost):
         total_posts, xml_post = get_xml_post(self.tags, self.url)
 
         if total_posts == 0:
-            self.post_data = NoPostsFound(self.tags)
-            return
+            raise CommandError(f'No posts found for {self.tags}')
 
         post_data = XmlPostData.from_xml(xml_post, total_posts)
         if post_data.has_disallowed_tags():

@@ -2,10 +2,10 @@ from typing import Optional
 
 import requests
 from discord import Embed
-from discord.ext.commands import Context
+from discord.ext.commands import Context, CommandError
 
 from util import util
-from api.post_data import PostError, PostData, NoPostsFound
+from api.post_data import PostError, PostData
 from api.xml_api import AbstractPost
 
 danbooru_url = 'https://danbooru.donmai.us/posts.json'
@@ -45,8 +45,7 @@ class JsonPost(AbstractPost):
         json_post = get_json_post(self.tags)
 
         if not json_post:
-            self.post_data = NoPostsFound(self.tags)
-            return
+            raise CommandError(f'No posts found for {self.tags}')
 
         post_data = JsonPostData(**json_post)
 
@@ -81,6 +80,8 @@ def send_json_request(url: str, tags: str, random: bool = True):
         'random': random,
         'tags': tags
     }
+
+    print(url)
 
     resp = requests.get(url, params)
     resp.raise_for_status()

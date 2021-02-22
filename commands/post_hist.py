@@ -35,14 +35,9 @@ class PostHistMessage(PageEmbedMessage):
         elif self.ctx.guild:
             await self.message.remove_reaction(reaction.emoji, user)
 
-    async def update_message(self):
-        await self.message.edit(**self.to_content())
-
-    def to_content(self) -> dict:
+    def get_current_page(self) -> dict:
         page_data = self.data[self.page]
         content = page_data.to_content()
-
-        print(content)
 
         if embed := content.get('embed'):
             embed.title = 'History'

@@ -4,7 +4,7 @@ from discord import Reaction, User, Message
 from discord.ext.commands import Context
 
 import db.post_repository
-from api.post_data import PostData, NoPostsFound, PostError
+from api.post_data import PostData, PostError
 
 
 class AbstractPost(ABC):
@@ -20,9 +20,6 @@ class AbstractPost(ABC):
         """
         self.fetch_post()
         self.message = await self.ctx.send(**self.post_data.to_content())
-
-        if isinstance(self.post_data, NoPostsFound):
-            return
 
         self.ctx.bot.add_listener(self.on_reaction_add)
         await self.message.add_reaction('🗑️')

@@ -10,7 +10,6 @@ from util.embed_util import PageEmbedMessage
 
 
 class FavoritesMessage(PageEmbedMessage):
-
     def __init__(self, ctx: Context, data: List[PostData]):
         super().__init__(ctx, data)
 
@@ -18,7 +17,7 @@ class FavoritesMessage(PageEmbedMessage):
         await super().on_reaction_add(reaction, user)
 
         if reaction.emoji == '🗑️' and user == self.ctx.author:
-            if remove_favorite(self.ctx.author, self.get_data()):
+            if remove_favorite(self.ctx.author, self.data[self.page]):
                 await self.ctx.send(f'{self.ctx.author.mention}, removed favorite successfully.')
 
             self.data.remove(self.data[self.page])
@@ -34,16 +33,13 @@ class FavoritesMessage(PageEmbedMessage):
         if self.ctx.guild:
             await self.message.remove_reaction(reaction, user)
 
-    async def update_message(self):
+    def get_current_page(self) -> dict:
         content = self.get_data().to_content()
 
         if embed := content.get('embed'):
             embed.description = f'Favorites for {self.ctx.author.mention}. Page {self.page + 1} of {len(self.data)}'
 
-        await self.message.edit(**content)
-
-    def get_data(self) -> PostData:
-        return self.data[self.page]
+        return content
 
 
 class Favorites(Cog):
