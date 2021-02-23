@@ -3,7 +3,7 @@ from typing import List
 
 from discord.ext.commands import Context
 
-from api.api_db_wrapper import PostEntry
+from api.post_entry import PostEntry
 from db.post_repository import store_favorite
 
 

@@ -6,9 +6,9 @@ import requests
 from discord import Embed
 from discord.ext.commands import Context, CommandError
 
-from util import util
 from api.post import AbstractPost
 from api.post_data import PostData, PostError
+from util import util
 
 POST_LIMIT = 2500
 MAX_POSTS_PER_PAGE = 100

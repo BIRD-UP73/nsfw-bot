@@ -1,34 +1,10 @@
-from abc import ABC, abstractmethod
-
 from dateutil import parser
 from discord import Embed, Color
 
 from util import util
 
 
-class AbstractPostData(ABC):
-    tags: str = None
-
-    @abstractmethod
-    def to_content(self) -> dict:
-        """
-        Converts this post data to a dictionary with arguments that
-        are used in `Message.send`
-
-        For example: `{'content': 'Message content', 'embed': <embed data>}
-
-        :return: the dictionary with content
-        """
-        pass
-
-    def has_disallowed_tags(self):
-        """
-        Checks if the tags contain disallowed tags
-        """
-        return util.contains_disallowed_tags(self.tags)
-
-
-class PostData(AbstractPostData):
+class PostData:
     created_at = None
     file_ext = None
     file_url = None
@@ -45,6 +21,9 @@ class PostData(AbstractPostData):
         self.source = kwargs.get('source')
         self.tags = kwargs.get('tags') or kwargs.get('tag_string')
         self.id = kwargs.get('id')
+
+    def has_disallowed_tags(self) -> bool:
+        return util.contains_disallowed_tags(self.tags)
 
     def to_content(self) -> dict:
         if not util.is_image(self.file_ext):

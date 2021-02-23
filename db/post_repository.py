@@ -1,13 +1,12 @@
-from typing import List
+from typing import List, Tuple
 
 from discord import User
 
-from api.api_db_wrapper import PostEntry
 from db.model import session, User as DBUser, Post as DBPost
 from util.url_util import parse_url
 
 
-def get_favorites(user: User) -> List[PostEntry]:
+def get_favorites(user: User) -> List[Tuple]:
     """
     Returns all favorites for a user
     :param user: the user
@@ -18,7 +17,7 @@ def get_favorites(user: User) -> List[PostEntry]:
     if not db_user:
         return []
 
-    return [PostEntry(db_post.url, db_post.id) for db_post in db_user.posts]
+    return [(db_post.url, db_post.id) for db_post in db_user.posts]
 
 
 def remove_favorite(user: User, url: str, post_id: int):

@@ -4,10 +4,9 @@ from discord import TextChannel
 from discord.ext import commands
 from discord.ext.commands import Context, NSFWChannelRequired, CommandError
 
+from api import xml_api, json_api
 from util import util
 from util.url_util import short_urls, get_long_url
-from api import xml_api, json_api
-
 
 aliases = {
     'rule34': ['r34'],

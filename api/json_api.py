@@ -4,9 +4,9 @@ import requests
 from discord import Embed
 from discord.ext.commands import Context, CommandError
 
-from util import util
 from api.post_data import PostError, PostData
 from api.xml_api import AbstractPost
+from util import util
 
 danbooru_url = 'https://danbooru.donmai.us/posts.json'
 

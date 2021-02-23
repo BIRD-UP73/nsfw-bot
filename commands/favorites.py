@@ -1,9 +1,10 @@
-from typing import Optional
+from typing import Optional, List
 
 from discord import User, Embed
 from discord.ext import commands
 from discord.ext.commands import Cog, Context, is_nsfw
 
+from api.post_entry import PostEntry
 from db.post_repository import get_favorites, remove_favorite
 from util.embed_util import PageEmbedMessage
 
@@ -49,13 +50,17 @@ class FavoritesMessage(PageEmbedMessage):
         return content
 
 
+def parse_favorites(fav_list: List[tuple]):
+    return [PostEntry(tup[0], tup[1]) for tup in fav_list]
+
+
 class Favorites(Cog):
 
     @is_nsfw()
     @commands.command(name='favorites', aliases=['favs'], brief='List a users favorites')
     async def favorites(self, ctx: Context, user: Optional[User] = None):
         user = user or ctx.author
-        favorites = get_favorites(user)
+        favorites = parse_favorites(get_favorites(user))
 
         if favorites:
             post_embed_message = FavoritesMessage(ctx, favorites)

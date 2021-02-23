@@ -6,8 +6,7 @@ from discord import DMChannel, Guild
 from discord.ext import commands
 from discord.ext.commands import Context, is_nsfw
 
-from api.api_db_wrapper import PostEntry
-from db.post_repository import store_favorite
+from api.post_entry import PostEntry
 from util.embed_util import PageEmbedMessage
 from util.url_util import parse_url
 

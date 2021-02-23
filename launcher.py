@@ -2,13 +2,13 @@ import configparser
 
 from discord.ext import commands
 
+from commands.cogs.listeners import Listeners
+from commands.cogs.posts_cog import XmlPosts
 from commands.favorites import Favorites
 from commands.github import github
 from commands.help import CustomHelpCommand
 from commands.latency import latency
 from commands.post_hist import PostHist
-from commands.cogs.posts_cog import XmlPosts
-from commands.cogs.listeners import Listeners
 
 config = configparser.RawConfigParser()
 config.read('config.properties')
