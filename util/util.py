@@ -1,4 +1,3 @@
-
 img_fmts = ['png', 'jpg', 'jpeg', 'tiff', 'gif']
 disallowed_tags = ['loli', 'shota', 'underage']
 

@@ -31,7 +31,8 @@ class XmlPostData(PostData):
             created_at=el.get('created_at'),
             score=el.get('score'),
             source=el.get('source'),
-            tags=el.get('tags')
+            tags=el.get('tags'),
+            id=el.get('id')
         )
 
         return cls(total_posts, **data)
@@ -89,6 +90,20 @@ async def show_post(ctx: Context, tags: str, score: int, url: str, skip_score=Fa
 
     post = XmlPost(ctx, url, tags)
     await post.create_message()
+
+
+def get_post_by_id(url, post_id):
+    params = {
+        'page': 'dapi',
+        's': 'post',
+        'q': 'index',
+        'id': post_id
+    }
+
+    resp = requests.get(url, params)
+    resp.raise_for_status()
+
+    return resp.text
 
 
 def send_request(limit: int, tags: str, page: int, url: str) -> str:

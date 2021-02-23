@@ -4,8 +4,6 @@ from dateutil import parser
 from discord import Embed, Color
 
 from util import util
-from db.model import Post as DBPost
-from util.embed_util import PageData
 
 
 class AbstractPostData(ABC):
@@ -30,13 +28,14 @@ class AbstractPostData(ABC):
         return util.contains_disallowed_tags(self.tags)
 
 
-class PostData(AbstractPostData, PageData):
+class PostData(AbstractPostData):
     created_at = None
     file_ext = None
     file_url = None
     score = None
     source = None
     tags = None
+    id = 0
 
     def __init__(self, **kwargs):
         self.created_at = kwargs.get('created_at')
@@ -45,6 +44,7 @@ class PostData(AbstractPostData, PageData):
         self.score = kwargs.get('score')
         self.source = kwargs.get('source')
         self.tags = kwargs.get('tags') or kwargs.get('tag_string')
+        self.id = kwargs.get('id')
 
     def to_content(self) -> dict:
         if not util.is_image(self.file_ext):
@@ -67,19 +67,6 @@ class PostData(AbstractPostData, PageData):
             embed.set_image(url=self.file_url)
 
         return embed
-
-    @classmethod
-    def from_db_post(cls, db_post: DBPost):
-        return cls(**db_post.__dict__)
-
-    def to_db_post(self) -> DBPost:
-        db_post = DBPost()
-        db_post.file_url = self.file_url
-        db_post.file_ext = self.file_ext
-        db_post.score = self.score
-        db_post.source = self.source
-
-        return db_post
 
 
 class PostError(PostData):

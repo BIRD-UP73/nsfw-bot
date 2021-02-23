@@ -3,28 +3,25 @@ from typing import List
 
 from discord.ext.commands import Context
 
-
-class PageData(ABC):
-
-    @abstractmethod
-    def to_content(self) -> dict:
-        pass
+from api.api_db_wrapper import PostEntry
+from db.post_repository import store_favorite
 
 
 class PageEmbedMessage(ABC):
     message = None
     page = 0
 
-    def __init__(self, ctx: Context, data: List[PageData]):
-        self.ctx = ctx
-        self.data = data
+    def __init__(self, ctx: Context, data: List[PostEntry]):
+        self.ctx: Context = ctx
+        self.data: List[PostEntry] = data
 
     async def create_message(self):
-        self.message = await self.ctx.send(**self.get_data().to_content())
+        self.message = await self.ctx.send(**self.get_current_page())
 
         await self.message.add_reaction('⬅')
         await self.message.add_reaction('➡')
         await self.message.add_reaction('🗑️')
+        await self.message.add_reaction('⭐')
 
         self.ctx.bot.add_listener(self.on_reaction_add)
 
@@ -38,12 +35,17 @@ class PageEmbedMessage(ABC):
         if reaction.emoji == '⬅':
             self.page = (self.page - 1) % len(self.data)
             await self.update_message()
+        if reaction.emoji == '⭐':
+            data = self.get_data()
+            store_favorite_result = store_favorite(user, data.url, data.post_id)
+            if store_favorite_result:
+                await self.ctx.send(f'{user.mention}, successfully stored favorite.')
 
     async def update_message(self):
-        page = self.get_current_page()
-        await self.message.edit(**page)
+        page_content = self.get_current_page()
+        await self.message.edit(**page_content)
 
-    def get_data(self):
+    def get_data(self) -> PostEntry:
         return self.data[self.page]
 
     @abstractmethod

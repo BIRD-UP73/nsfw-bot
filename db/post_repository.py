@@ -2,11 +2,12 @@ from typing import List
 
 from discord import User
 
-from api.post_data import PostData
+from api.api_db_wrapper import PostEntry
 from db.model import session, User as DBUser, Post as DBPost
+from util.url_util import parse_url
 
 
-def get_favorites(user: User) -> List[PostData]:
+def get_favorites(user: User) -> List[PostEntry]:
     """
     Returns all favorites for a user
     :param user: the user
@@ -17,17 +18,18 @@ def get_favorites(user: User) -> List[PostData]:
     if not db_user:
         return []
 
-    return [PostData.from_db_post(db_post) for db_post in db_user.posts]
+    return [PostEntry(db_post.url, db_post.id) for db_post in db_user.posts]
 
 
-def remove_favorite(user: User, post_data: PostData):
+def remove_favorite(user: User, url: str, post_id: int):
     """
     Removes a favorite from a user
     This will not succeed if the user is not stored in the database
     Or if the user did not have the favorite
 
     :param user: the user
-    :param post_data: the post that might be a user's favorite
+    :param url: the post's url
+    :param post_id: the post id
     :return: True if removing succeeds, False if not
     """
     db_user = session.query(DBUser).get(user.id)
@@ -35,7 +37,8 @@ def remove_favorite(user: User, post_data: PostData):
     if not db_user:
         return False
 
-    db_post = session.query(DBPost).get(post_data.file_url)
+    parsed_url = parse_url(url)
+    db_post = session.query(DBPost).get((post_id, parsed_url))
 
     if db_post in db_user.posts:
         db_user.posts.remove(db_post)
@@ -45,13 +48,14 @@ def remove_favorite(user: User, post_data: PostData):
     return False
 
 
-def store_favorite(user: User, post_data: PostData):
+def store_favorite(user: User, url: str, post_id: int):
     """
     Stores a favorite for a user
     This might fail if the user already has the post as a favorite
 
     :param user: the user
-    :param post_data: the post data that should be stored
+    :param url: the post url
+    :param post_id: the post id
     :return: True if storing the favorite succeeds, False if not
     """
     db_user = session.query(DBUser).get(user.id)
@@ -60,10 +64,12 @@ def store_favorite(user: User, post_data: PostData):
         db_user = DBUser(id=user.id)
         session.add(db_user)
 
-    db_post = session.query(DBPost).get(post_data.file_url)
+    parsed_url = parse_url(url)
+
+    db_post = session.query(DBPost).get((post_id, parsed_url))
 
     if not db_post:
-        db_post = post_data.to_db_post()
+        db_post = DBPost(id=post_id, url=parsed_url)
 
     if db_post not in db_user.posts:
         db_user.posts.append(db_post)

@@ -1,23 +1,27 @@
-from typing import Optional, List
+from typing import Optional
 
-from discord import User
+from discord import User, Embed
 from discord.ext import commands
 from discord.ext.commands import Cog, Context, is_nsfw
 
-from api.post_data import PostData
 from db.post_repository import get_favorites, remove_favorite
 from util.embed_util import PageEmbedMessage
 
 
 class FavoritesMessage(PageEmbedMessage):
-    def __init__(self, ctx: Context, data: List[PostData]):
+    def __init__(self, ctx: Context, data):
         super().__init__(ctx, data)
 
     async def on_reaction_add(self, reaction, user):
+        if user == self.ctx.bot.user or self.message.id != reaction.message.id:
+            return
+
         await super().on_reaction_add(reaction, user)
 
         if reaction.emoji == '🗑️' and user == self.ctx.author:
-            if remove_favorite(self.ctx.author, self.data[self.page]):
+            data = self.get_data()
+
+            if remove_favorite(self.ctx.author, data.url, data.post_id):
                 await self.ctx.send(f'{self.ctx.author.mention}, removed favorite successfully.')
 
             self.data.remove(self.data[self.page])
@@ -36,8 +40,11 @@ class FavoritesMessage(PageEmbedMessage):
     def get_current_page(self) -> dict:
         content = self.get_data().to_content()
 
-        if embed := content.get('embed'):
-            embed.description = f'Favorites for {self.ctx.author.mention}. Page {self.page + 1} of {len(self.data)}'
+        if content.get('embed'):
+            embed: Embed = content.get('embed')
+            embed.title = 'Favorites'
+            embed.description = f'Favorites for {self.ctx.author.mention}'
+            embed.set_footer(text=f'Page {self.page + 1} of {len(self.data)}')
 
         return content
 

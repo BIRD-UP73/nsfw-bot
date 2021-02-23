@@ -74,14 +74,21 @@ def get_json_post(tags: str) -> Optional[dict]:
     return resp_json[0]
 
 
+def json_post_by_id(base_url: str, post_id: int):
+    url = f'{base_url}/{post_id}.json'
+    resp = requests.get(url)
+
+    resp.raise_for_status()
+
+    return resp.json()
+
+
 def send_json_request(url: str, tags: str, random: bool = True):
     params = {
         'limit': '1',
         'random': random,
         'tags': tags
     }
-
-    print(url)
 
     resp = requests.get(url, params)
     resp.raise_for_status()

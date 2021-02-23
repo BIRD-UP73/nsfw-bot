@@ -31,7 +31,7 @@ class AbstractPost(ABC):
         Adds the current post to the post history
         """
         hist_cog = self.ctx.bot.get_cog('PostHist')
-        hist_cog.add_post(self.ctx.channel, post_data.file_url)
+        hist_cog.add_post(self.ctx.channel, self.url, post_data.id)
 
     async def on_reaction_add(self, reaction: Reaction, user: User):
         """
@@ -42,7 +42,7 @@ class AbstractPost(ABC):
         if reaction.message.id != self.message.id or user == self.ctx.bot.user:
             return
         if reaction.emoji == '⭐' and not isinstance(self.post_data, PostError):
-            if db.post_repository.store_favorite(user, self.post_data):
+            if db.post_repository.store_favorite(user, self.url, self.post_data.id):
                 await self.ctx.send(f'{self.ctx.author.mention}, added post to favorites')
         if user == self.ctx.author:
             if reaction.emoji == '🗑️':

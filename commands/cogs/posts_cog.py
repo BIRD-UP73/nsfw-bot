@@ -5,15 +5,9 @@ from discord.ext import commands
 from discord.ext.commands import Context, NSFWChannelRequired, CommandError
 
 from util import util
+from util.url_util import short_urls, get_long_url
 from api import xml_api, json_api
 
-short_urls = {
-    'rule34': 'rule34.xxx',
-    'gelbooru': 'gelbooru.com',
-    'xbooru': 'xbooru.com',
-    'tbib': 'tbib.org',
-    'danbooru': 'danbooru.donmai.us'
-}
 
 aliases = {
     'rule34': ['r34'],
@@ -28,10 +22,6 @@ desc = {
     - To filter by score, use 'score:>=[amount]'
     """
 }
-
-
-def get_long_url(command_name: str):
-    return f'https://{short_urls.get(command_name)}/index.php'
 
 
 def get_data(command_name: str):

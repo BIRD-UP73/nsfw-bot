@@ -1,27 +1,25 @@
 from collections import deque
-from typing import Union, Dict, List
+from datetime import datetime
+from typing import Union, Dict, List, Deque
 
-from discord import Embed, DMChannel, Guild
+from discord import DMChannel, Guild
 from discord.ext import commands
 from discord.ext.commands import Context, is_nsfw
 
-from util.embed_util import PageData, PageEmbedMessage
+from api.api_db_wrapper import PostEntry
+from db.post_repository import store_favorite
+from util.embed_util import PageEmbedMessage
+from util.url_util import parse_url
 
-max_len = 20
 
-
-class PostHistData(PageData):
-    def __init__(self, urls: List[str]):
-        self.urls = urls
-
-    def to_content(self) -> dict:
-        embed = Embed()
-        embed.add_field(name=f'Posts', value='\n'.join(self.urls))
-        return {'embed': embed}
+class PostHistEntry(PostEntry):
+    def __init__(self, url: str, post_id: int, saved_at: datetime):
+        super().__init__(url, post_id)
+        self.saved_at = saved_at
 
 
 class PostHistMessage(PageEmbedMessage):
-    def __init__(self, ctx: Context, data: List[PostHistData]):
+    def __init__(self, ctx: Context, data: List[PostHistEntry]):
         super().__init__(ctx, data)
 
     async def on_reaction_add(self, reaction, user):
@@ -29,26 +27,33 @@ class PostHistMessage(PageEmbedMessage):
 
         if user == self.ctx.bot.user or self.message.id != reaction.message.id:
             return
+
         if reaction.emoji == '🗑️':
             await self.message.delete()
             self.ctx.bot.remove_listener(self.on_reaction_add)
-        elif self.ctx.guild:
+            return
+
+        if self.ctx.guild:
             await self.message.remove_reaction(reaction.emoji, user)
 
     def get_current_page(self) -> dict:
         page_data = self.data[self.page]
         content = page_data.to_content()
 
-        if embed := content.get('embed'):
+        if content.get('embed'):
+            embed = content.get('embed')
             embed.title = 'History'
-            embed.description = f'Page {self.page + 1} of {len(self.data)}'
+            embed.description = ''
+            embed.set_footer(text=f'Page {self.page + 1} of {len(self.data)}')
+            embed.timestamp = page_data.saved_at
             content['embed'] = embed
 
         return content
 
 
 class PostHist(commands.Cog):
-    post_hist: Dict[int, deque] = dict()
+    max_len = 50
+    post_hist: Dict[int, Deque[PostHistEntry]] = dict()
 
     @is_nsfw()
     @commands.command(name='history', aliases=['hist'], brief='Post history')
@@ -58,26 +63,15 @@ class PostHist(commands.Cog):
         if not channel_hist:
             return await ctx.send(content='No history')
 
-        parsed_posts = []
-        post_data_list = []
-
-        for url in list(channel_hist):
-            joined_txt = '\n'.join(parsed_posts)
-
-            if len(joined_txt) + len(url) > 1024:
-                post_data_list.append(PostHistData(parsed_posts))
-                parsed_posts = []
-            else:
-                parsed_posts.append(url)
-
-        post_data_list.append(PostHistData(parsed_posts))
-
-        post_hist_message = PostHistMessage(ctx, post_data_list)
+        post_hist_message = PostHistMessage(ctx, list(channel_hist))
         await post_hist_message.create_message()
 
-    def add_post(self, guild_or_channel: Union[Guild, DMChannel], url: str):
-        self.post_hist.setdefault(guild_or_channel.id, deque(maxlen=max_len))
-        self.post_hist[guild_or_channel.id].append(url)
+    def add_post(self, guild_or_channel: Union[Guild, DMChannel], url: str, post_id: int):
+        self.post_hist.setdefault(guild_or_channel.id, deque(maxlen=self.max_len))
 
-    def get_hist(self, channel_or_guild_id: int):
+        short_url = parse_url(url)
+        post_hist_entry = PostHistEntry(short_url, post_id, datetime.now())
+        self.post_hist[guild_or_channel.id].append(post_hist_entry)
+
+    def get_hist(self, channel_or_guild_id: int) -> Deque[PostHistEntry]:
         return self.post_hist.get(channel_or_guild_id)
