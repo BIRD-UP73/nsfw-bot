@@ -37,9 +37,7 @@ class JsonPostData(PostData):
 
 class JsonPost(AbstractPost):
     def __init__(self, ctx: Context, url: str, tags: str):
-        self.ctx = ctx
-        self.url = url
-        self.tags = tags
+        super().__init__(ctx, url, tags)
 
     def fetch_post(self) -> PostData:
         """

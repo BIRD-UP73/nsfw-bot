@@ -45,9 +45,7 @@ class XmlPostData(PostData):
 
 class XmlPost(AbstractPost):
     def __init__(self, ctx: Context, url: str, tags: str):
-        self.ctx = ctx
-        self.url = url
-        self.tags = tags
+        super().__init__(ctx, url, tags)
 
     def fetch_post(self):
         total_posts, xml_post = get_xml_post(self.tags, self.url)

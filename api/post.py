@@ -14,6 +14,11 @@ class AbstractPost(ABC):
     url: str = None
     tags: str = None
 
+    def __init__(self, ctx: Context, url: str, tags: str):
+        self.ctx = ctx
+        self.url = url
+        self.tags = tags
+
     async def create_message(self):
         """
         Creates a message with the post, and adds reaction listeners
