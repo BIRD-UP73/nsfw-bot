@@ -54,8 +54,14 @@ class PostHist(commands.Cog):
     max_len = 50
     post_hist: Dict[int, Deque[PostHistEntry]] = dict()
 
+    description = """
+    ⭐   add post to your favorites
+    🗑️  remove message
+    ⬅➡ scroll through pages
+    """
+
     @is_nsfw()
-    @commands.command(name='history', aliases=['hist'], brief='Post history')
+    @commands.command(name='history', aliases=['hist'], brief='Post history', description=description)
     async def post_history(self, ctx: Context):
         channel_hist = self.get_hist(ctx.channel.id)
 

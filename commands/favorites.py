@@ -55,8 +55,17 @@ def parse_favorites(fav_list: List[tuple]):
 
 class Favorites(Cog):
 
+    description = """
+    List a users favorites.
+    
+    Emojis 
+    ⭐   add post to your favorites
+    🗑️  remove this post from your favorites list
+    ⬅➡ scroll through pages
+    """
+
     @is_nsfw()
-    @commands.command(name='favorites', aliases=['favs'], brief='List a users favorites')
+    @commands.command(name='favorites', aliases=['favs'], description=description)
     async def favorites(self, ctx: Context, user: Optional[User] = None):
         user = user or ctx.author
         favorites = parse_favorites(get_favorites(user))

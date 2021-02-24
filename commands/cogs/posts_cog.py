@@ -17,8 +17,12 @@ desc = {
     'danbooru': """
     Searches images from danbooru.com
     
-    - For search terms, see https://danbooru.donmai.us/wiki_pages/help:cheatsheet
-    - To filter by score, use 'score:>=[amount]'
+    Emojis 
+    ⭐   add post to your favorites
+    🗑️  to remove a message
+    🔁   get another random post
+    
+    For search terms, see https://danbooru.donmai.us/wiki_pages/help:cheatsheet
     """
 }
 
@@ -27,9 +31,13 @@ def get_data(command_name: str):
     url = short_urls.get(command_name)
     description = desc.get(command_name) or f"""
                 Searches images from {url}
+                
+                Emojis 
+                ⭐   add post to your favorites
+                🗑️  to remove a message
+                🔁   get another random post
 
-                - For search terms, see https://{url}/index.php?page=help&topic=cheatsheet
-                - To filter by score, use 'score:>=[amount]'
+                For search terms, see https://{url}/index.php?page=help&topic=cheatsheet
                 """
 
     data_dict = dict(

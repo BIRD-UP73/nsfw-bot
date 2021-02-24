@@ -54,6 +54,7 @@ class AbstractPost(ABC):
             if reaction.emoji == '🔁':
                 self.post_data = self.fetch_post()
                 await self.message.edit(**self.post_data.to_content())
+
         if self.ctx.guild:
             await self.message.remove_reaction(reaction.emoji, user)
 
