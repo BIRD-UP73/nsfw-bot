@@ -4,8 +4,8 @@ import requests
 from discord import Embed
 from discord.ext.commands import Context, CommandError
 
+from api.post import AbstractPost
 from api.post_data import PostError, PostData
-from api.xml_api import AbstractPost
 from util import util
 
 danbooru_url = 'https://danbooru.donmai.us/posts.json'
@@ -41,7 +41,16 @@ class JsonPost(AbstractPost):
         self.url = url
         self.tags = tags
 
-    def fetch_post(self):
+    def fetch_post(self) -> PostData:
+        """
+        Fetches a post from a site with a json-based API
+        Will throw an error if no posts are found (nothing else to fetch)
+        Will show an error embed if the post contains disallowed tags
+
+        Also adds post to history
+
+        :return: the fetched post
+        """
         json_post = get_json_post(self.tags)
 
         if not json_post:
@@ -50,11 +59,10 @@ class JsonPost(AbstractPost):
         post_data = JsonPostData(**json_post)
 
         if post_data.has_disallowed_tags():
-            self.post_data = PostError('Post contains disallowed tags. Please try again.')
-            return
+            return PostError('Post contains disallowed tags. Please try again.')
 
         self.update_hist(post_data)
-        self.post_data = post_data
+        return post_data
 
 
 async def show_post(ctx: Context, tags: str, score: int):

@@ -22,10 +22,10 @@ class PostHistMessage(PageEmbedMessage):
         super().__init__(ctx, data)
 
     async def on_reaction_add(self, reaction, user):
-        await super().on_reaction_add(reaction, user)
-
         if user == self.ctx.bot.user or self.message.id != reaction.message.id:
             return
+
+        await super().on_reaction_add(reaction, user)
 
         if reaction.emoji == '🗑️':
             await self.message.delete()
@@ -36,7 +36,7 @@ class PostHistMessage(PageEmbedMessage):
             await self.message.remove_reaction(reaction.emoji, user)
 
     def get_current_page(self) -> dict:
-        page_data = self.data[self.page]
+        page_data = self.get_data()
         content = page_data.to_content()
 
         if content.get('embed'):

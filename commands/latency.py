@@ -10,7 +10,7 @@ async def latency(ctx: Context):
     embed = Embed()
     embed.title = 'Latency'
 
-    latency_ms = round(ctx.bot.latency * 1000, 1)
+    latency_ms = int(ctx.bot.latency * 1000)
     embed.add_field(name='Websocket', value=f'{latency_ms} ms')
 
     before = datetime.now()

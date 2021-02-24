@@ -24,8 +24,7 @@ class FavoritesMessage(PageEmbedMessage):
 
             if remove_favorite(self.ctx.author, data.url, data.post_id):
                 await self.ctx.send(f'{self.ctx.author.mention}, removed favorite successfully.')
-
-            self.data.remove(self.data[self.page])
+                self.data.remove(self.data[self.page])
 
             if len(self.data) == 0:
                 await self.message.edit(content='No favorites found', embed=None)

@@ -29,6 +29,6 @@ class PostEntry:
 
         return XmlPostData.from_xml(et_post[0], 1)
 
-    def to_content(self):
+    def to_content(self) -> dict:
         post_data = self.fetch_post()
         return post_data.to_content()

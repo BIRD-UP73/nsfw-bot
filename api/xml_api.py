@@ -57,11 +57,10 @@ class XmlPost(AbstractPost):
 
         post_data = XmlPostData.from_xml(xml_post, total_posts)
         if post_data.has_disallowed_tags():
-            self.post_data = PostError('Post contains disallowed tags. Please try again.')
-            return
+            return PostError('Post contains disallowed tags. Please try again.')
 
         self.update_hist(post_data)
-        self.post_data = post_data
+        return post_data
 
 
 def get_xml_post(tags: str, url: str) -> Element:
