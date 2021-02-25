@@ -1,5 +1,7 @@
 from xml.etree import ElementTree
 
+from requests import HTTPError
+
 from api.json_api import JsonPostData, json_post_by_id
 from api.post_data import PostData, PostError
 from api.xml_api import XmlPostData, get_post_by_id
@@ -19,10 +21,14 @@ class PostEntry:
         return self.get_xml_post()
 
     def get_json_post(self) -> PostData:
-        long_url = short_to_long(self.url)
-        json_post = json_post_by_id(long_url, self.post_id)
-
-        return JsonPostData(**json_post)
+        try:
+            long_url = short_to_long(self.url)
+            json_post = json_post_by_id(long_url, self.post_id)
+            return JsonPostData(**json_post)
+        except HTTPError as e:
+            if e.response.status_code == 404:
+                return PostError('That post no longer exists.')
+            raise e
 
     def get_xml_post(self) -> PostData:
         long_url = short_to_long(self.url)
@@ -30,10 +36,6 @@ class PostEntry:
         et_post = ElementTree.fromstring(resp_text)
 
         if len(et_post) == 0:
-            return PostError('Could not find post.')
+            return PostError('That post no longer exists.')
 
         return XmlPostData.from_xml(et_post[0], 1)
-
-    def to_content(self) -> dict:
-        self.post_data = self.fetch_post()
-        return self.post_data.to_content()

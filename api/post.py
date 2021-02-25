@@ -44,7 +44,7 @@ class AbstractPost(ABC):
     async def on_reaction_add(self, reaction: Reaction, user: User):
         if reaction.message.id != self.message.id or user == self.ctx.bot.user:
             return
-        if reaction.emoji == '⭐' and not isinstance(self.post_data, PostError):
+        if reaction.emoji == '⭐' and not self.post_data.is_error():
             if not post_repository.exists(user, self.url, self.post_data.id):
                 post_repository.store_favorite(user, self.url, self.post_data.id)
                 await self.ctx.send(f'{self.ctx.author.mention}, added post to favorites')

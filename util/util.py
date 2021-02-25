@@ -4,8 +4,8 @@ disallowed_tags = ['loli', 'shota', 'underage']
 max_field_length = 1024
 
 
-def is_image(ext: str):
-    return ext in img_fmts
+def is_video(ext: str):
+    return ext not in img_fmts
 
 
 def contains_disallowed_tags(tags: str):

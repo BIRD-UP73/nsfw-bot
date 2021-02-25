@@ -1,6 +1,6 @@
-from typing import Optional, List
+from typing import List
 
-from discord import User, Embed
+from discord import User
 from discord.ext import commands
 from discord.ext.commands import Cog, Context, is_nsfw
 
@@ -10,8 +10,9 @@ from util.embed_util import PageEmbedMessage
 
 
 class FavoritesMessage(PageEmbedMessage):
-    def __init__(self, ctx: Context, data: List[PostEntry]):
+    def __init__(self, ctx: Context, user: User, data: List[PostEntry]):
         super().__init__(ctx, data)
+        self.user = user
 
     async def on_reaction_add(self, reaction, user):
         if user == self.ctx.bot.user or self.message.id != reaction.message.id:
@@ -21,7 +22,7 @@ class FavoritesMessage(PageEmbedMessage):
 
         data = self.get_data()
 
-        if reaction.emoji == '🗑️' and user == self.ctx.author:
+        if reaction.emoji == '🗑️' and user == self.user:
             remove_favorite(self.ctx.author, data.url, data.post_id)
             await self.ctx.send(f'{self.ctx.author.mention}, removed favorite successfully.')
             self.data.remove(self.data[self.page])
@@ -34,20 +35,20 @@ class FavoritesMessage(PageEmbedMessage):
                 self.page = 0
                 await self.update_message()
 
-        if self.ctx.guild:
-            await self.message.remove_reaction(reaction, user)
+        await super().after_reaction(reaction, user)
 
     def get_current_page(self) -> dict:
-        content = self.get_data().to_content()
+        data = self.get_data().fetch_post()
+        if data.is_animated():
+            return data.to_content()
 
-        if content.get('embed'):
-            embed: Embed = content.get('embed')
-            embed.title = 'Favorites'
+        embed = data.to_embed()
+        embed.title = 'Favorites'
+        embed.description = f'Favorites for {self.ctx.author.mention}'
 
-            embed.description = f'Favorites for {self.ctx.author.mention}'
-            embed.set_footer(text=f'Page {self.page + 1} of {len(self.data)}')
+        embed.set_footer(text=f'Page {self.page + 1} of {len(self.data)}')
 
-        return content
+        return {'content': None, 'embed': embed}
 
 
 def parse_favorites(fav_list: List[tuple]) -> List[PostEntry]:
@@ -67,12 +68,12 @@ class Favorites(Cog):
 
     @is_nsfw()
     @commands.command(name='favorites', aliases=['favs'], description=description)
-    async def favorites(self, ctx: Context, user: Optional[User] = None):
+    async def favorites(self, ctx: Context, user: User = None):
         user = user or ctx.author
         favorites = parse_favorites(get_favorites(user))
 
         if favorites:
-            post_embed_message = FavoritesMessage(ctx, favorites)
+            post_embed_message = FavoritesMessage(ctx, user, favorites)
             await post_embed_message.create_message()
         else:
             await ctx.send('No favorites found')

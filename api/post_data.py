@@ -22,11 +22,17 @@ class PostData:
         self.tags = kwargs.get('tags') or kwargs.get('tag_string')
         self.id = kwargs.get('id')
 
+    def is_error(self):
+        return False
+
     def has_disallowed_tags(self) -> bool:
         return util.contains_disallowed_tags(self.tags)
 
+    def is_animated(self):
+        return util.is_video(self.file_ext)
+
     def to_content(self) -> dict:
-        if not util.is_image(self.file_ext):
+        if self.is_animated():
             return {'content': self.file_url, 'embed': None}
 
         return {'content': None, 'embed': self.to_embed()}
@@ -56,11 +62,17 @@ class PostError(PostData):
         super().__init__()
         self.message = message
 
-    def to_content(self) -> dict:
-        embed = Embed()
-        embed.title = 'Error'
-        embed.description = self.message
+    def is_animated(self):
+        return False
 
+    def is_error(self):
+        return True
+
+    def to_embed(self) -> Embed:
+        embed = Embed()
         embed.colour = Color.red()
 
-        return {'content': None, 'embed': embed}
+        embed.title = 'Error'
+        embed.add_field(name='Error', value=self.message)
+
+        return embed

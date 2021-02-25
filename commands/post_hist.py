@@ -30,24 +30,23 @@ class PostHistMessage(PageEmbedMessage):
         if reaction.emoji == '🗑️':
             await self.message.delete()
             self.ctx.bot.remove_listener(self.on_reaction_add)
-            return
-
-        if self.ctx.guild:
-            await self.message.remove_reaction(reaction.emoji, user)
+        else:
+            await super().after_reaction(reaction, user)
 
     def get_current_page(self) -> dict:
-        page_data = self.get_data()
-        content = page_data.to_content()
+        entry_data = self.get_data()
+        post_data = entry_data.fetch_post()
 
-        if content.get('embed'):
-            embed = content.get('embed')
-            embed.title = 'History'
-            embed.description = ''
-            embed.set_footer(text=f'Page {self.page + 1} of {len(self.data)}')
-            embed.timestamp = page_data.saved_at
-            content['embed'] = embed
+        if post_data.is_animated():
+            return post_data.to_content()
 
-        return content
+        embed = post_data.to_embed()
+        embed.title = 'History'
+
+        embed.set_footer(text=f'Page {self.page + 1} of {len(self.data)}')
+        embed.timestamp = entry_data.saved_at
+
+        return {'content': '', 'embed': embed}
 
 
 class PostHist(commands.Cog):
