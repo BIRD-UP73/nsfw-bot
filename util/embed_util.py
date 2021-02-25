@@ -3,8 +3,9 @@ from typing import List
 
 from discord.ext.commands import Context
 
+from api.post_data import PostError
 from api.post_entry import PostEntry
-from db.post_repository import store_favorite
+from db import post_repository
 
 
 class PageEmbedMessage(ABC):
@@ -37,9 +38,11 @@ class PageEmbedMessage(ABC):
             await self.update_message()
         if reaction.emoji == '⭐':
             data = self.get_data()
-            store_favorite_result = store_favorite(user, data.url, data.post_id)
-            if store_favorite_result:
-                await self.ctx.send(f'{user.mention}, successfully stored favorite.')
+
+            if not isinstance(data.post_data, PostError):
+                if not post_repository.exists(user, data.url, data.post_id):
+                    post_repository.store_favorite(user, data.url, data.post_id)
+                    await self.ctx.send(f'{user.mention}, successfully stored favorite.')
 
     async def update_message(self):
         page_content = self.get_current_page()

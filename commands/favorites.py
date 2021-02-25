@@ -10,7 +10,7 @@ from util.embed_util import PageEmbedMessage
 
 
 class FavoritesMessage(PageEmbedMessage):
-    def __init__(self, ctx: Context, data):
+    def __init__(self, ctx: Context, data: List[PostEntry]):
         super().__init__(ctx, data)
 
     async def on_reaction_add(self, reaction, user):
@@ -19,12 +19,12 @@ class FavoritesMessage(PageEmbedMessage):
 
         await super().on_reaction_add(reaction, user)
 
-        if reaction.emoji == '🗑️' and user == self.ctx.author:
-            data = self.get_data()
+        data = self.get_data()
 
-            if remove_favorite(self.ctx.author, data.url, data.post_id):
-                await self.ctx.send(f'{self.ctx.author.mention}, removed favorite successfully.')
-                self.data.remove(self.data[self.page])
+        if reaction.emoji == '🗑️' and user == self.ctx.author:
+            remove_favorite(self.ctx.author, data.url, data.post_id)
+            await self.ctx.send(f'{self.ctx.author.mention}, removed favorite successfully.')
+            self.data.remove(self.data[self.page])
 
             if len(self.data) == 0:
                 await self.message.edit(content='No favorites found', embed=None)
@@ -43,13 +43,14 @@ class FavoritesMessage(PageEmbedMessage):
         if content.get('embed'):
             embed: Embed = content.get('embed')
             embed.title = 'Favorites'
+
             embed.description = f'Favorites for {self.ctx.author.mention}'
             embed.set_footer(text=f'Page {self.page + 1} of {len(self.data)}')
 
         return content
 
 
-def parse_favorites(fav_list: List[tuple]):
+def parse_favorites(fav_list: List[tuple]) -> List[PostEntry]:
     return [PostEntry(tup[0], tup[1]) for tup in fav_list]
 
 

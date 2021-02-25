@@ -4,7 +4,8 @@ from discord import Reaction, User, Message
 from discord.ext.commands import Context
 
 from api.post_data import PostData, PostError
-from db.post_repository import store_favorite
+
+from db import post_repository
 
 
 class AbstractPost(ABC):
@@ -42,9 +43,8 @@ class AbstractPost(ABC):
         if reaction.message.id != self.message.id or user == self.ctx.bot.user:
             return
         if reaction.emoji == '⭐' and not isinstance(self.post_data, PostError):
-            store_result = store_favorite(user, self.url, self.post_data.id)
-
-            if store_result:
+            if not post_repository.exists(user, self.url, self.post_data.id):
+                post_repository.store_favorite(user, self.url, self.post_data.id)
                 await self.ctx.send(f'{self.ctx.author.mention}, added post to favorites')
         if user == self.ctx.author:
             if reaction.emoji == '🗑️':
