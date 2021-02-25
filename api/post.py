@@ -37,7 +37,9 @@ class AbstractPost(ABC):
         Adds the current post to the post history
         """
         hist_cog = self.ctx.bot.get_cog('PostHist')
-        hist_cog.add_post(self.ctx.channel, self.url, post_data.id)
+
+        target = self.ctx.guild or self.ctx.channel
+        hist_cog.add_post(target, self.url, post_data.id)
 
     async def on_reaction_add(self, reaction: Reaction, user: User):
         if reaction.message.id != self.message.id or user == self.ctx.bot.user:

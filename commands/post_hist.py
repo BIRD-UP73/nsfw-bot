@@ -63,7 +63,7 @@ class PostHist(commands.Cog):
     @is_nsfw()
     @commands.command(name='history', aliases=['hist'], brief='Post history', description=description)
     async def post_history(self, ctx: Context):
-        channel_hist = self.get_hist(ctx.channel.id)
+        channel_hist = self.get_hist(ctx.guild or ctx.channel)
 
         if not channel_hist:
             return await ctx.send(content='No history')
@@ -78,5 +78,5 @@ class PostHist(commands.Cog):
         post_hist_entry = PostHistEntry(short_url, post_id, datetime.now())
         self.post_hist[guild_or_channel.id].append(post_hist_entry)
 
-    def get_hist(self, channel_or_guild_id: int) -> Deque[PostHistEntry]:
-        return self.post_hist.get(channel_or_guild_id)
+    def get_hist(self, guild_or_channel: Union[Guild, DMChannel]) -> Deque[PostHistEntry]:
+        return self.post_hist.get(guild_or_channel.id)
