@@ -48,7 +48,7 @@ class FavoritesMessage(PageEmbedMessage):
 
         embed.set_footer(text=f'Page {self.page + 1} of {len(self.data)}')
 
-        return {'content': None, 'embed': embed}
+        return dict(content=None, embed=embed)
 
 
 def parse_favorites(fav_list: List[tuple]) -> List[PostEntry]:

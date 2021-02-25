@@ -3,8 +3,7 @@ from abc import ABC, abstractmethod
 from discord import Reaction, User, Message
 from discord.ext.commands import Context
 
-from api.post_data import PostData, PostError
-
+from api.post_data import PostData
 from db import post_repository
 
 

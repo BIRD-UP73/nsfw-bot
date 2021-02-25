@@ -61,6 +61,14 @@ class XmlPost(AbstractPost):
         return post_data
 
 
+async def show_post(ctx: Context, tags: str, score: int, url: str, skip_score=False):
+    if not skip_score:
+        tags = util.parse_tags(tags, score)
+
+    post = XmlPost(ctx, url, tags)
+    await post.create_message()
+
+
 def get_xml_post(tags: str, url: str) -> Element:
     resp_text = send_request(MAX_POSTS_PER_PAGE, tags, 0, url)
     posts = ElementTree.fromstring(resp_text)
@@ -79,14 +87,6 @@ def get_xml_post(tags: str, url: str) -> Element:
 
     random.shuffle(posts)
     return total_posts, posts[0]
-
-
-async def show_post(ctx: Context, tags: str, score: int, url: str, skip_score=False):
-    if not skip_score:
-        tags = util.parse_tags(tags, score)
-
-    post = XmlPost(ctx, url, tags)
-    await post.create_message()
 
 
 def get_post_by_id(url, post_id):

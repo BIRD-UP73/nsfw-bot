@@ -46,7 +46,7 @@ class PostHistMessage(PageEmbedMessage):
         embed.set_footer(text=f'Page {self.page + 1} of {len(self.data)}')
         embed.timestamp = entry_data.saved_at
 
-        return {'content': '', 'embed': embed}
+        return dict(content=None, embed=embed)
 
 
 class PostHist(commands.Cog):
