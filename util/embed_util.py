@@ -40,10 +40,9 @@ class PageEmbedMessage(ABC):
             data = self.get_data()
             post_data = data.fetch_post()
 
-            if not post_data.is_error():
-                if not post_repository.exists(user, data.url, data.post_id):
-                    post_repository.store_favorite(user, data.url, data.post_id)
-                    await self.ctx.send(f'{user.mention}, successfully stored favorite.')
+            if not post_data.is_error() and not post_repository.exists(user, data.url, data.post_id):
+                post_repository.store_favorite(user, data.url, data.post_id)
+                await self.ctx.send(f'{user.mention}, successfully stored favorite.')
 
     async def after_reaction(self, reaction: Reaction, user):
         if self.ctx.guild:
