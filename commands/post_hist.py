@@ -7,7 +7,7 @@ from discord.ext import commands
 from discord.ext.commands import Context, is_nsfw
 
 from api.post_entry import PostEntry
-from util.embed_util import PageEmbedMessage
+from api.page_embed_message import PageEmbedMessage
 from util.url_util import parse_url
 
 

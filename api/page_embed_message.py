@@ -12,6 +12,8 @@ class PageEmbedMessage(ABC):
     message = None
     page = 0
 
+    reaction_emojis = ['⬅', '➡', '🗑️', '⭐']
+
     def __init__(self, ctx: Context, data: List[PostEntry]):
         self.ctx: Context = ctx
         self.data: List[PostEntry] = data
@@ -19,10 +21,8 @@ class PageEmbedMessage(ABC):
     async def create_message(self):
         self.message = await self.ctx.send(**self.get_current_page())
 
-        await self.message.add_reaction('⬅')
-        await self.message.add_reaction('➡')
-        await self.message.add_reaction('🗑️')
-        await self.message.add_reaction('⭐')
+        for reaction_emoji in self.reaction_emojis:
+            await self.message.add_reaction(reaction_emoji)
 
         self.ctx.bot.add_listener(self.on_reaction_add)
 

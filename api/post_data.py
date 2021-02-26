@@ -33,7 +33,7 @@ class PostData:
 
     def to_content(self) -> dict:
         if self.is_animated():
-            return {'content': self.file_url, 'embed': None}
+            return dict(content=self.file_url, embed=None)
 
         return dict(content=None, embed=self.to_embed())
 
