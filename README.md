@@ -9,3 +9,9 @@ token=birdup
 prefix=!
 ```
 - Run `launcher.py`
+
+## Emojis used
+
+- ⬅ and ➡ To cycle through pages
+- 🗑️ to delete post messages or favorites
+- ⭐ to store a post as favorite
