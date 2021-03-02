@@ -11,14 +11,8 @@ from api.post_entry import PostEntry
 from util.url_util import parse_url
 
 
-class PostHistEntry(PostEntry):
-    def __init__(self, url: str, post_id: int, saved_at: datetime):
-        super().__init__(url, post_id)
-        self.saved_at = saved_at
-
-
 class PostHistMessage(PageEmbedMessage):
-    def __init__(self, ctx: Context, data: List[PostHistEntry]):
+    def __init__(self, ctx: Context, data: List[PostEntry]):
         super().__init__(ctx, data)
 
     async def on_reaction_add(self, reaction, user):
@@ -51,7 +45,7 @@ class PostHistMessage(PageEmbedMessage):
 
 class PostHist(commands.Cog):
     max_len = 50
-    post_hist: Dict[int, Deque[PostHistEntry]] = dict()
+    post_hist: Dict[int, Deque[PostEntry]] = dict()
 
     description = """
     ⭐   add post to your favorites
@@ -74,8 +68,8 @@ class PostHist(commands.Cog):
         self.post_hist.setdefault(guild_or_channel.id, deque(maxlen=self.max_len))
 
         short_url = parse_url(url)
-        post_hist_entry = PostHistEntry(short_url, post_id, datetime.now())
+        post_hist_entry = PostEntry(short_url, post_id, datetime.now())
         self.post_hist[guild_or_channel.id].append(post_hist_entry)
 
-    def get_hist(self, guild_or_channel: Union[Guild, DMChannel]) -> Deque[PostHistEntry]:
+    def get_hist(self, guild_or_channel: Union[Guild, DMChannel]) -> Deque[PostEntry]:
         return self.post_hist.get(guild_or_channel.id)

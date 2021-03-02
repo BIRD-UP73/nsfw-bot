@@ -1,3 +1,4 @@
+from datetime import datetime
 from xml.etree import ElementTree
 
 from requests import HTTPError
@@ -11,9 +12,10 @@ from util.url_util import short_to_long
 class PostEntry:
     post_data: PostData
 
-    def __init__(self, url: str, post_id: int):
+    def __init__(self, url: str, post_id: int, saved_at: datetime):
         self.url = url
         self.post_id = post_id
+        self.saved_at = saved_at
 
     def fetch_post(self) -> PostData:
         if 'danbooru' in self.url:
