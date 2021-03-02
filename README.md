@@ -12,6 +12,6 @@ prefix=!
 
 ## Emojis used
 
-- ⬅ and ➡ To cycle through pages
+- ⬅ and ➡ to cycle through pages
 - 🗑️ to delete post messages or favorites
 - ⭐ to store a post as favorite
