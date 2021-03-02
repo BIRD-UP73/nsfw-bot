@@ -1,18 +1,45 @@
 from abc import ABC, abstractmethod
-from typing import List
+from typing import List, Dict
 
 from discord import Reaction
 from discord.ext.commands import Context
 
 from api.post_entry import PostEntry
+from api.reaction_handler import ReactionContext, ReactionHandler, EmptyReactionHandler
 from db import post_repository
+
+
+class NextPageReactionHandler(ReactionHandler):
+    async def handle_reaction(self, ctx: ReactionContext):
+        ctx.post.page = (ctx.post.page + 1) % len(ctx.post.data)
+        await ctx.post.update_message()
+
+
+class PreviousPageReactionHandler(ReactionHandler):
+    async def handle_reaction(self, ctx: ReactionContext):
+        ctx.post.page = (ctx.post.page - 1) % len(ctx.post.data)
+        await ctx.post.update_message()
+
+
+class AddFavoriteReactionHandler(ReactionHandler):
+    async def handle_reaction(self, ctx: ReactionContext):
+        data = ctx.post.get_data()
+        post_data = data.fetch_post()
+
+        if not post_data.is_error() and not post_repository.exists(ctx.user, data.url, data.post_id):
+            post_repository.store_favorite(ctx.user, data.url, data.post_id)
+            await ctx.post.ctx.send(f'{ctx.user.mention}, successfully stored favorite.')
 
 
 class PageEmbedMessage(ABC):
     message = None
     page = 0
 
-    reaction_emojis = ['⬅', '➡', '🗑️', '⭐']
+    reaction_handlers: Dict[str, ReactionHandler] = {
+        '⬅': PreviousPageReactionHandler(),
+        '➡': NextPageReactionHandler(),
+        '⭐': AddFavoriteReactionHandler()
+    }
 
     def __init__(self, ctx: Context, data: List[PostEntry]):
         self.ctx: Context = ctx
@@ -21,28 +48,16 @@ class PageEmbedMessage(ABC):
     async def create_message(self):
         self.message = await self.ctx.send(**self.get_current_page())
 
-        for reaction_emoji in self.reaction_emojis:
+        for reaction_emoji in self.reaction_handlers:
             await self.message.add_reaction(reaction_emoji)
 
         self.ctx.bot.add_listener(self.on_reaction_add)
 
     async def on_reaction_add(self, reaction, user):
-        if user == self.ctx.bot.user or self.message.id != reaction.message.id:
-            return
+        reaction_context = ReactionContext(reaction, user, self)
 
-        if reaction.emoji == '➡':
-            self.page = (self.page + 1) % len(self.data)
-            await self.update_message()
-        if reaction.emoji == '⬅':
-            self.page = (self.page - 1) % len(self.data)
-            await self.update_message()
-        if reaction.emoji == '⭐':
-            data = self.get_data()
-            post_data = data.fetch_post()
-
-            if not post_data.is_error() and not post_repository.exists(user, data.url, data.post_id):
-                post_repository.store_favorite(user, data.url, data.post_id)
-                await self.ctx.send(f'{user.mention}, successfully stored favorite.')
+        handler = self.reaction_handlers.get(reaction.emoji, EmptyReactionHandler())
+        await handler.on_reaction(reaction_context)
 
     async def after_reaction(self, reaction: Reaction, user):
         if self.ctx.guild:

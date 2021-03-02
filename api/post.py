@@ -4,7 +4,27 @@ from discord import Reaction, User, Message
 from discord.ext.commands import Context
 
 from api.post_data import PostData
+from api.reaction_handler import ReactionHandler, ReactionContext, EmptyReactionHandler, DeleteMessageReactionHandler
 from db import post_repository
+
+
+class RandomPostReactionHandler(ReactionHandler):
+    async def handle_reaction(self, ctx: ReactionContext):
+        if ctx.user != ctx.post.ctx.author:
+            return
+
+        ctx.post.post_data = ctx.post.fetch_post()
+        await ctx.post.message.edit(**ctx.post.post_data.to_content())
+
+
+class AddFavoriteReactionHandler(ReactionHandler):
+    async def handle_reaction(self, ctx: ReactionContext):
+        if ctx.post.post_data.is_error() or\
+                post_repository.exists(ctx.user, ctx.post.url, ctx.post.post_data.id):
+            return
+
+        post_repository.store_favorite(ctx.user, ctx.post.url, ctx.post.post_data.id)
+        await ctx.post.ctx.send(f'{ctx.user.mention}, added post to favorites')
 
 
 class AbstractPost(ABC):
@@ -13,6 +33,12 @@ class AbstractPost(ABC):
     post_data: PostData = None
     url: str = None
     tags: str = None
+
+    reaction_handlers = {
+        '🔁': RandomPostReactionHandler(author_only=True),
+        '🗑️': DeleteMessageReactionHandler(author_only=True),
+        '⭐': AddFavoriteReactionHandler()
+    }
 
     def __init__(self, ctx: Context, url: str, tags: str):
         self.ctx = ctx
@@ -27,9 +53,15 @@ class AbstractPost(ABC):
         self.message = await self.ctx.send(**self.post_data.to_content())
 
         self.ctx.bot.add_listener(self.on_reaction_add)
-        await self.message.add_reaction('🗑️')
-        await self.message.add_reaction('🔁')
-        await self.message.add_reaction('⭐')
+
+        for emoji in self.reaction_handlers:
+            await self.message.add_reaction(emoji)
+
+    async def on_reaction_add(self, reaction: Reaction, user: User):
+        reaction_context = ReactionContext(reaction, user, self)
+
+        handler = self.reaction_handlers.get(reaction.emoji, EmptyReactionHandler())
+        await handler.on_reaction(reaction_context)
 
     def update_hist(self, post_data):
         """
@@ -39,25 +71,6 @@ class AbstractPost(ABC):
 
         target = self.ctx.guild or self.ctx.channel
         hist_cog.add_post(target, self.url, post_data.id)
-
-    async def on_reaction_add(self, reaction: Reaction, user: User):
-        if reaction.message.id != self.message.id or user == self.ctx.bot.user:
-            return
-        if reaction.emoji == '⭐':
-            if not self.post_data.is_error() and not post_repository.exists(user, self.url, self.post_data.id):
-                post_repository.store_favorite(user, self.url, self.post_data.id)
-                await self.ctx.send(f'{user.mention}, added post to favorites')
-        if user == self.ctx.author:
-            if reaction.emoji == '🗑️':
-                await self.message.delete()
-                self.ctx.bot.remove_listener(self.on_reaction_add)
-                return
-            if reaction.emoji == '🔁':
-                self.post_data = self.fetch_post()
-                await self.message.edit(**self.post_data.to_content())
-
-        if self.ctx.guild:
-            await self.message.remove_reaction(reaction.emoji, user)
 
     @abstractmethod
     def fetch_post(self) -> PostData:
