@@ -133,4 +133,4 @@ dmypy.json
 
 config.properties
 
-sqlalchemy_example.db
+database.db

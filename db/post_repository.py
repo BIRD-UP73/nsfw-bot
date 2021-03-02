@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import List, Tuple
 
 from discord import User
@@ -12,7 +13,8 @@ def get_favorites(user: User) -> List[Tuple]:
     :param user: the user
     :return: the favorites for the specified user
     """
-    posts = session.query(DBPost).filter(DBPost.user_id == user.id)
+    posts = session.query(DBPost).filter(DBPost.user_id == user.id).order_by(DBPost.saved_at.asc())
+
     return [(db_post.url, db_post.post_id) for db_post in list(posts)]
 
 
@@ -60,6 +62,6 @@ def store_favorite(user: User, url: str, post_id: int):
     """
     parsed_url = parse_url(url)
 
-    db_post = DBPost(user_id=user.id, post_id=post_id, url=parsed_url)
+    db_post = DBPost(user_id=user.id, post_id=post_id, url=parsed_url, saved_at=datetime.now())
     session.add(db_post)
     session.commit()
