@@ -15,3 +15,4 @@ prefix=!
 - ⬅ and ➡ to cycle through pages
 - 🗑️ to delete post messages or favorites
 - ⭐ to store a post as favorite
+- 🔁 to refresh posts
