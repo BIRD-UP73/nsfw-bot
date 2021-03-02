@@ -4,9 +4,9 @@ from discord import User
 from discord.ext import commands
 from discord.ext.commands import Cog, Context, is_nsfw
 
+from api.page_embed_message import PageEmbedMessage
 from api.post_entry import PostEntry
 from db.post_repository import get_favorites, remove_favorite
-from api.page_embed_message import PageEmbedMessage
 
 
 class FavoritesMessage(PageEmbedMessage):

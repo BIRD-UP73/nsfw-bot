@@ -1,5 +1,3 @@
-from typing import Optional
-
 import requests
 from discord import Embed
 from discord.ext.commands import Context, CommandError
@@ -49,12 +47,12 @@ class JsonPost(AbstractPost):
 
         :return: the fetched post
         """
-        json_post = get_json_post(self.tags)
+        resp_json = send_json_request(danbooru_url, self.tags)
 
-        if not json_post:
+        if len(resp_json) == 0:
             raise CommandError(f'No posts found for {self.tags}')
 
-        post_data = JsonPostData(**json_post)
+        post_data = JsonPostData(**resp_json[0])
 
         if post_data.has_disallowed_tags():
             return PostError('Post contains disallowed tags. Please try again.')
@@ -69,15 +67,6 @@ async def show_post(ctx: Context, tags: str, score: int):
 
     post = JsonPost(ctx, danbooru_url, tags)
     await post.create_message()
-
-
-def get_json_post(tags: str) -> Optional[dict]:
-    resp_json = send_json_request(danbooru_url, tags)
-
-    if len(resp_json) == 0:
-        return None
-
-    return resp_json[0]
 
 
 def json_post_by_id(base_url: str, post_id: int):
