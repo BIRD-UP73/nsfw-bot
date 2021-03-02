@@ -38,13 +38,16 @@ class FavoritesMessage(PageEmbedMessage):
         await super().after_reaction(reaction, user)
 
     def get_current_page(self) -> dict:
-        data = self.get_data().fetch_post()
-        if data.is_animated():
-            return data.to_content()
+        data = self.get_data()
+        post = data.fetch_post()
 
-        embed = data.to_embed()
+        if post.is_animated():
+            return post.to_content()
+
+        embed = post.to_embed()
         embed.title = 'Favorites'
         embed.description = f'Favorites for {self.ctx.author.mention}'
+        embed.timestamp = data.saved_at
 
         embed.set_footer(text=f'Page {self.page + 1} of {len(self.data)}')
 
@@ -52,7 +55,7 @@ class FavoritesMessage(PageEmbedMessage):
 
 
 def parse_favorites(fav_list: List[tuple]) -> List[PostEntry]:
-    return [PostEntry(tup[0], tup[1]) for tup in fav_list]
+    return [PostEntry(tup[0], tup[1], tup[2]) for tup in fav_list]
 
 
 class Favorites(Cog):
