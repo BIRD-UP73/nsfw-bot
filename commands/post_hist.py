@@ -35,9 +35,7 @@ class PostHistMessage(PageEmbedMessage):
 
 class PostHist(commands.Cog):
     max_len = 50
-    post_hist: Dict[int, Deque[PostEntry]] = {
-        594542271437864988: [PostEntry('danbooru.donmai.us', 3267687, datetime.now())]
-    }
+    post_hist: Dict[int, Deque[PostEntry]] = {}
 
     description = """
     ⭐   add post to your favorites

@@ -23,11 +23,8 @@ class ReactionHandler(ABC):
     async def on_reaction(self, ctx: ReactionContext):
         if ctx.user == ctx.bot_user or ctx.post.message.id != ctx.reaction.message.id:
             return
-        if self.author_only and ctx.user != ctx.post.ctx.author:
-            await self.remove_reaction(ctx)
-            return
-
-        await self.handle_reaction(ctx)
+        if not self.author_only or ctx.user == ctx.post.ctx.author:
+            await self.handle_reaction(ctx)
 
         if self.delete_reaction and ctx.post.message.guild:
             await self.remove_reaction(ctx)
@@ -51,8 +48,7 @@ class DeleteMessageReactionHandler(ReactionHandler):
 
     async def handle_reaction(self, ctx: ReactionContext):
         if ctx.user != ctx.post.ctx.author:
-            await self.remove_reaction(ctx)
-            return
+            return await self.remove_reaction(ctx)
 
         await ctx.post.message.delete()
         ctx.post.ctx.bot.remove_listener(ctx.post.on_reaction_add)
