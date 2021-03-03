@@ -49,10 +49,6 @@ class PageEmbedMessage(ABC):
         handler = self.reaction_handlers.get(reaction.emoji, EmptyReactionHandler())
         await handler.on_reaction(reaction_context)
 
-    async def after_reaction(self, reaction: Reaction, user):
-        if self.ctx.guild:
-            await self.message.remove_reaction(reaction.emoji, user)
-
     async def update_message(self):
         page_content = self.get_current_page()
         await self.message.edit(**page_content)
