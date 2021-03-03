@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from discord import Reaction, User, Message
+from discord import Reaction, User, Message, DMChannel
 from discord.ext.commands import Context
 
 from api.post_data import PostData
@@ -15,7 +15,6 @@ class RandomPostReactionHandler(ReactionHandler):
 
 
 class AbstractPost(ABC):
-    ctx: Context = None
     message: Message = None
     post_data: PostData = None
     url: str = None
@@ -28,7 +27,9 @@ class AbstractPost(ABC):
     }
 
     def __init__(self, ctx: Context, url: str, tags: str):
-        self.ctx = ctx
+        self.bot = ctx.bot
+        self.channel = ctx.channel
+        self.author = ctx.author
         self.url = url
         self.tags = tags
 
@@ -37,9 +38,9 @@ class AbstractPost(ABC):
         Creates a message with the post, and adds reaction listeners
         """
         self.post_data = self.fetch_post()
-        self.message = await self.ctx.send(**self.post_data.to_content())
+        self.message = await self.channel.send(**self.post_data.to_content())
 
-        self.ctx.bot.add_listener(self.on_reaction_add)
+        self.bot.add_listener(self.on_reaction_add)
 
         for emoji in self.reaction_handlers:
             await self.message.add_reaction(emoji)
@@ -54,9 +55,13 @@ class AbstractPost(ABC):
         """
         Adds the current post to the post history
         """
-        hist_cog = self.ctx.bot.get_cog('PostHist')
+        hist_cog = self.bot.get_cog('PostHist')
 
-        target = self.ctx.guild or self.ctx.channel
+        if isinstance(self.channel, DMChannel):
+            target = self.channel
+        else:
+            target = self.channel.guild
+
         hist_cog.add_post(target, self.url, post_data.post_id)
 
     def get_data(self):

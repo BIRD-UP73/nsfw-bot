@@ -1,7 +1,8 @@
 from abc import ABC, abstractmethod
-from typing import List, Dict
+from typing import List, Dict, Union
 
-from discord.ext.commands import Context
+from discord import TextChannel, Member, User
+from discord.ext.commands import Context, Bot
 
 from api.post_entry import PostEntry
 from api.reaction_handler import ReactionContext, ReactionHandler, EmptyReactionHandler, AddFavoriteReactionHandler
@@ -31,16 +32,18 @@ class PageEmbedMessage(ABC):
     }
 
     def __init__(self, ctx: Context, data: List[PostEntry]):
-        self.ctx: Context = ctx
+        self.bot: Bot = ctx.bot
+        self.author: Union[User, Member] = ctx.author
+        self.channel: TextChannel = ctx.channel
         self.data: List[PostEntry] = data
 
     async def create_message(self):
-        self.message = await self.ctx.send(**self.get_current_page())
+        self.message = await self.channel.send(**self.get_current_page())
 
         for reaction_emoji in self.reaction_handlers:
             await self.message.add_reaction(reaction_emoji)
 
-        self.ctx.bot.add_listener(self.on_reaction_add)
+        self.bot.add_listener(self.on_reaction_add)
 
     async def on_reaction_add(self, reaction, user):
         reaction_context = ReactionContext(reaction, user, self)

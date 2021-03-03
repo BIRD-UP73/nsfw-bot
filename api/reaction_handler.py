@@ -14,7 +14,7 @@ class ReactionContext:
 
     @property
     def bot_user(self):
-        return self.post.ctx.bot.user
+        return self.post.bot.user
 
 
 class ReactionHandler(ABC):
@@ -25,7 +25,7 @@ class ReactionHandler(ABC):
     async def on_reaction(self, ctx: ReactionContext):
         if ctx.user == ctx.bot_user or ctx.post.message.id != ctx.reaction.message.id:
             return
-        if not self.author_only or ctx.user == ctx.post.ctx.author:
+        if not self.author_only or ctx.user == ctx.post.author:
             await self.handle_reaction(ctx)
 
         if self.delete_reaction and ctx.post.message.guild:
@@ -49,11 +49,11 @@ class DeleteMessageReactionHandler(ReactionHandler):
         super().__init__(author_only=author_only, delete_reaction=False)
 
     async def handle_reaction(self, ctx: ReactionContext):
-        if ctx.user != ctx.post.ctx.author:
+        if ctx.user != ctx.post.author:
             return await self.remove_reaction(ctx)
 
         await ctx.post.message.delete()
-        ctx.post.ctx.bot.remove_listener(ctx.post.on_reaction_add)
+        ctx.post.bot.remove_listener(ctx.post.on_reaction_add)
 
 
 class AddFavoriteReactionHandler(ReactionHandler):
@@ -65,4 +65,4 @@ class AddFavoriteReactionHandler(ReactionHandler):
             return
 
         post_repository.store_favorite(ctx.user, data.url, post_data.post_id)
-        await ctx.post.ctx.send(f'{ctx.user.mention}, successfully stored favorite.')
+        await ctx.post.channel.send(f'{ctx.user.mention}, successfully stored favorite.')

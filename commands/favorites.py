@@ -18,13 +18,13 @@ class RemoveFavoriteReactionHandler(ReactionHandler):
         data = ctx.post.get_data()
 
         remove_favorite(ctx.user, data.url, data.post_id)
-        await ctx.post.ctx.send(f'{ctx.user.mention}, removed favorite successfully.')
+        await ctx.post.channel.send(f'{ctx.user.mention}, removed favorite successfully.')
         ctx.post.data.remove(data)
 
         if len(ctx.post.data) == 0:
             await ctx.post.message.edit(content='No favorites found', embed=None)
             await ctx.post.message.clear_reactions()
-            ctx.post.ctx.bot.remove_listener(ctx.post.on_reaction_add)
+            ctx.post.bot.remove_listener(ctx.post.on_reaction_add)
             return
 
         ctx.post.page = 0
@@ -35,6 +35,7 @@ class FavoritesMessage(PageEmbedMessage):
     def __init__(self, ctx: Context, user: User, data: List[PostEntry]):
         super().__init__(ctx, data)
         self.user = user
+        self.author = ctx.author
         self.reaction_handlers['🗑️'] = RemoveFavoriteReactionHandler()
 
     def get_current_page(self) -> dict:
@@ -46,7 +47,7 @@ class FavoritesMessage(PageEmbedMessage):
 
         embed = self.post_data.to_embed()
         embed.title = 'Favorites'
-        embed.description = f'Favorites for {self.ctx.author.mention}'
+        embed.description = f'Favorites for {self.author.mention}'
         embed.timestamp = data.saved_at
 
         embed.set_footer(text=f'Page {self.page + 1} of {len(self.data)}')
