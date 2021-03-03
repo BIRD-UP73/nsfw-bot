@@ -4,8 +4,8 @@ from discord import Reaction, User, Message
 from discord.ext.commands import Context
 
 from api.post_data import PostData
-from api.reaction_handler import ReactionHandler, ReactionContext, EmptyReactionHandler, DeleteMessageReactionHandler
-from db import post_repository
+from api.reaction_handler import ReactionHandler, ReactionContext, EmptyReactionHandler, DeleteMessageReactionHandler, \
+    AddFavoriteReactionHandler
 
 
 class RandomPostReactionHandler(ReactionHandler):
@@ -15,16 +15,6 @@ class RandomPostReactionHandler(ReactionHandler):
 
         ctx.post.post_data = ctx.post.fetch_post()
         await ctx.post.message.edit(**ctx.post.post_data.to_content())
-
-
-class AddFavoriteReactionHandler(ReactionHandler):
-    async def handle_reaction(self, ctx: ReactionContext):
-        if ctx.post.post_data.is_error() or\
-                post_repository.exists(ctx.user, ctx.post.url, ctx.post.post_data.id):
-            return
-
-        post_repository.store_favorite(ctx.user, ctx.post.url, ctx.post.post_data.id)
-        await ctx.post.ctx.send(f'{ctx.user.mention}, added post to favorites')
 
 
 class AbstractPost(ABC):
@@ -70,7 +60,10 @@ class AbstractPost(ABC):
         hist_cog = self.ctx.bot.get_cog('PostHist')
 
         target = self.ctx.guild or self.ctx.channel
-        hist_cog.add_post(target, self.url, post_data.id)
+        hist_cog.add_post(target, self.url, post_data.post_id)
+
+    def get_data(self):
+        return self
 
     @abstractmethod
     def fetch_post(self) -> PostData:

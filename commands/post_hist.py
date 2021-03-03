@@ -19,12 +19,12 @@ class PostHistMessage(PageEmbedMessage):
 
     def get_current_page(self) -> dict:
         entry_data = self.get_data()
-        post_data = entry_data.fetch_post()
+        self.post_data = entry_data.fetch_post()
 
-        if post_data.is_animated():
-            return post_data.to_content()
+        if self.post_data.is_animated():
+            return self.post_data.to_content()
 
-        embed = post_data.to_embed()
+        embed = self.post_data.to_embed()
         embed.title = 'History'
 
         embed.set_footer(text=f'Page {self.page + 1} of {len(self.data)}')

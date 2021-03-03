@@ -3,6 +3,8 @@ from typing import Union
 
 from discord import Reaction, Member, User
 
+from db import post_repository
+
 
 class ReactionContext:
     def __init__(self, reaction: Reaction, user: Union[Member, User], post):
@@ -52,3 +54,15 @@ class DeleteMessageReactionHandler(ReactionHandler):
 
         await ctx.post.message.delete()
         ctx.post.ctx.bot.remove_listener(ctx.post.on_reaction_add)
+
+
+class AddFavoriteReactionHandler(ReactionHandler):
+    async def handle_reaction(self, ctx: ReactionContext):
+        data = ctx.post.get_data()
+        post_data = ctx.post.post_data
+
+        if post_data.is_error() or post_repository.exists(ctx.user, data.url, post_data.post_id):
+            return
+
+        post_repository.store_favorite(ctx.user, data.url, post_data.post_id)
+        await ctx.post.ctx.send(f'{ctx.user.mention}, successfully stored favorite.')

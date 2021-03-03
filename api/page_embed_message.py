@@ -5,8 +5,7 @@ from discord import Reaction
 from discord.ext.commands import Context
 
 from api.post_entry import PostEntry
-from api.reaction_handler import ReactionContext, ReactionHandler, EmptyReactionHandler
-from db import post_repository
+from api.reaction_handler import ReactionContext, ReactionHandler, EmptyReactionHandler, AddFavoriteReactionHandler
 
 
 class NextPageReactionHandler(ReactionHandler):
@@ -21,19 +20,10 @@ class PreviousPageReactionHandler(ReactionHandler):
         await ctx.post.update_message()
 
 
-class AddFavoriteReactionHandler(ReactionHandler):
-    async def handle_reaction(self, ctx: ReactionContext):
-        data = ctx.post.get_data()
-        post_data = data.fetch_post()
-
-        if not post_data.is_error() and not post_repository.exists(ctx.user, data.url, data.post_id):
-            post_repository.store_favorite(ctx.user, data.url, data.post_id)
-            await ctx.post.ctx.send(f'{ctx.user.mention}, successfully stored favorite.')
-
-
 class PageEmbedMessage(ABC):
     message = None
     page = 0
+    post_data = None
 
     reaction_handlers: Dict[str, ReactionHandler] = {
         '⬅': PreviousPageReactionHandler(),
