@@ -10,9 +10,6 @@ from api.reaction_handler import ReactionHandler, ReactionContext, EmptyReaction
 
 class RandomPostReactionHandler(ReactionHandler):
     async def handle_reaction(self, ctx: ReactionContext):
-        if ctx.user != ctx.post.ctx.author:
-            return
-
         ctx.post.post_data = ctx.post.fetch_post()
         await ctx.post.message.edit(**ctx.post.post_data.to_content())
 
@@ -26,7 +23,7 @@ class AbstractPost(ABC):
 
     reaction_handlers = {
         '🔁': RandomPostReactionHandler(author_only=True),
-        '🗑️': DeleteMessageReactionHandler(author_only=True),
+        '🗑️': DeleteMessageReactionHandler(),
         '⭐': AddFavoriteReactionHandler()
     }
 
