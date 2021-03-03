@@ -27,7 +27,9 @@ class RemoveFavoriteReactionHandler(ReactionHandler):
             ctx.post.bot.remove_listener(ctx.post.on_reaction_add)
             return
 
-        ctx.post.page = 0
+        if ctx.post.page == len(ctx.post.data):
+            ctx.post.page = 0
+
         await ctx.post.update_message()
 
 
