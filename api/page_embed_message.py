@@ -1,7 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import List, Dict
 
-from discord import Reaction
 from discord.ext.commands import Context
 
 from api.post_entry import PostEntry
