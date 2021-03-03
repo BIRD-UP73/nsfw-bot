@@ -8,33 +8,23 @@ from discord.ext.commands import Context, is_nsfw
 
 from api.page_embed_message import PageEmbedMessage
 from api.post_entry import PostEntry
+from api.reaction_handler import DeleteMessageReactionHandler
 from util.url_util import parse_url
 
 
 class PostHistMessage(PageEmbedMessage):
     def __init__(self, ctx: Context, data: List[PostEntry]):
         super().__init__(ctx, data)
-
-    async def on_reaction_add(self, reaction, user):
-        if user == self.ctx.bot.user or self.message.id != reaction.message.id:
-            return
-
-        await super().on_reaction_add(reaction, user)
-
-        if reaction.emoji == '🗑️':
-            await self.message.delete()
-            self.ctx.bot.remove_listener(self.on_reaction_add)
-        else:
-            await super().after_reaction(reaction, user)
+        self.reaction_handlers['🗑️'] = DeleteMessageReactionHandler()
 
     def get_current_page(self) -> dict:
         entry_data = self.get_data()
-        post_data = entry_data.fetch_post()
+        self.post_data = entry_data.fetch_post()
 
-        if post_data.is_animated():
-            return post_data.to_content()
+        if self.post_data.is_animated():
+            return self.post_data.to_content()
 
-        embed = post_data.to_embed()
+        embed = self.post_data.to_embed()
         embed.title = 'History'
 
         embed.set_footer(text=f'Page {self.page + 1} of {len(self.data)}')
@@ -45,7 +35,7 @@ class PostHistMessage(PageEmbedMessage):
 
 class PostHist(commands.Cog):
     max_len = 50
-    post_hist: Dict[int, Deque[PostEntry]] = dict()
+    post_hist: Dict[int, Deque[PostEntry]] = {}
 
     description = """
     ⭐   add post to your favorites

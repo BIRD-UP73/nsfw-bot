@@ -11,7 +11,7 @@ class PostData:
     score = None
     source = None
     tags = None
-    id = 0
+    post_id = 0
 
     def __init__(self, **kwargs):
         self.created_at = kwargs.get('created_at')
@@ -20,7 +20,7 @@ class PostData:
         self.score = kwargs.get('score')
         self.source = kwargs.get('source')
         self.tags = kwargs.get('tags') or kwargs.get('tag_string')
-        self.id = kwargs.get('id')
+        self.post_id = kwargs.get('id')
 
     def is_error(self):
         return False

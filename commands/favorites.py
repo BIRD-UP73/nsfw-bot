@@ -6,47 +6,48 @@ from discord.ext.commands import Cog, Context, is_nsfw
 
 from api.page_embed_message import PageEmbedMessage
 from api.post_entry import PostEntry
+from api.reaction_handler import ReactionHandler, ReactionContext
 from db.post_repository import get_favorites, remove_favorite
+
+
+class RemoveFavoriteReactionHandler(ReactionHandler):
+    async def handle_reaction(self, ctx: ReactionContext):
+        if ctx.user != ctx.post.user:
+            return
+
+        data = ctx.post.get_data()
+
+        remove_favorite(ctx.user, data.url, data.post_id)
+        await ctx.post.channel.send(f'{ctx.user.mention}, removed favorite successfully.')
+        ctx.post.data.remove(data)
+
+        if len(ctx.post.data) == 0:
+            await ctx.post.message.edit(content='No favorites found', embed=None)
+            await ctx.post.message.clear_reactions()
+            ctx.post.bot.remove_listener(ctx.post.on_reaction_add)
+            return
+
+        ctx.post.page = 0
+        await ctx.post.update_message()
 
 
 class FavoritesMessage(PageEmbedMessage):
     def __init__(self, ctx: Context, user: User, data: List[PostEntry]):
         super().__init__(ctx, data)
         self.user = user
-
-    async def on_reaction_add(self, reaction, user):
-        if user == self.ctx.bot.user or self.message.id != reaction.message.id:
-            return
-
-        await super().on_reaction_add(reaction, user)
-
-        data = self.get_data()
-
-        if reaction.emoji == '🗑️' and user == self.user:
-            remove_favorite(self.ctx.author, data.url, data.post_id)
-            await self.ctx.send(f'{self.ctx.author.mention}, removed favorite successfully.')
-            self.data.remove(self.data[self.page])
-
-            if len(self.data) == 0:
-                await self.message.edit(content='No favorites found', embed=None)
-                await self.message.clear_reactions()
-                self.ctx.bot.remove_listener(self.on_reaction_add)
-            else:
-                self.page = 0
-                await self.update_message()
-
-        await super().after_reaction(reaction, user)
+        self.author = ctx.author
+        self.reaction_handlers['🗑️'] = RemoveFavoriteReactionHandler()
 
     def get_current_page(self) -> dict:
         data = self.get_data()
-        post = data.fetch_post()
+        self.post_data = data.fetch_post()
 
-        if post.is_animated():
-            return post.to_content()
+        if self.post_data.is_animated():
+            return self.post_data.to_content()
 
-        embed = post.to_embed()
+        embed = self.post_data.to_embed()
         embed.title = 'Favorites'
-        embed.description = f'Favorites for {self.ctx.author.mention}'
+        embed.description = f'Favorites for {self.author.mention}'
         embed.timestamp = data.saved_at
 
         embed.set_footer(text=f'Page {self.page + 1} of {len(self.data)}')
