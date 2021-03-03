@@ -3,70 +3,9 @@ from xml.dom.minidom import Element
 from xml.etree import ElementTree
 
 import requests
-from discord import Embed
-from discord.ext.commands import Context, CommandError
-
-from api.post import AbstractPost
-from api.post_data import PostData, PostError
-from util import util
 
 POST_LIMIT = 2500
 MAX_POSTS_PER_PAGE = 100
-
-
-class XmlPostData(PostData):
-    total_posts = 0
-
-    def __init__(self, total_posts, **kwargs):
-        super().__init__(**kwargs)
-        self.total_posts = total_posts
-
-    @classmethod
-    def from_xml(cls, el: ElementTree, total_posts: int):
-        file_url = el.get('file_url')
-
-        data = dict(
-            file_url=file_url,
-            file_ext=file_url.split('.')[-1],
-            created_at=el.get('created_at'),
-            score=el.get('score'),
-            source=el.get('source'),
-            tags=el.get('tags'),
-            id=el.get('id')
-        )
-
-        return cls(total_posts, **data)
-
-    def to_embed(self) -> Embed:
-        embed = super().to_embed()
-        embed.description = f'Found {self.total_posts} images'
-        return embed
-
-
-class XmlPost(AbstractPost):
-    def __init__(self, ctx: Context, url: str, tags: str):
-        super().__init__(ctx, url, tags)
-
-    def fetch_post(self):
-        total_posts, xml_post = get_xml_post(self.tags, self.url)
-
-        if total_posts == 0:
-            raise CommandError(f'No posts found for {self.tags}')
-
-        post_data = XmlPostData.from_xml(xml_post, total_posts)
-        if post_data.has_disallowed_tags():
-            return PostError('Post contains disallowed tags. Please try again.')
-
-        self.update_hist(post_data)
-        return post_data
-
-
-async def show_post(ctx: Context, tags: str, score: int, url: str, skip_score=False):
-    if not skip_score:
-        tags = util.parse_tags(tags, score)
-
-    post = XmlPost(ctx, url, tags)
-    await post.create_message()
 
 
 def get_xml_post(tags: str, url: str) -> Element:

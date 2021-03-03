@@ -3,9 +3,11 @@ from xml.etree import ElementTree
 
 from requests import HTTPError
 
-from api.json_api import JsonPostData, json_post_by_id
-from api.post_data import PostData, PostError
-from api.xml_api import XmlPostData, get_post_by_id
+from api.json_api import json_post_by_id
+from posts.data.json_post_data import JsonPostData
+from posts.data.post_data import PostData, PostError
+from api.xml_api import get_post_by_id
+from posts.data.xml_post_data import XmlPostData
 from util.url_util import short_to_long
 
 

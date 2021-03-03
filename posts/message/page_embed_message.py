@@ -4,8 +4,8 @@ from typing import List, Dict, Union
 from discord import TextChannel, Member, User
 from discord.ext.commands import Context, Bot
 
-from api.post_entry import PostEntry
-from api.reaction_handler import ReactionContext, ReactionHandler, EmptyReactionHandler, AddFavoriteReactionHandler
+from posts.data.post_entry import PostEntry
+from posts.message.reaction_handler import ReactionContext, ReactionHandler, EmptyReactionHandler, AddFavoriteReactionHandler
 
 
 class NextPageReactionHandler(ReactionHandler):
@@ -40,10 +40,10 @@ class PageEmbedMessage(ABC):
     async def create_message(self):
         self.message = await self.channel.send(**self.get_current_page())
 
+        self.bot.add_listener(self.on_reaction_add)
+
         for reaction_emoji in self.reaction_handlers:
             await self.message.add_reaction(reaction_emoji)
-
-        self.bot.add_listener(self.on_reaction_add)
 
     async def on_reaction_add(self, reaction, user):
         reaction_context = ReactionContext(reaction, user, self)

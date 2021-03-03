@@ -4,9 +4,9 @@ from discord import User
 from discord.ext import commands
 from discord.ext.commands import Cog, Context, is_nsfw
 
-from api.page_embed_message import PageEmbedMessage
-from api.post_entry import PostEntry
-from api.reaction_handler import ReactionHandler, ReactionContext
+from posts.message.page_embed_message import PageEmbedMessage
+from posts.data.post_entry import PostEntry
+from posts.message.reaction_handler import ReactionHandler, ReactionContext
 from db.post_repository import get_favorites, remove_favorite
 
 

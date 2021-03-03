@@ -3,9 +3,9 @@ from abc import ABC, abstractmethod
 from discord import Reaction, User, Message, DMChannel
 from discord.ext.commands import Context
 
-from api.post_data import PostData
-from api.reaction_handler import ReactionHandler, ReactionContext, EmptyReactionHandler, DeleteMessageReactionHandler, \
-    AddFavoriteReactionHandler
+from posts.data.post_data import PostData
+from posts.message.reaction_handler import ReactionHandler, ReactionContext, EmptyReactionHandler, \
+    DeleteMessageReactionHandler, AddFavoriteReactionHandler
 
 
 class RandomPostReactionHandler(ReactionHandler):
@@ -55,13 +55,12 @@ class AbstractPost(ABC):
         """
         Adds the current post to the post history
         """
-        hist_cog = self.bot.get_cog('PostHist')
-
         if isinstance(self.channel, DMChannel):
             target = self.channel
         else:
             target = self.channel.guild
 
+        hist_cog = self.bot.get_cog('PostHist')
         hist_cog.add_post(target, self.url, post_data.post_id)
 
     def get_data(self):

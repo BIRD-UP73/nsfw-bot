@@ -31,7 +31,8 @@ class ReactionHandler(ABC):
         if self.delete_reaction and ctx.post.message.guild:
             await self.remove_reaction(ctx)
 
-    async def remove_reaction(self, ctx: ReactionContext):
+    @staticmethod
+    async def remove_reaction(ctx: ReactionContext):
         await ctx.post.message.remove_reaction(ctx.reaction.emoji, ctx.user)
 
     @abstractmethod
