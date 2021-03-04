@@ -1,8 +1,6 @@
 from datetime import datetime
 from xml.etree import ElementTree
 
-from requests import HTTPError
-
 from api.json_api import json_post_by_id
 from posts.data.json_post_data import JsonPostData
 from posts.data.post_data import PostData, PostError
