@@ -26,8 +26,8 @@ class PostHistMessage(PageEmbedMessage):
 
         embed = self.post_data.to_embed()
         embed.title = 'History'
+        embed.description = f'Page **{self.page + 1}** of **{len(self.data)}**'
 
-        embed.set_footer(text=f'Page {self.page + 1} of {len(self.data)}')
         embed.timestamp = entry_data.saved_at
 
         return dict(content=None, embed=embed)
@@ -49,7 +49,7 @@ class PostHist(commands.Cog):
         channel_hist = self.get_hist(ctx.guild or ctx.channel)
 
         if not channel_hist:
-            return await ctx.send(content='No history')
+            return await ctx.send('No history')
 
         post_hist_message = PostHistMessage(ctx, list(channel_hist))
         await post_hist_message.create_message()
