@@ -18,9 +18,9 @@ class ReactionContext:
 
 
 class ReactionHandler(ABC):
-    def __init__(self, delete_reaction=True, author_only=False):
-        self.delete_reaction = delete_reaction
-        self.author_only = author_only
+    def __init__(self, **kwargs):
+        self.delete_reaction = kwargs.get('delete_reaction', True)
+        self.author_only = kwargs.get('author_only', False)
 
     async def on_reaction(self, ctx: ReactionContext):
         if ctx.user == ctx.bot_user or ctx.post.message.id != ctx.reaction.message.id:

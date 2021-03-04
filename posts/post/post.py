@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from discord import Reaction, User, Message, DMChannel
+from discord import Reaction, User, Message
 from discord.ext.commands import Context
 
 from posts.data.post_data import PostData
@@ -30,6 +30,7 @@ class AbstractPost(ABC):
         self.bot = ctx.bot
         self.channel = ctx.channel
         self.author = ctx.author
+        self.guild = ctx.guild
         self.url = url
         self.tags = tags
 
@@ -55,10 +56,7 @@ class AbstractPost(ABC):
         """
         Adds the current post to the post history
         """
-        if isinstance(self.channel, DMChannel):
-            target = self.channel
-        else:
-            target = self.channel.guild
+        target = self.channel or self.guild
 
         hist_cog = self.bot.get_cog('PostHist')
         hist_cog.add_post(target, self.url, post_data.post_id)
