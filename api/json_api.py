@@ -7,8 +7,6 @@ def json_post_by_id(base_url: str, post_id: int):
     url = f'{base_url}/{post_id}.json'
     resp = requests.get(url)
 
-    resp.raise_for_status()
-
     return resp.json()
 
 

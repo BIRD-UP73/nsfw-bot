@@ -25,14 +25,13 @@ class PostEntry:
         return self.get_xml_post()
 
     def get_json_post(self) -> PostData:
-        try:
-            long_url = short_to_long(self.url)
-            json_post = json_post_by_id(long_url, self.post_id)
-            return JsonPostData(**json_post)
-        except HTTPError as e:
-            if e.response.status_code == 404:
-                return PostError('That post no longer exists.')
-            raise e
+        long_url = short_to_long(self.url)
+        json_post = json_post_by_id(long_url, self.post_id)
+
+        if json_post.get('success') is False:
+            return PostError('Post no longer exists')
+
+        return JsonPostData(**json_post)
 
     def get_xml_post(self) -> PostData:
         long_url = short_to_long(self.url)
