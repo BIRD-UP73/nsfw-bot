@@ -56,7 +56,7 @@ class AbstractPost(ABC):
         """
         Adds the current post to the post history
         """
-        target = self.channel or self.guild
+        target = self.guild or self.channel
 
         hist_cog = self.bot.get_cog('PostHist')
         hist_cog.add_post(target, self.url, post_data.post_id)
