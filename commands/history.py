@@ -6,8 +6,8 @@ from discord import DMChannel, Guild
 from discord.ext import commands
 from discord.ext.commands import Context, is_nsfw
 
-from posts.message.page_embed_message import PageEmbedMessage
 from posts.data.post_entry import PostEntry
+from posts.message.page_embed_message import PageEmbedMessage
 from posts.message.reaction_handler import DeleteMessageReactionHandler
 from util.url_util import parse_url
 

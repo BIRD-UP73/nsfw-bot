@@ -1,9 +1,9 @@
 from discord.ext.commands import Context, CommandError
 
+from posts.api.xml_api import get_xml_post
+from posts.data.post_data import PostHasDisallowedTags
 from posts.data.xml_post_data import XmlPostData
 from posts.post.post import AbstractPost
-from posts.data.post_data import PostHasDisallowedTags
-from posts.api.xml_api import get_xml_post
 from util import util
 
 

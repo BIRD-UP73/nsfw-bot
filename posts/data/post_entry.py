@@ -2,9 +2,9 @@ from datetime import datetime
 from xml.etree import ElementTree
 
 from posts.api.json_api import json_post_by_id
+from posts.api.xml_api import get_post_by_id
 from posts.data.json_post_data import JsonPostData
 from posts.data.post_data import PostData, PostNoLongerExists
-from posts.api.xml_api import get_post_by_id
 from posts.data.xml_post_data import XmlPostData
 from util.url_util import short_to_long
 

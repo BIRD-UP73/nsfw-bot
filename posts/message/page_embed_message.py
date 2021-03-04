@@ -5,7 +5,8 @@ from discord import TextChannel, Member, User
 from discord.ext.commands import Context, Bot
 
 from posts.data.post_entry import PostEntry
-from posts.message.reaction_handler import ReactionContext, ReactionHandler, EmptyReactionHandler, AddFavoriteReactionHandler
+from posts.message.reaction_handler import ReactionContext, ReactionHandler, EmptyReactionHandler, \
+    AddFavoriteReactionHandler
 
 
 class NextPageReactionHandler(ReactionHandler):

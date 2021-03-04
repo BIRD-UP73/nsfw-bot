@@ -2,8 +2,8 @@ from discord.ext.commands import Context, CommandError
 
 from posts.api.json_api import send_json_request, danbooru_url
 from posts.data.json_post_data import JsonPostData
-from posts.post.post import AbstractPost
 from posts.data.post_data import PostData, PostHasDisallowedTags
+from posts.post.post import AbstractPost
 from util import util
 
 
