@@ -1,13 +1,14 @@
 from datetime import datetime
-from typing import List, Tuple
+from typing import List
 
 from discord import User
 
 from db.model import session, Post as DBPost
+from posts.data.post_entry import PostEntry
 from util.url_util import parse_url
 
 
-def get_favorites(user: User) -> List[Tuple]:
+def get_favorites(user: User) -> List[PostEntry]:
     """
     Returns all favorites for a user
     :param user: the user
@@ -15,7 +16,7 @@ def get_favorites(user: User) -> List[Tuple]:
     """
     posts = session.query(DBPost).filter(DBPost.user_id == user.id).order_by(DBPost.saved_at.asc())
 
-    return [(db_post.url, db_post.post_id, db_post.saved_at) for db_post in list(posts)]
+    return [PostEntry(db_post.url, db_post.post_id, db_post.saved_at) for db_post in list(posts)]
 
 
 def remove_favorite(user: User, url: str, post_id: int):

@@ -37,6 +37,6 @@ class PostEntry:
         et_post = ElementTree.fromstring(resp_text)
 
         if len(et_post) == 0:
-            return PostError('That post no longer exists.')
+            return PostError('Post no longer exists.')
 
         return XmlPostData.from_xml(et_post[0], 1)

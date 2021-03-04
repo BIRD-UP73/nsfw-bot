@@ -7,7 +7,7 @@ from discord.ext.commands import Cog, Context, is_nsfw
 from posts.message.page_embed_message import PageEmbedMessage
 from posts.data.post_entry import PostEntry
 from posts.message.reaction_handler import ReactionHandler, ReactionContext
-from db.post_repository import get_favorites, remove_favorite
+from db import post_repository
 
 
 class RemoveFavoriteReactionHandler(ReactionHandler):
@@ -17,7 +17,7 @@ class RemoveFavoriteReactionHandler(ReactionHandler):
 
         data = ctx.post.get_data()
 
-        remove_favorite(ctx.user, data.url, data.post_id)
+        post_repository.remove_favorite(ctx.user, data.url, data.post_id)
         await ctx.post.channel.send(f'{ctx.user.mention}, removed favorite successfully.')
         ctx.post.data.remove(data)
 
@@ -57,10 +57,6 @@ class FavoritesMessage(PageEmbedMessage):
         return dict(content=None, embed=embed)
 
 
-def parse_favorites(fav_list: List[tuple]) -> List[PostEntry]:
-    return [PostEntry(tup[0], tup[1], tup[2]) for tup in fav_list]
-
-
 class Favorites(Cog):
 
     description = """
@@ -76,7 +72,7 @@ class Favorites(Cog):
     @commands.command(name='favorites', aliases=['favs'], description=description)
     async def favorites(self, ctx: Context, user: User = None):
         user = user or ctx.author
-        favorites = parse_favorites(get_favorites(user))
+        favorites = post_repository.get_favorites(user)
 
         if favorites:
             post_embed_message = FavoritesMessage(ctx, user, favorites)
