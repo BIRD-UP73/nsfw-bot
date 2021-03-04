@@ -3,7 +3,7 @@ from discord.ext.commands import Context, CommandError
 from posts.api.json_api import send_json_request, danbooru_url
 from posts.data.json_post_data import JsonPostData
 from posts.post.post import AbstractPost
-from posts.data.post_data import PostData, PostError
+from posts.data.post_data import PostData, PostHasDisallowedTags
 from util import util
 
 
@@ -29,7 +29,7 @@ class JsonPost(AbstractPost):
         post_data = JsonPostData(**resp_json[0])
 
         if post_data.has_disallowed_tags():
-            return PostError('Post contains disallowed tags. Please try again.')
+            return PostHasDisallowedTags()
 
         self.update_hist(post_data)
         return post_data

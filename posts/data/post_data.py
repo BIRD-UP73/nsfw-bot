@@ -76,3 +76,13 @@ class PostError(PostData):
         embed.add_field(name='Error', value=self.message)
 
         return embed
+
+
+class PostNoLongerExists(PostError):
+    def __init__(self):
+        super().__init__('Post no longer exists')
+
+
+class PostHasDisallowedTags(PostError):
+    def __init__(self):
+        super().__init__('Post contains disallowed tags. Please try again.')

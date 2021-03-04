@@ -2,7 +2,7 @@ from discord.ext.commands import Context, CommandError
 
 from posts.data.xml_post_data import XmlPostData
 from posts.post.post import AbstractPost
-from posts.data.post_data import PostError
+from posts.data.post_data import PostHasDisallowedTags
 from posts.api.xml_api import get_xml_post
 from util import util
 
@@ -19,7 +19,7 @@ class XmlPost(AbstractPost):
 
         post_data = XmlPostData.from_xml(xml_post, total_posts)
         if post_data.has_disallowed_tags():
-            return PostError('Post contains disallowed tags. Please try again.')
+            return PostHasDisallowedTags()
 
         self.update_hist(post_data)
         return post_data

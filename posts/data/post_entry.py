@@ -3,7 +3,7 @@ from xml.etree import ElementTree
 
 from posts.api.json_api import json_post_by_id
 from posts.data.json_post_data import JsonPostData
-from posts.data.post_data import PostData, PostError
+from posts.data.post_data import PostData, PostNoLongerExists
 from posts.api.xml_api import get_post_by_id
 from posts.data.xml_post_data import XmlPostData
 from util.url_util import short_to_long
@@ -27,7 +27,7 @@ class PostEntry:
         json_post = json_post_by_id(long_url, self.post_id)
 
         if json_post.get('success') is False:
-            return PostError('Post no longer exists')
+            return PostNoLongerExists()
 
         return JsonPostData(**json_post)
 
@@ -37,6 +37,6 @@ class PostEntry:
         et_post = ElementTree.fromstring(resp_text)
 
         if len(et_post) == 0:
-            return PostError('Post no longer exists.')
+            return PostNoLongerExists()
 
         return XmlPostData.from_xml(et_post[0], 1)
