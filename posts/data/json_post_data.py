@@ -5,10 +5,6 @@ from util import util
 
 
 class JsonPostData(PostData):
-    artist_tag: str = ''
-    character_tag: str = ''
-    copyright_tag: str = ''
-
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.artist_tag = kwargs.get('tag_string_artist')

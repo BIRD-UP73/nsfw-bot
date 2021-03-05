@@ -6,9 +6,7 @@ from posts.data.post_data import PostData
 
 
 class XmlPostData(PostData):
-    total_posts = 0
-
-    def __init__(self, total_posts, **kwargs):
+    def __init__(self, total_posts=0, **kwargs):
         super().__init__(**kwargs)
         self.total_posts = total_posts
 

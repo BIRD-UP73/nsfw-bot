@@ -5,13 +5,6 @@ from util import util
 
 
 class PostData:
-    created_at = None
-    file_ext = None
-    file_url = None
-    score = None
-    source = None
-    tags = None
-    post_id = 0
 
     def __init__(self, **kwargs):
         self.created_at = kwargs.get('created_at')
