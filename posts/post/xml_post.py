@@ -11,7 +11,6 @@ from posts.data.xml_post_data import XmlPostData
 from posts.post.post import AbstractPost
 from util import util
 
-
 POST_LIMIT = 2500
 MAX_POSTS_PER_PAGE = 100
 

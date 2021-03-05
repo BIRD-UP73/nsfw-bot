@@ -2,7 +2,7 @@ from collections import deque
 from datetime import datetime
 from typing import Union, Dict, List, Deque
 
-from discord import DMChannel, Guild
+from discord import DMChannel, TextChannel
 from discord.ext import commands
 from discord.ext.commands import Context, is_nsfw
 
@@ -46,7 +46,7 @@ class PostHist(commands.Cog):
     @is_nsfw()
     @commands.command(name='history', aliases=['hist'], brief='Post history', description=description)
     async def post_history(self, ctx: Context):
-        channel_hist = self.get_hist(ctx.guild or ctx.channel)
+        channel_hist = self.post_hist.get(ctx.channel.id)
 
         if not channel_hist:
             return await ctx.send('No history')
@@ -54,12 +54,9 @@ class PostHist(commands.Cog):
         post_hist_message = PostHistMessage(ctx, list(channel_hist))
         await post_hist_message.create_message()
 
-    def add_post(self, guild_or_channel: Union[Guild, DMChannel], url: str, post_id: int):
-        self.post_hist.setdefault(guild_or_channel.id, deque(maxlen=self.max_len))
+    def add_to_history(self, channel: Union[TextChannel, DMChannel], url: str, post_id: int):
+        self.post_hist.setdefault(channel.id, deque(maxlen=self.max_len))
 
         short_url = parse_url(url)
         post_hist_entry = PostEntry(short_url, post_id, datetime.now())
-        self.post_hist[guild_or_channel.id].append(post_hist_entry)
-
-    def get_hist(self, guild_or_channel: Union[Guild, DMChannel]) -> Deque[PostEntry]:
-        return self.post_hist.get(guild_or_channel.id)
+        self.post_hist[channel.id].append(post_hist_entry)

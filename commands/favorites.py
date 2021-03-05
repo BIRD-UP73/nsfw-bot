@@ -22,10 +22,7 @@ class RemoveFavoriteReactionHandler(ReactionHandler):
         ctx.post.data.remove(data)
 
         if len(ctx.post.data) == 0:
-            await ctx.post.message.edit(content='No favorites found', embed=None)
-            await ctx.post.message.clear_reactions()
-            ctx.post.bot.remove_listener(ctx.post.on_reaction_add)
-            return
+            return await ctx.post.clear_message()
 
         if ctx.post.page == len(ctx.post.data):
             ctx.post.page = 0
@@ -55,6 +52,11 @@ class FavoritesMessage(PageEmbedMessage):
         embed.set_footer(text=f'Page {self.page + 1} of {len(self.data)}')
 
         return dict(content=None, embed=embed)
+
+    async def clear_message(self):
+        self.bot.remove_listener(self.on_reaction_add)
+        await self.message.clear_reactions()
+        await self.message.edit(content='No favorites.', embed=None)
 
 
 class Favorites(Cog):

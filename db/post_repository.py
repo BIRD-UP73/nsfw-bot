@@ -11,6 +11,7 @@ from util.url_util import parse_url
 def get_favorites(user: User) -> List[PostEntry]:
     """
     Returns all favorites for a user
+
     :param user: the user
     :return: the favorites for the specified user
     """
@@ -40,6 +41,7 @@ def remove_favorite(user: User, url: str, post_id: int):
 def exists(user: User, url: str, post_id: int):
     """
     Checks whether a post exists for a given user
+
     :param user: the user
     :param url: the post url
     :param post_id: the post

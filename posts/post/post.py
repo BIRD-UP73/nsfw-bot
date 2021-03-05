@@ -1,7 +1,8 @@
 from abc import ABC, abstractmethod
+from typing import Union
 
-from discord import Reaction, User, Message
-from discord.ext.commands import Context
+from discord import Reaction, User, Message, DMChannel, TextChannel, Member
+from discord.ext.commands import Context, Bot
 
 from posts.data.post_data import PostData
 from posts.message.reaction_handler import ReactionHandler, ReactionContext, EmptyReactionHandler, \
@@ -17,8 +18,6 @@ class RandomPostReactionHandler(ReactionHandler):
 class AbstractPost(ABC):
     message: Message = None
     post_data: PostData = None
-    url: str = None
-    tags: str = None
 
     reaction_handlers = {
         '🔁': RandomPostReactionHandler(author_only=True),
@@ -27,12 +26,11 @@ class AbstractPost(ABC):
     }
 
     def __init__(self, ctx: Context, url: str, tags: str):
-        self.bot = ctx.bot
-        self.channel = ctx.channel
-        self.author = ctx.author
-        self.guild = ctx.guild
-        self.url = url
-        self.tags = tags
+        self.bot: Bot = ctx.bot
+        self.channel: Union[TextChannel, DMChannel] = ctx.channel
+        self.author: Union[User, Member] = ctx.author
+        self.url: str = url
+        self.tags: str = tags
 
     async def create_message(self):
         """
@@ -56,10 +54,8 @@ class AbstractPost(ABC):
         """
         Adds the current post to the post history
         """
-        target = self.guild or self.channel
-
         hist_cog = self.bot.get_cog('PostHist')
-        hist_cog.add_post(target, self.url, post_data.post_id)
+        hist_cog.add_to_history(self.channel, self.url, post_data.post_id)
 
     def get_data(self):
         return self
