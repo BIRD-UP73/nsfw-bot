@@ -76,8 +76,8 @@ class Favorites(Cog):
         user = user or ctx.author
         favorites = post_repository.get_favorites(user)
 
-        if favorites:
-            post_embed_message = FavoritesMessage(ctx, user, favorites)
-            return await post_embed_message.create_message()
+        if not favorites:
+            return await ctx.send('No favorites found')
 
-        await ctx.send('No favorites found')
+        post_embed_message = FavoritesMessage(ctx, user, favorites)
+        await post_embed_message.create_message()
