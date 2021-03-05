@@ -16,7 +16,7 @@ def get_favorites(user: User) -> List[PostEntry]:
     """
     posts = session.query(DBPost).filter(DBPost.user_id == user.id).order_by(DBPost.saved_at.asc())
 
-    return [PostEntry(db_post.url, db_post.post_id, db_post.saved_at) for db_post in list(posts)]
+    return [PostEntry(db_post.url, db_post.post_id, db_post.saved_at) for db_post in posts]
 
 
 def remove_favorite(user: User, url: str, post_id: int):
