@@ -1,6 +1,6 @@
 from collections import deque
 from datetime import datetime
-from typing import Union, Dict, List, Deque
+from typing import Union, Dict, Deque
 
 from discord import DMChannel, TextChannel
 from discord.ext import commands
@@ -13,7 +13,7 @@ from util.url_util import parse_url
 
 
 class PostHistMessage(PageEmbedMessage):
-    def __init__(self, ctx: Context, data: List[PostEntry]):
+    def __init__(self, ctx: Context, data: Deque[PostEntry]):
         super().__init__(ctx, data)
         self.reaction_handlers['🗑️'] = DeleteMessageReactionHandler()
 
@@ -51,7 +51,7 @@ class PostHist(commands.Cog):
         if not channel_hist:
             return await ctx.send('No history')
 
-        post_hist_message = PostHistMessage(ctx, list(channel_hist))
+        post_hist_message = PostHistMessage(ctx, channel_hist)
         await post_hist_message.create_message()
 
     def add_to_history(self, channel: Union[TextChannel, DMChannel], url: str, post_id: int):

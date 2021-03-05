@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import List, Dict, Union
+from typing import List, Dict, Union, Deque
 
 from discord import TextChannel, Member, User
 from discord.ext.commands import Context, Bot
@@ -32,11 +32,11 @@ class PageEmbedMessage(ABC):
         '⭐': AddFavoriteReactionHandler()
     }
 
-    def __init__(self, ctx: Context, data: List[PostEntry]):
+    def __init__(self, ctx: Context, data: Union[List[PostEntry], Deque[PostEntry]]):
         self.bot: Bot = ctx.bot
         self.author: Union[User, Member] = ctx.author
         self.channel: TextChannel = ctx.channel
-        self.data: List[PostEntry] = data
+        self.data: Union[List[PostEntry], Deque[PostEntry]] = data
 
     async def create_message(self):
         self.message = await self.channel.send(**self.get_current_page())

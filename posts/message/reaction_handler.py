@@ -37,10 +37,19 @@ class ReactionHandler(ABC):
 
     @abstractmethod
     async def handle_reaction(self, ctx: ReactionContext):
+        """
+        Function used for reaction-specific handling
+
+        :param ctx: the reaction context
+        """
         pass
 
 
 class EmptyReactionHandler(ReactionHandler):
+    """
+    Reaction handler without any specific handling
+    Used by default
+    """
     async def handle_reaction(self, ctx: ReactionContext):
         return
 
