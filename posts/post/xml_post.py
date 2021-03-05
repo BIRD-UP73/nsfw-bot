@@ -1,4 +1,5 @@
 import random
+from typing import Tuple
 from xml.dom.minidom import Element
 from xml.etree import ElementTree
 
@@ -41,7 +42,7 @@ async def show_post(ctx: Context, tags: str, score: int, url: str, skip_score=Fa
     await post.create_message()
 
 
-def get_xml_post(tags: str, url: str) -> Element:
+def get_xml_post(tags: str, url: str) -> Tuple[int, Element]:
     resp_text = send_request(MAX_POSTS_PER_PAGE, tags, 0, url)
     posts = ElementTree.fromstring(resp_text)
 
