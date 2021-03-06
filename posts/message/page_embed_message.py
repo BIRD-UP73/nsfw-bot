@@ -1,9 +1,10 @@
 from abc import ABC, abstractmethod
 from typing import List, Dict, Union, Deque
 
-from discord import TextChannel, Member, User
+from discord import TextChannel, Member, User, Message, DMChannel, Reaction
 from discord.ext.commands import Context, Bot
 
+from posts.data.post_data import PostData
 from posts.data.post_entry import PostEntry
 from posts.message.reaction_handler import ReactionContext, ReactionHandler, EmptyReactionHandler, \
     AddFavoriteReactionHandler
@@ -22,9 +23,9 @@ class PreviousPageReactionHandler(ReactionHandler):
 
 
 class PageEmbedMessage(ABC):
-    message = None
-    page = 0
-    post_data = None
+    message: Message = None
+    page: int = 0
+    post_data: PostData = None
 
     reaction_handlers: Dict[str, ReactionHandler] = {
         '⬅': PreviousPageReactionHandler(),
@@ -35,7 +36,7 @@ class PageEmbedMessage(ABC):
     def __init__(self, ctx: Context, data: Union[List[PostEntry], Deque[PostEntry]]):
         self.bot: Bot = ctx.bot
         self.author: Union[User, Member] = ctx.author
-        self.channel: TextChannel = ctx.channel
+        self.channel: Union[DMChannel, TextChannel] = ctx.channel
         self.data: Union[List[PostEntry], Deque[PostEntry]] = data
 
     async def create_message(self):
@@ -46,7 +47,7 @@ class PageEmbedMessage(ABC):
         for reaction_emoji in self.reaction_handlers:
             await self.message.add_reaction(reaction_emoji)
 
-    async def on_reaction_add(self, reaction, user):
+    async def on_reaction_add(self, reaction: Reaction, user: Union[Member, User]):
         reaction_context = ReactionContext(reaction, user, self)
 
         handler = self.reaction_handlers.get(reaction.emoji, EmptyReactionHandler())

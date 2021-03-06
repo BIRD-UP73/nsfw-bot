@@ -6,7 +6,7 @@ from xml.etree import ElementTree
 from discord.ext.commands import Context, CommandError
 
 from posts.api.xml_api import send_request
-from posts.data.post_data import PostHasDisallowedTags
+from posts.data.post_data import PostHasDisallowedTags, PostData
 from posts.data.xml_post_data import XmlPostData
 from posts.post.post import AbstractPost
 from util import util
@@ -19,7 +19,7 @@ class XmlPost(AbstractPost):
     def __init__(self, ctx: Context, url: str, tags: str):
         super().__init__(ctx, url, tags)
 
-    def fetch_post(self):
+    def fetch_post(self) -> PostData:
         total_posts, xml_post = get_xml_post(self.tags, self.url)
 
         if total_posts == 0:

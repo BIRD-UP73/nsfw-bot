@@ -8,7 +8,7 @@ from posts.data.post_data import PostData
 class XmlPostData(PostData):
     def __init__(self, total_posts=0, **kwargs):
         super().__init__(**kwargs)
-        self.total_posts = total_posts
+        self.total_posts: int = total_posts
 
     @classmethod
     def from_xml(cls, el: ElementTree, total_posts: int):

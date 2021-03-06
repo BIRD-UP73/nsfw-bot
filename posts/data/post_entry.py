@@ -13,9 +13,9 @@ class PostEntry:
     post_data: PostData
 
     def __init__(self, url: str, post_id: int, saved_at: datetime):
-        self.url = url
-        self.post_id = post_id
-        self.saved_at = saved_at
+        self.url: str = url
+        self.post_id: int = post_id
+        self.saved_at: datetime = saved_at
 
     def fetch_post(self) -> PostData:
         if 'danbooru' in self.url:

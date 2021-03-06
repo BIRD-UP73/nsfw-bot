@@ -7,9 +7,9 @@ from util import util
 class JsonPostData(PostData):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.artist_tag = kwargs.get('tag_string_artist')
-        self.character_tag = kwargs.get('tag_string_character')
-        self.copyright_tag = kwargs.get('tag_string_copyright')
+        self.artist_tag: str = kwargs.get('tag_string_artist')
+        self.character_tag: str = kwargs.get('tag_string_character')
+        self.copyright_tag: str = kwargs.get('tag_string_copyright')
 
     def to_embed(self) -> Embed:
         embed = super().to_embed()

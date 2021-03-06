@@ -5,23 +5,22 @@ from util import util
 
 
 class PostData:
-
     def __init__(self, **kwargs):
-        self.created_at = kwargs.get('created_at')
-        self.file_ext = kwargs.get('file_ext')
-        self.file_url = kwargs.get('file_url')
-        self.score = kwargs.get('score')
-        self.source = kwargs.get('source')
-        self.tags = kwargs.get('tags') or kwargs.get('tag_string')
-        self.post_id = kwargs.get('id')
+        self.created_at: str = kwargs.get('created_at')
+        self.file_ext: str = kwargs.get('file_ext')
+        self.file_url: str = kwargs.get('file_url')
+        self.score: str = kwargs.get('score')
+        self.source: str = kwargs.get('source')
+        self.tags: str = kwargs.get('tags') or kwargs.get('tag_string')
+        self.post_id: str = kwargs.get('id')
 
-    def is_error(self):
+    def is_error(self) -> bool:
         return False
 
     def has_disallowed_tags(self) -> bool:
         return util.contains_disallowed_tags(self.tags)
 
-    def is_animated(self):
+    def is_animated(self) -> bool:
         return util.is_video(self.file_ext)
 
     def to_content(self) -> dict:
@@ -53,12 +52,12 @@ class PostError(PostData):
     """
     def __init__(self, message: str):
         super().__init__()
-        self.message = message
+        self.message: str = message
 
-    def is_animated(self):
+    def is_animated(self) -> bool:
         return False
 
-    def is_error(self):
+    def is_error(self) -> bool:
         return True
 
     def to_embed(self) -> Embed:

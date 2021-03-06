@@ -44,7 +44,7 @@ class AbstractPost(ABC):
         for emoji in self.reaction_handlers:
             await self.message.add_reaction(emoji)
 
-    async def on_reaction_add(self, reaction: Reaction, user: User):
+    async def on_reaction_add(self, reaction: Reaction, user: Union[Member, User]):
         reaction_context = ReactionContext(reaction, user, self)
 
         handler = self.reaction_handlers.get(reaction.emoji, EmptyReactionHandler())

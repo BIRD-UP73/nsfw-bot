@@ -1,19 +1,19 @@
 from abc import ABC, abstractmethod
 from typing import Union
 
-from discord import Reaction, Member, User
+from discord import Reaction, Member, User, ClientUser
 
 from db import post_repository
 
 
 class ReactionContext:
     def __init__(self, reaction: Reaction, user: Union[Member, User], post):
-        self.reaction = reaction
-        self.user = user
+        self.reaction: Reaction = reaction
+        self.user: Union[Member, User] = user
         self.post = post
 
     @property
-    def bot_user(self):
+    def bot_user(self) -> ClientUser:
         return self.post.bot.user
 
 
