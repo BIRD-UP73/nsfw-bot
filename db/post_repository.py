@@ -38,7 +38,7 @@ def remove_favorite(user: User, url: str, post_id: int):
     session.commit()
 
 
-def exists(user: User, url: str, post_id: int):
+def exists(user: User, url: str, post_id: int) -> bool:
     """
     Checks whether a post exists for a given user
 
