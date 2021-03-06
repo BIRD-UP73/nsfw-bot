@@ -46,7 +46,7 @@ class FavoritesMessage(PageEmbedMessage):
 
         embed = self.post_data.to_embed()
         embed.title = 'Favorites'
-        embed.description = f'Favorites for {self.author.mention}'
+        embed.description = f'Favorites for {self.user.mention}'
         embed.timestamp = data.saved_at
 
         embed.set_footer(text=f'Page {self.page + 1} of {len(self.data)}')
