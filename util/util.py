@@ -4,11 +4,11 @@ disallowed_tags = ['loli', 'shota', 'underage']
 max_field_length = 1024
 
 
-def is_video(ext: str):
-    return ext not in img_fmts
+def is_video(file_ext: str) -> bool:
+    return file_ext not in img_fmts
 
 
-def contains_disallowed_tags(tags: str):
+def contains_disallowed_tags(tags: str) -> bool:
     for disallowed_tag in disallowed_tags:
         if disallowed_tag in tags:
             return True
@@ -16,7 +16,7 @@ def contains_disallowed_tags(tags: str):
     return False
 
 
-def parse_tags(tags: str, score: int):
+def parse_tags(tags: str, score: int) -> str:
     if 'score:>' not in tags:
         return tags + f' score:>{score}'
 
