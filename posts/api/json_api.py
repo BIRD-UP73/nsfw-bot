@@ -1,7 +1,5 @@
 import requests
 
-danbooru_url = 'https://danbooru.donmai.us/posts.json'
-
 
 def json_post_by_id(base_url: str, post_id: int) -> dict:
     url = f'{base_url}/{post_id}.json'

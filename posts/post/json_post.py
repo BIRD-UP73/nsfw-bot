@@ -1,16 +1,15 @@
 from discord.ext.commands import Context, CommandError
 
-from posts.api.json_api import send_json_request, danbooru_url
+from posts.api.json_api import send_json_request
 from posts.data.json_post_data import JsonPostData
 from posts.data.post_data import PostData, PostHasDisallowedTags
 from posts.post.post import AbstractPost
 from util import util
 
+danbooru_url = 'https://danbooru.donmai.us/posts.json'
+
 
 class JsonPost(AbstractPost):
-    def __init__(self, ctx: Context, url: str, tags: str):
-        super().__init__(ctx, url, tags)
-
     def fetch_post(self) -> PostData:
         """
         Fetches a post from a site with a json-based API
