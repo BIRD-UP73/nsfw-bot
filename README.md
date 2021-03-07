@@ -10,8 +10,16 @@ prefix=!
 ```
 - Run `launcher.py`
 
-## Emojis used
+## Supported sites
+Warning! These sites contain NSFW content.
 
+- rule34.xxx
+- gelbooru.com
+- xbooru.com
+- tbib.org
+- danbooru.donmai.us
+
+## Emojis used
 - ⬅ and ➡ to cycle through pages
 - 🗑️ to delete post messages or favorites
 - ⭐ to store a post as favorite
