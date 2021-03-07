@@ -40,7 +40,8 @@ class PageEmbedMessage(ABC):
         self.data: Union[List[PostEntry], Deque[PostEntry]] = data
 
     async def create_message(self):
-        self.message = await self.channel.send(**self.get_current_page())
+        page_content = self.get_current_page()
+        self.message = await self.channel.send(**page_content)
 
         self.bot.add_listener(self.on_reaction_add)
 
@@ -62,4 +63,11 @@ class PageEmbedMessage(ABC):
 
     @abstractmethod
     def get_current_page(self) -> dict:
+        """
+        Returns the content of the current page of the embed
+        This should be in the form of a :type mapping: dict
+        with both a 'content' and an 'embed' field
+
+        :return: the content of the page
+        """
         pass
