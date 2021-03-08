@@ -1,5 +1,4 @@
 import random
-from typing import Tuple
 from xml.dom.minidom import Element
 from xml.etree import ElementTree
 
@@ -11,21 +10,25 @@ from posts.data.xml_post_data import XmlPostData
 from posts.post.post import AbstractPost
 from util import util
 
-POST_LIMIT = 2500
-MAX_POSTS_PER_PAGE = 100
-
 
 class XmlPost(AbstractPost):
+    total_posts: int = 0
+
     def __init__(self, ctx: Context, url: str, tags: str):
         super().__init__(ctx, url, tags)
 
-    def fetch_post(self) -> PostData:
-        total_posts, xml_post = get_xml_post(self.tags, self.url)
+    async def create_message(self):
+        self.total_posts = get_total_posts(self.url, self.tags)
 
-        if total_posts == 0:
+        if self.total_posts == 0:
             raise CommandError(f'No posts found for {self.tags}')
 
-        post_data = XmlPostData.from_xml(xml_post, total_posts)
+        await super().create_message()
+
+    def fetch_post(self) -> PostData:
+        xml_post = random_xml_post(self.url, self.tags, self.total_posts)
+
+        post_data = XmlPostData.from_xml(xml_post, self.total_posts)
         if post_data.has_disallowed_tags():
             return PostHasDisallowedTags()
 
@@ -41,21 +44,29 @@ async def show_post(ctx: Context, tags: str, score: int, url: str, skip_score=Fa
     await post.create_message()
 
 
-def get_xml_post(tags: str, url: str) -> Tuple[int, Element]:
-    resp_text = send_request(MAX_POSTS_PER_PAGE, tags, 0, url)
+def get_total_posts(url: str, tags: str) -> int:
+    """
+    Returns the total amount of posts for a list of tags
+
+    :param url: the url to search the pots for
+    :param tags: the tags
+    :return: the total amount of posts for a tag
+    """
+    resp_text = send_request(url, 0, tags, 0)
     posts = ElementTree.fromstring(resp_text)
 
-    total_posts = int(posts.get('count'))
-    max_posts_to_search = min(total_posts, POST_LIMIT)
-    max_pages = max_posts_to_search // MAX_POSTS_PER_PAGE
+    text_count = posts.get('count')
 
-    if max_posts_to_search == 0:
-        return 0, None
+    if text_count:
+        return int(text_count)
 
-    random_page = random.randint(0, max_pages)
+    return 0
 
-    resp_text = send_request(MAX_POSTS_PER_PAGE, tags, random_page, url)
+
+def random_xml_post(url: str, tags: str, total_posts: int) -> Element:
+    random_page = random.randint(0, total_posts - 1)
+
+    resp_text = send_request(url, 1, tags, random_page)
     posts = ElementTree.fromstring(resp_text)
 
-    random.shuffle(posts)
-    return total_posts, posts[0]
+    return posts[0]

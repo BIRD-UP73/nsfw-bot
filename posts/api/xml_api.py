@@ -15,7 +15,7 @@ def get_post_by_id(url, post_id):
     return resp.text
 
 
-def send_request(limit: int, tags: str, page: int, url: str) -> str:
+def send_request(url: str, limit: int, tags: str, page: int) -> str:
     params = {
         'page': 'dapi',
         's': 'post',
