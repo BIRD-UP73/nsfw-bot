@@ -1,21 +1,22 @@
-from abc import ABC, abstractmethod
+from abc import abstractmethod
 from typing import Union
 
-from discord import Reaction, User, Message, DMChannel, TextChannel, Member
+from discord import User, Message, DMChannel, TextChannel, Member
 from discord.ext.commands import Context, Bot
 
-from posts.data.post_data import PostData
-from posts.message.reaction_handler import ReactionHandler, ReactionContext, EmptyReactionHandler, \
+from posts.data.post_data import PostData, PostHasDisallowedTags
+from posts.message.reaction_handler import ReactionHandler, ReactionContext,\
     DeleteMessageReactionHandler, AddFavoriteReactionHandler
+from posts.post.abstract_post import AbstractPost
 
 
 class RandomPostReactionHandler(ReactionHandler):
     async def handle_reaction(self, ctx: ReactionContext):
-        ctx.post.post_data = ctx.post.fetch_post()
+        ctx.post.post_data = ctx.post.get_post()
         await ctx.post.message.edit(**ctx.post.post_data.to_content())
 
 
-class AbstractPost(ABC):
+class Post(AbstractPost):
     message: Message = None
     post_data: PostData = None
 
@@ -36,19 +37,13 @@ class AbstractPost(ABC):
         """
         Creates a message with the post, and adds reaction listeners
         """
-        self.post_data = self.fetch_post()
+        self.post_data = self.get_post()
         self.message = await self.channel.send(**self.post_data.to_content())
 
         self.bot.add_listener(self.on_reaction_add)
 
         for emoji in self.reaction_handlers:
             await self.message.add_reaction(emoji)
-
-    async def on_reaction_add(self, reaction: Reaction, user: Union[Member, User]):
-        reaction_context = ReactionContext(reaction, user, self)
-
-        handler = self.reaction_handlers.get(reaction.emoji, EmptyReactionHandler())
-        await handler.on_reaction(reaction_context)
 
     def update_hist(self, post_data):
         """
@@ -59,6 +54,14 @@ class AbstractPost(ABC):
 
     def get_data(self):
         return self
+
+    def get_post(self) -> PostData:
+        post_data = self.fetch_post()
+        if post_data.has_disallowed_tags():
+            return PostHasDisallowedTags()
+
+        self.update_hist(post_data)
+        return post_data
 
     @abstractmethod
     def fetch_post(self) -> PostData:
