@@ -1,4 +1,4 @@
-from abc import abstractmethod
+from abc import abstractmethod, ABC
 from typing import List, Dict, Union, Deque
 
 from discord import TextChannel, Member, User, Message, DMChannel, Reaction
@@ -8,7 +8,6 @@ from posts.data.post_data import PostData
 from posts.data.post_entry import PostEntry
 from posts.message.reaction_handler import ReactionContext, ReactionHandler, EmptyReactionHandler, \
     AddFavoriteReactionHandler
-from posts.post.abstract_post import AbstractPost
 
 
 class NextPageReactionHandler(ReactionHandler):
@@ -23,7 +22,7 @@ class PreviousPageReactionHandler(ReactionHandler):
         await ctx.post.update_message()
 
 
-class PageEmbedMessage(AbstractPost):
+class PageEmbedMessage(ABC):
     message: Message = None
     page: int = 0
     post_data: PostData = None
@@ -48,6 +47,12 @@ class PageEmbedMessage(AbstractPost):
 
         for reaction_emoji in self.reaction_handlers:
             await self.message.add_reaction(reaction_emoji)
+
+    async def on_reaction_add(self, reaction: Reaction, user: Union[Member, User]):
+        reaction_context = ReactionContext(reaction, user, self)
+
+        handler = self.reaction_handlers.get(reaction.emoji, EmptyReactionHandler())
+        await handler.on_reaction(reaction_context)
 
     async def update_message(self):
         page_content = self.get_current_page()

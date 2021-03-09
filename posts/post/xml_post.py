@@ -13,6 +13,7 @@ from util import util
 
 class XmlPost(Post):
     total_posts: int = 0
+    post_page: int = 0
 
     def __init__(self, ctx: Context, url: str, tags: str):
         super().__init__(ctx, url, tags)
@@ -26,10 +27,19 @@ class XmlPost(Post):
         await super().create_message()
 
     def fetch_post(self) -> PostData:
-        random_page = random.randint(0, self.total_posts - 1)
-        xml_post = fetch_xml_post(self.url, self.tags, random_page)
+        self.post_page = random.randint(0, self.total_posts - 1)
+        xml_post = fetch_xml_post(self.url, self.tags, self.post_page)
 
         return xml_post
+
+    def post_content(self) -> dict:
+        if self.post_data.is_animated():
+            return dict(content=self.post_data.to_text(), embed=None)
+
+        embed = self.post_data.to_embed()
+        embed.description = f'Post **{self.post_page}** of **{self.total_posts}**'
+
+        return dict(content=None, embed=embed)
 
 
 async def show_post(ctx: Context, tags: str, score: int, url: str, skip_score=False):
