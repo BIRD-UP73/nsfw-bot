@@ -15,7 +15,7 @@ class RandomPostReactionHandler(ReactionHandler):
         await ctx.post.message.edit(**ctx.post.post_content())
 
 
-class Post(ABC):
+class PostMessage(ABC):
     message: Message = None
     post_data: PostData = None
 

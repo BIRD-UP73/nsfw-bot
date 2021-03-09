@@ -7,16 +7,13 @@ from discord.ext.commands import Context, CommandError
 from posts.api.xml_api import send_request
 from posts.data.post_data import PostData
 from posts.data.xml_post_data import XmlPostData
-from posts.post.post import Post
+from posts.post.postmessage import PostMessage
 from util import util
 
 
-class XmlPost(Post):
+class XmlPostMessage(PostMessage):
     total_posts: int = 0
     post_page: int = 0
-
-    def __init__(self, ctx: Context, url: str, tags: str):
-        super().__init__(ctx, url, tags)
 
     async def create_message(self):
         self.total_posts = get_total_posts(self.url, self.tags)
@@ -46,7 +43,7 @@ async def show_post(ctx: Context, tags: str, score: int, url: str, skip_score=Fa
     if not skip_score:
         tags = util.parse_tags(tags, score)
 
-    post = XmlPost(ctx, url, tags)
+    post = XmlPostMessage(ctx, url, tags)
     await post.create_message()
 
 

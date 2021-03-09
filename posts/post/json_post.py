@@ -3,13 +3,13 @@ from discord.ext.commands import Context, CommandError
 from posts.api.json_api import send_json_request
 from posts.data.json_post_data import JsonPostData
 from posts.data.post_data import PostData
-from posts.post.post import Post
+from posts.post.postmessage import PostMessage
 from util import util
 
 danbooru_url = 'https://danbooru.donmai.us/posts.json'
 
 
-class JsonPost(Post):
+class JsonPostMessage(PostMessage):
     def fetch_post(self) -> PostData:
         resp_json = send_json_request(danbooru_url, self.tags)
 
@@ -23,5 +23,5 @@ async def show_post(ctx: Context, tags: str, score: int):
     if len(tags.split(' ')) < 2:
         tags = util.parse_tags(tags, score)
 
-    post = JsonPost(ctx, danbooru_url, tags)
+    post = JsonPostMessage(ctx, danbooru_url, tags)
     await post.create_message()
