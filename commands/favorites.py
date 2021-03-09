@@ -42,7 +42,7 @@ class FavoritesMessage(PageEmbedMessage):
         self.post_data = data.fetch_post()
 
         if self.post_data.is_animated():
-            return dict(content=self.post_data.to_content(), embed=None)
+            return dict(content=self.post_data.to_text(), embed=None)
 
         embed = self.post_data.to_embed()
         embed.title = 'Favorites'
