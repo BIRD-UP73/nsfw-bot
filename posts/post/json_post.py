@@ -3,7 +3,7 @@ from discord.ext.commands import Context, CommandError
 from posts.api.json_api import send_json_request
 from posts.data.json_post_data import JsonPostData
 from posts.data.post_data import PostData
-from posts.post.postmessage import PostMessage
+from posts.post.post_message import PostMessage
 from util import util
 
 danbooru_url = 'https://danbooru.donmai.us/posts.json'

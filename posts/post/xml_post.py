@@ -7,7 +7,7 @@ from discord.ext.commands import Context, CommandError
 from posts.api.xml_api import send_request
 from posts.data.post_data import PostData
 from posts.data.xml_post_data import XmlPostData
-from posts.post.postmessage import PostMessage
+from posts.post.post_message import PostMessage
 from util import util
 
 
