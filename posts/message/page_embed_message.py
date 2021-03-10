@@ -1,4 +1,4 @@
-from abc import ABC, abstractmethod
+from abc import abstractmethod, ABC
 from typing import List, Dict, Union, Deque
 
 from discord import TextChannel, Member, User, Message, DMChannel, Reaction

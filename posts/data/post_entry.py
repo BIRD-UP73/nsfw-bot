@@ -39,4 +39,4 @@ class PostEntry:
         if len(et_post) == 0:
             return PostNoLongerExists()
 
-        return XmlPostData.from_xml(et_post[0], 1)
+        return XmlPostData.from_xml(et_post[0])

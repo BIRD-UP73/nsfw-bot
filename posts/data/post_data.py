@@ -23,11 +23,8 @@ class PostData:
     def is_animated(self) -> bool:
         return util.is_video(self.file_ext)
 
-    def to_content(self) -> dict:
-        if self.is_animated():
-            return dict(content=self.file_url, embed=None)
-
-        return dict(content=None, embed=self.to_embed())
+    def to_text(self) -> str:
+        return self.file_url
 
     def to_embed(self) -> Embed:
         embed = Embed()

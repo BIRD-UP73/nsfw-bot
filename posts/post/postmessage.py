@@ -1,21 +1,21 @@
-from abc import ABC, abstractmethod
+from abc import abstractmethod, ABC
 from typing import Union
 
-from discord import Reaction, User, Message, DMChannel, TextChannel, Member
+from discord import User, Message, DMChannel, TextChannel, Member, Reaction
 from discord.ext.commands import Context, Bot
 
-from posts.data.post_data import PostData
-from posts.message.reaction_handler import ReactionHandler, ReactionContext, EmptyReactionHandler, \
-    DeleteMessageReactionHandler, AddFavoriteReactionHandler
+from posts.data.post_data import PostData, PostHasDisallowedTags
+from posts.message.reaction_handler import ReactionHandler, ReactionContext, \
+    DeleteMessageReactionHandler, AddFavoriteReactionHandler, EmptyReactionHandler
 
 
 class RandomPostReactionHandler(ReactionHandler):
     async def handle_reaction(self, ctx: ReactionContext):
-        ctx.post.post_data = ctx.post.fetch_post()
-        await ctx.post.message.edit(**ctx.post.post_data.to_content())
+        ctx.post.post_data = ctx.post.get_post()
+        await ctx.post.message.edit(**ctx.post.post_content())
 
 
-class AbstractPost(ABC):
+class PostMessage(ABC):
     message: Message = None
     post_data: PostData = None
 
@@ -36,8 +36,8 @@ class AbstractPost(ABC):
         """
         Creates a message with the post, and adds reaction listeners
         """
-        self.post_data = self.fetch_post()
-        self.message = await self.channel.send(**self.post_data.to_content())
+        self.post_data = self.get_post()
+        self.message = await self.channel.send(**self.post_content())
 
         self.bot.add_listener(self.on_reaction_add)
 
@@ -57,8 +57,22 @@ class AbstractPost(ABC):
         hist_cog = self.bot.get_cog('PostHist')
         hist_cog.add_to_history(self.channel, self.url, post_data.post_id)
 
+    def post_content(self) -> dict:
+        if self.post_data.is_animated():
+            return dict(content=self.post_data.to_text(), embed=None)
+
+        return dict(content=None, embed=self.post_data.to_embed())
+
     def get_data(self):
         return self
+
+    def get_post(self) -> PostData:
+        post_data = self.fetch_post()
+        if post_data.has_disallowed_tags():
+            return PostHasDisallowedTags()
+
+        self.update_hist(post_data)
+        return post_data
 
     @abstractmethod
     def fetch_post(self) -> PostData:
