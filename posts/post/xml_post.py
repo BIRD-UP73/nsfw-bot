@@ -25,9 +25,7 @@ class XmlPostMessage(PostMessage):
 
     def fetch_post(self) -> PostData:
         self.post_page = random.randint(0, self.total_posts - 1)
-        xml_post = fetch_xml_post(self.url, self.tags, self.post_page)
-
-        return xml_post
+        return fetch_xml_post(self.url, self.tags, self.post_page)
 
     def post_content(self) -> dict:
         if self.post_data.is_animated():
