@@ -8,9 +8,9 @@ def json_post_by_id(base_url: str, post_id: int) -> dict:
     return resp.json()
 
 
-def send_json_request(url: str, tags: str, random: bool = True) -> dict:
+def send_json_request(url: str, tags: str, limit: int = 1, random: bool = True) -> dict:
     params = {
-        'limit': '1',
+        'limit': limit,
         'random': random,
         'tags': tags
     }
