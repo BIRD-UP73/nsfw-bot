@@ -10,7 +10,7 @@ from util.url_util import short_to_long
 
 
 class PostEntry:
-    post_data: PostData
+    post_data: PostData = None
 
     def __init__(self, url: str, post_id: int, saved_at: datetime):
         self.url: str = url
@@ -29,7 +29,8 @@ class PostEntry:
         if json_post.get('success') is False:
             return PostNoLongerExists()
 
-        return JsonPostData(**json_post)
+        self.post_data = JsonPostData(**json_post)
+        return self.post_data
 
     def get_xml_post(self) -> PostData:
         long_url = short_to_long(self.url)
@@ -39,4 +40,5 @@ class PostEntry:
         if len(et_post) == 0:
             return PostNoLongerExists()
 
-        return XmlPostData.from_xml(et_post[0])
+        self.post_data = XmlPostData.from_xml(et_post[0])
+        return self.post_data

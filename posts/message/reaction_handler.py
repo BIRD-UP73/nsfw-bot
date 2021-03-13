@@ -68,11 +68,11 @@ class DeleteMessageReactionHandler(ReactionHandler):
 
 class AddFavoriteReactionHandler(ReactionHandler):
     async def handle_reaction(self, ctx: ReactionContext):
-        data = ctx.post.get_data()
-        post_data = ctx.post.post_data
+        fetcher = ctx.post.fetcher
+        post_data = ctx.post.fetcher.post_data
 
-        if post_data.is_error() or post_repository.exists(ctx.user, data.url, post_data.post_id):
+        if post_data.is_error() or post_repository.exists(ctx.user, fetcher.url, post_data.post_id):
             return
 
-        post_repository.store_favorite(ctx.user, data.url, post_data.post_id)
+        post_repository.store_favorite(ctx.user, fetcher.url, post_data.post_id)
         await ctx.post.channel.send(f'{ctx.user.mention}, successfully stored favorite.')

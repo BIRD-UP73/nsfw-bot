@@ -6,32 +6,43 @@ from discord.ext.commands import Context, CommandError
 from posts.api.xml_api import send_request
 from posts.data.post_data import PostData, PostNoLongerExists
 from posts.data.xml_post_data import XmlPostData
+from posts.post.post_fetcher import PostMessageFetcher
 from posts.post.post_message import PostMessage
 from util import util
 
 
-class XmlPostMessage(PostMessage):
-    total_posts: int = 0
+class XmlPostMessageFetcher(PostMessageFetcher):
     post_page: int = 0
+    total_posts = 0
 
-    async def create_message(self):
+    def fetch_total_pages(self):
         self.total_posts = get_total_posts(self.url, self.tags)
 
         if self.total_posts == 0:
             raise CommandError(f'No posts found for {self.tags}')
 
-        await super().create_message()
-
     def fetch_post(self) -> PostData:
         self.post_page = random.randint(0, self.total_posts - 1)
-        return fetch_xml_post(self.url, self.tags, self.post_page)
+        self.post_data = fetch_xml_post(self.url, self.tags, self.post_page)
+        return self.post_data
+
+
+class XmlPostMessage(PostMessage):
+    fetcher: XmlPostMessageFetcher
+
+    async def create_message(self):
+        self.fetcher.fetch_total_pages()
+        self.get_post()
+        await super().create_message()
 
     def post_content(self) -> dict:
-        if self.post_data.is_animated():
-            return dict(content=self.post_data.to_text(), embed=None)
+        post_data = self.fetcher.post_data
 
-        embed = self.post_data.to_embed()
-        embed.description = f'Post **{self.post_page}** of **{self.total_posts}**'
+        if post_data.is_animated():
+            return dict(content=post_data.to_text(), embed=None)
+
+        embed = post_data.to_embed()
+        embed.description = f'Post **{self.fetcher.post_page}** of **{self.fetcher.total_posts}**'
 
         return dict(content=None, embed=embed)
 
@@ -40,7 +51,8 @@ async def show_post(ctx: Context, tags: str, score: int, url: str, skip_score=Fa
     if not skip_score:
         tags = util.parse_tags(tags, score)
 
-    post = XmlPostMessage(ctx, url, tags)
+    fetcher = XmlPostMessageFetcher(url, tags)
+    post = XmlPostMessage(ctx, fetcher)
     await post.create_message()
 
 

@@ -9,26 +9,27 @@ from discord.ext.commands import Context, is_nsfw
 from posts.data.post_entry import PostEntry
 from posts.message.page_embed_message import PageEmbedMessage
 from posts.message.reaction_handler import DeleteMessageReactionHandler
+from posts.post.post_fetcher import PostEntryFetcher
 from util.url_util import parse_url
 
 
 class PostHistMessage(PageEmbedMessage):
-    def __init__(self, ctx: Context, data: Deque[PostEntry]):
-        super().__init__(ctx, data)
+    def __init__(self, ctx: Context, fetcher: PostEntryFetcher):
+        super().__init__(ctx, fetcher)
         self.reaction_handlers['🗑️'] = DeleteMessageReactionHandler()
 
     def get_current_page(self) -> dict:
-        entry_data = self.get_data()
-        self.post_data = entry_data.fetch_post()
+        post_data = self.fetcher.fetch_post()
 
-        if self.post_data.is_animated():
-            return self.post_data.to_content()
+        if post_data.is_animated():
+            return dict(content=post_data.to_text(), embed=None)
 
-        embed = self.post_data.to_embed()
+        embed = post_data.to_embed()
         embed.title = 'History'
-        embed.description = f'Page **{self.page + 1}** of **{len(self.data)}**'
+        embed.description = f'Page **{self.fetcher.page + 1}** of **{len(self.fetcher.entries)}**'
 
-        embed.timestamp = entry_data.saved_at
+        entry = self.fetcher.current_entry()
+        embed.timestamp = entry.saved_at
 
         return dict(content=None, embed=embed)
 
@@ -51,7 +52,8 @@ class PostHist(commands.Cog):
         if not channel_hist:
             return await ctx.send('No history')
 
-        post_hist_message = PostHistMessage(ctx, channel_hist)
+        post_hist_fetcher = PostEntryFetcher(list(channel_hist))
+        post_hist_message = PostHistMessage(ctx, post_hist_fetcher)
         await post_hist_message.create_message()
 
     def add_to_history(self, channel: Union[TextChannel, DMChannel], url: str, post_id: int):
