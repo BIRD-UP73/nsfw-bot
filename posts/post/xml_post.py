@@ -1,5 +1,4 @@
 import random
-from xml.dom.minidom import Element
 from xml.etree import ElementTree
 
 from discord.ext.commands import Context, CommandError
