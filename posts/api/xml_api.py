@@ -1,7 +1,7 @@
 import requests
 
 
-def get_post_by_id(url, post_id):
+def get_post_by_id(url: str, post_id: int) -> str:
     params = {
         'page': 'dapi',
         's': 'post',
