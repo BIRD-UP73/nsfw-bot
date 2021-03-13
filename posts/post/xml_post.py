@@ -58,7 +58,7 @@ def get_total_posts(url: str, tags: str) -> int:
     return 0
 
 
-def fetch_xml_post(url: str, tags: str, page: int) -> Element:
+def fetch_xml_post(url: str, tags: str, page: int) -> PostData:
     resp_text = send_request(url, 1, tags, page)
     posts = ElementTree.fromstring(resp_text)
 
