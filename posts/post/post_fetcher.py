@@ -25,6 +25,10 @@ class PostMessageFetcher(PostFetcher, ABC):
         self.url: str = url
         self.tags: str = tags
 
+    @abstractmethod
+    def fetch_post(self):
+        pass
+
 
 class JsonPostMessageFetcher(PostMessageFetcher):
     def fetch_post(self) -> PostData:
@@ -36,7 +40,8 @@ class JsonPostMessageFetcher(PostMessageFetcher):
         if len(resp_json) == 0:
             raise CommandError(f'No posts found for {self.tags}')
 
-        return JsonPostData(**resp_json[0])
+        self.post_data = JsonPostData(**resp_json[0])
+        return self.post_data
 
 
 class PostEntryFetcher(PostFetcher):

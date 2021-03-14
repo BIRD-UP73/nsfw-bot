@@ -1,5 +1,5 @@
-from abc import ABC
-from typing import Union
+from abc import ABC, abstractmethod
+from typing import Union, Dict
 
 from discord import User, Message, DMChannel, TextChannel, Member, Reaction
 from discord.ext.commands import Context, Bot
@@ -16,21 +16,13 @@ class RandomPostReactionHandler(ReactionHandler):
         await ctx.post.message.edit(**ctx.post.post_content())
 
 
-class PostMessage(ABC):
+class Post(ABC):
+    reaction_handlers: Dict[str, ReactionHandler] = {}
     message: Message = None
-    post_data: PostMessageFetcher = None
 
-    reaction_handlers = {
-        '🔁': RandomPostReactionHandler(author_only=True),
-        '🗑️': DeleteMessageReactionHandler(),
-        '⭐': AddFavoriteReactionHandler()
-    }
-
-    def __init__(self, ctx: Context, fetcher: PostMessageFetcher):
+    def __init__(self, ctx: Context):
         self.bot: Bot = ctx.bot
         self.channel: Union[TextChannel, DMChannel] = ctx.channel
-        self.author: Union[User, Member] = ctx.author
-        self.fetcher: PostMessageFetcher = fetcher
 
     async def create_message(self):
         """
@@ -49,20 +41,50 @@ class PostMessage(ABC):
         handler = self.reaction_handlers.get(reaction.emoji, EmptyReactionHandler())
         await handler.on_reaction(reaction_context)
 
-    def update_hist(self, post_data):
-        """
-        Adds the current post to the post history
-        """
-        hist_cog = self.bot.get_cog('PostHist')
-        hist_cog.add_to_history(self.channel, self.fetcher.url, post_data.post_id)
+    async def update_message(self):
+        await self.message.edit(**self.post_content())
 
     def post_content(self) -> dict:
+        """
+        Returns the content of the current page of the embed
+        This should be in the form of a :type mapping: dict
+        with both a 'content' and an 'embed' field
+
+        :return: the content of the page
+        """
         post_data = self.get_post()
 
         if post_data.is_animated():
             return dict(content=post_data.to_text(), embed=None)
 
         return dict(content=None, embed=post_data.to_embed())
+
+    @abstractmethod
+    def get_post(self) -> PostData:
+        pass
+
+
+class PostMessage(Post, ABC):
+    message: Message = None
+    post_data: PostMessageFetcher = None
+
+    reaction_handlers = {
+        '🔁': RandomPostReactionHandler(author_only=True),
+        '🗑️': DeleteMessageReactionHandler(),
+        '⭐': AddFavoriteReactionHandler()
+    }
+
+    def __init__(self, ctx: Context, fetcher: PostMessageFetcher):
+        super().__init__(ctx)
+        self.author: Union[User, Member] = ctx.author
+        self.fetcher: PostMessageFetcher = fetcher
+
+    def update_hist(self, post_data):
+        """
+        Adds the current post to the post history
+        """
+        hist_cog = self.bot.get_cog('PostHist')
+        hist_cog.add_to_history(self.channel, self.fetcher.url, post_data.post_id)
 
     def get_data(self):
         return self

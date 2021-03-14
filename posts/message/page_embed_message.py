@@ -1,12 +1,13 @@
 from abc import ABC
 from typing import Dict, Union
 
-from discord import TextChannel, Member, User, Message, DMChannel, Reaction
-from discord.ext.commands import Context, Bot
+from discord import Member, User, Message
+from discord.ext.commands import Context
 
-from posts.message.reaction_handler import ReactionContext, ReactionHandler, EmptyReactionHandler, \
-    AddFavoriteReactionHandler
+from posts.data.post_data import PostData
+from posts.message.reaction_handler import ReactionContext, ReactionHandler, AddFavoriteReactionHandler
 from posts.post.post_fetcher import PostEntryFetcher
+from posts.post.post_message import Post
 
 
 class NextPageReactionHandler(ReactionHandler):
@@ -23,7 +24,7 @@ class PreviousPageReactionHandler(ReactionHandler):
         await ctx.post.update_message()
 
 
-class PageEmbedMessage(ABC):
+class PageEmbedMessage(Post, ABC):
     message: Message = None
 
     reaction_handlers: Dict[str, ReactionHandler] = {
@@ -33,36 +34,9 @@ class PageEmbedMessage(ABC):
     }
 
     def __init__(self, ctx: Context, fetcher: PostEntryFetcher):
-        self.bot: Bot = ctx.bot
+        super().__init__(ctx)
         self.author: Union[User, Member] = ctx.author
-        self.channel: Union[DMChannel, TextChannel] = ctx.channel
         self.fetcher = fetcher
 
-    async def create_message(self):
-        page_content = self.get_current_page()
-        self.message = await self.channel.send(**page_content)
-
-        self.bot.add_listener(self.on_reaction_add)
-
-        for reaction_emoji in self.reaction_handlers:
-            await self.message.add_reaction(reaction_emoji)
-
-    async def on_reaction_add(self, reaction: Reaction, user: Union[Member, User]):
-        reaction_context = ReactionContext(reaction, user, self)
-
-        handler = self.reaction_handlers.get(reaction.emoji, EmptyReactionHandler())
-        await handler.on_reaction(reaction_context)
-
-    async def update_message(self):
-        page_content = self.get_current_page()
-        await self.message.edit(**page_content)
-
-    def get_current_page(self) -> dict:
-        """
-        Returns the content of the current page of the embed
-        This should be in the form of a :type mapping: dict
-        with both a 'content' and an 'embed' field
-
-        :return: the content of the page
-        """
+    def get_post(self) -> PostData:
         return self.fetcher.fetch_post()
