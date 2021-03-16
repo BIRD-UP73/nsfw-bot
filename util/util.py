@@ -4,6 +4,10 @@ disallowed_tags = ['loli', 'shota', 'underage']
 max_field_length = 1024
 
 
+def is_valid_field_text(text: str):
+    return text is not None and len(text) < max_field_length
+
+
 def is_video(file_ext: str) -> bool:
     return file_ext not in img_fmts
 

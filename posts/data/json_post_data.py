@@ -14,11 +14,11 @@ class JsonPostData(PostData):
     def to_embed(self) -> Embed:
         embed = super().to_embed()
 
-        if self.copyright_tag and len(self.copyright_tag) < util.max_field_length:
-            embed.add_field(name='Copyright', value=self.copyright_tag)
-        if self.character_tag and len(self.character_tag) < util.max_field_length:
-            embed.add_field(name='Characters', value=self.character_tag)
-        if self.artist_tag and len(self.artist_tag) < util.max_field_length:
+        if util.is_valid_field_text(self.artist_tag):
             embed.add_field(name='Artist', value=self.artist_tag)
+        if util.is_valid_field_text(self.character_tag):
+            embed.add_field(name='Characters', value=self.character_tag)
+        if util.is_valid_field_text(self.copyright_tag):
+            embed.add_field(name='Copyright', value=self.copyright_tag)
 
         return embed
