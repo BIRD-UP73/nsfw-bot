@@ -10,7 +10,7 @@ from util.url_util import short_to_long
 
 
 class PostEntry:
-    post_data: PostData
+    post_data: PostData = None
 
     def __init__(self, url: str, post_id: int, saved_at: datetime):
         self.url: str = url
@@ -18,9 +18,15 @@ class PostEntry:
         self.saved_at: datetime = saved_at
 
     def fetch_post(self) -> PostData:
+        if self.post_data:
+            return self.post_data
+
         if 'danbooru' in self.url:
-            return self.get_json_post()
-        return self.get_xml_post()
+            self.post_data = self.get_json_post()
+        else:
+            self.post_data = self.get_xml_post()
+
+        return self.post_data
 
     def get_json_post(self) -> PostData:
         long_url = short_to_long(self.url)
