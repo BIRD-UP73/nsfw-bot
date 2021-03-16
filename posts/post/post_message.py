@@ -50,12 +50,12 @@ class PostMessage(ABC):
         handler = self.reaction_handlers.get(reaction.emoji, EmptyReactionHandler())
         await handler.on_reaction(reaction_context)
 
-    def update_hist(self, post_data):
+    def update_hist(self, post_data: PostData):
         """
         Adds the current post to the post history
         """
         hist_cog = self.bot.get_cog('PostHist')
-        hist_cog.add_to_history(self.channel, self.url, post_data.post_id)
+        hist_cog.add_to_history(self.channel, self.url, post_data)
 
     def post_content(self) -> dict:
         if self.post_data.is_animated():

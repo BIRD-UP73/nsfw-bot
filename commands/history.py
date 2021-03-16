@@ -6,25 +6,26 @@ from discord import DMChannel, TextChannel
 from discord.ext import commands
 from discord.ext.commands import Context, is_nsfw
 
+from posts.data.post_data import PostData
 from posts.data.post_entry import PostEntry
 from posts.message.page_embed_message import PageEmbedMessage
 from posts.message.reaction_handler import DeleteMessageReactionHandler
 from util.url_util import parse_url
 
 
-class PostHistMessage(PageEmbedMessage):
+class HistoryMessage(PageEmbedMessage):
     def __init__(self, ctx: Context, data: Deque[PostEntry]):
         super().__init__(ctx, data)
         self.reaction_handlers['🗑️'] = DeleteMessageReactionHandler()
 
     def get_current_page(self) -> dict:
         entry_data = self.get_data()
-        self.post_data = entry_data.fetch_post()
+        post_data = entry_data.fetch_post()
 
-        if self.post_data.is_animated():
-            return self.post_data.to_content()
+        if post_data.is_animated():
+            return dict(content=post_data.to_text(), embed=None)
 
-        embed = self.post_data.to_embed()
+        embed = post_data.to_embed()
         embed.title = 'History'
         embed.description = f'Page **{self.page + 1}** of **{len(self.data)}**'
 
@@ -51,12 +52,13 @@ class PostHist(commands.Cog):
         if not channel_hist:
             return await ctx.send('No history')
 
-        post_hist_message = PostHistMessage(ctx, channel_hist)
+        post_hist_message = HistoryMessage(ctx, channel_hist)
         await post_hist_message.create_message()
 
-    def add_to_history(self, channel: Union[TextChannel, DMChannel], url: str, post_id: int):
+    def add_to_history(self, channel: Union[TextChannel, DMChannel], url: str, post_data: PostData):
         self.post_hist.setdefault(channel.id, deque(maxlen=self.max_len))
 
         short_url = parse_url(url)
-        post_hist_entry = PostEntry(short_url, post_id, datetime.now())
+        post_hist_entry = PostEntry(short_url, post_data.post_id, datetime.now(), post_data)
+
         self.post_hist[channel.id].append(post_hist_entry)

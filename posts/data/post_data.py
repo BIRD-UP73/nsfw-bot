@@ -12,7 +12,7 @@ class PostData:
         self.score: str = kwargs.get('score')
         self.source: str = kwargs.get('source')
         self.tags: str = kwargs.get('tags') or kwargs.get('tag_string')
-        self.post_id: str = kwargs.get('id')
+        self.post_id: int = int(kwargs.get('id'))
 
     def is_error(self) -> bool:
         return False

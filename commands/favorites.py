@@ -39,12 +39,12 @@ class FavoritesMessage(PageEmbedMessage):
 
     def get_current_page(self) -> dict:
         data = self.get_data()
-        self.post_data = data.fetch_post()
+        post_data = data.fetch_post()
 
-        if self.post_data.is_animated():
+        if post_data.is_animated():
             return dict(content=self.post_data.to_text(), embed=None)
 
-        embed = self.post_data.to_embed()
+        embed = post_data.to_embed()
         embed.title = 'Favorites'
         embed.description = f'Favorites for {self.user.mention}'
         embed.timestamp = data.saved_at

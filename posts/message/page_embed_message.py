@@ -25,7 +25,6 @@ class PreviousPageReactionHandler(ReactionHandler):
 class PageEmbedMessage(ABC):
     message: Message = None
     page: int = 0
-    post_data: PostData = None
 
     reaction_handlers: Dict[str, ReactionHandler] = {
         '⬅': PreviousPageReactionHandler(),
@@ -60,6 +59,11 @@ class PageEmbedMessage(ABC):
 
     def get_data(self) -> PostEntry:
         return self.data[self.page]
+
+    @property
+    def post_data(self) -> PostData:
+        entry_data = self.get_data()
+        return entry_data.fetch_post()
 
     @abstractmethod
     def get_current_page(self) -> dict:
