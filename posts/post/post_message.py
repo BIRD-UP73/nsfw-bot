@@ -55,7 +55,7 @@ class PostMessage(ABC):
         Adds the current post to the post history
         """
         hist_cog = self.bot.get_cog('PostHist')
-        hist_cog.add_to_history(self.channel, self.url, post_data.post_id)
+        hist_cog.add_to_history(self.channel, self.url, post_data)
 
     def post_content(self) -> dict:
         if self.post_data.is_animated():
