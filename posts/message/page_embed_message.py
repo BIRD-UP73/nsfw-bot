@@ -25,7 +25,6 @@ class PreviousPageReactionHandler(ReactionHandler):
 class PageEmbedMessage(ABC):
     message: Message = None
     page: int = 0
-    post_data: PostData = None
 
     reaction_handlers: Dict[str, ReactionHandler] = {
         '⬅': PreviousPageReactionHandler(),
