@@ -59,7 +59,6 @@ class PostHist(commands.Cog):
         self.post_hist.setdefault(channel.id, deque(maxlen=self.max_len))
 
         short_url = parse_url(url)
-        post_hist_entry = PostEntry(short_url, int(post_data.post_id), datetime.now())
-        post_hist_entry.post_data = post_data
+        post_hist_entry = PostEntry(short_url, post_data.post_id, datetime.now(), post_data)
 
         self.post_hist[channel.id].append(post_hist_entry)

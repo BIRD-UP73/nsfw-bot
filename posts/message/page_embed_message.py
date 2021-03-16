@@ -61,6 +61,11 @@ class PageEmbedMessage(ABC):
     def get_data(self) -> PostEntry:
         return self.data[self.page]
 
+    @property
+    def post_data(self) -> PostData:
+        entry_data = self.get_data()
+        return entry_data.fetch_post()
+
     @abstractmethod
     def get_current_page(self) -> dict:
         """

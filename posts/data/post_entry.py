@@ -10,12 +10,11 @@ from util.url_util import short_to_long
 
 
 class PostEntry:
-    post_data: PostData = None
-
-    def __init__(self, url: str, post_id: int, saved_at: datetime):
+    def __init__(self, url: str, post_id: int, saved_at: datetime, post_data: PostData = None):
         self.url: str = url
         self.post_id: int = post_id
         self.saved_at: datetime = saved_at
+        self.post_data = post_data
 
     def fetch_post(self) -> PostData:
         if self.post_data:
