@@ -3,7 +3,7 @@ import configparser
 from discord.ext import commands
 
 from commands.cogs.listeners import Listeners
-from commands.cogs.posts_cog import XmlPosts
+from commands.cogs.posts_cog import PostCog
 from commands.favorites import Favorites
 from commands.github import github
 from commands.help import CustomHelpCommand
@@ -24,7 +24,7 @@ bot = commands.Bot(
     help_command=CustomHelpCommand()
 )
 
-bot.add_cog(XmlPosts())
+bot.add_cog(PostCog())
 bot.add_cog(PostHist())
 bot.add_cog(Listeners(bot))
 bot.add_cog(Favorites())

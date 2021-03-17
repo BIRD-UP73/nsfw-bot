@@ -53,7 +53,7 @@ def get_data(command_name: str):
     return data_dict
 
 
-class XmlPosts(commands.Cog):
+class PostCog(commands.Cog):
     @commands.command(**get_data('rule34'))
     async def rule34(self, ctx: Context, score: Optional[int] = 50, *, tags: str):
         await posts.post.xml_post.show_post(ctx, tags, score, get_long_url(ctx.command.name))
