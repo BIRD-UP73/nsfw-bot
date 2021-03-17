@@ -9,6 +9,7 @@ from discord.ext.commands import Context, is_nsfw
 from posts.data.post_data import PostData
 from posts.data.post_entry import PostEntry
 from posts.message.page_embed_message import PageEmbedMessage
+from posts.message.post_message_content import PostMessageContent
 from posts.message.reaction_handler import DeleteMessageReactionHandler
 from util.url_util import parse_url
 
@@ -18,20 +19,19 @@ class HistoryMessage(PageEmbedMessage):
         super().__init__(ctx, data)
         self.reaction_handlers['🗑️'] = DeleteMessageReactionHandler()
 
-    def get_current_page(self) -> dict:
+    def page_content(self) -> PostMessageContent:
         entry_data = self.get_data()
         post_data = entry_data.fetch_post()
 
-        if post_data.is_animated():
-            return dict(content=post_data.to_text(), embed=None)
+        message_content = post_data.to_message_content()
 
-        embed = post_data.to_embed()
-        embed.title = 'History'
-        embed.description = f'Page **{self.page + 1}** of **{len(self.data)}**'
+        if message_content.embed:
+            message_content.embed.title = 'History'
+            message_content.embed.description = f'Page **{self.page + 1}** of **{len(self.data)}**'
 
-        embed.timestamp = entry_data.saved_at
+            message_content.embed.timestamp = entry_data.saved_at
 
-        return dict(content=None, embed=embed)
+        return message_content
 
 
 class PostHist(commands.Cog):

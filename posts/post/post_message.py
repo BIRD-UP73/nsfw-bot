@@ -11,8 +11,7 @@ from posts.message.reaction_handler import ReactionHandler, ReactionContext, \
 
 class RandomPostReactionHandler(ReactionHandler):
     async def handle_reaction(self, ctx: ReactionContext):
-        ctx.post.post_data = ctx.post.get_post()
-        await ctx.post.message.edit(**ctx.post.post_content())
+        await ctx.post.update_message()
 
 
 class PostMessage(ABC):
@@ -37,12 +36,18 @@ class PostMessage(ABC):
         Creates a message with the post, and adds reaction listeners
         """
         self.post_data = self.get_post()
-        self.message = await self.channel.send(**self.post_content())
+
+        message_content = self.post_data.to_message_content()
+        self.message = await self.channel.send(**message_content.to_dict())
 
         self.bot.add_listener(self.on_reaction_add)
 
         for emoji in self.reaction_handlers:
             await self.message.add_reaction(emoji)
+
+    async def update_message(self):
+        self.post_data = self.get_post()
+        await self.message.edit(**self.post_data.to_message_content().to_dict())
 
     async def on_reaction_add(self, reaction: Reaction, user: Union[Member, User]):
         reaction_context = ReactionContext(reaction, user, self)
@@ -56,12 +61,6 @@ class PostMessage(ABC):
         """
         hist_cog = self.bot.get_cog('PostHist')
         hist_cog.add_to_history(self.channel, self.url, post_data)
-
-    def post_content(self) -> dict:
-        if self.post_data.is_animated():
-            return dict(content=self.post_data.to_text(), embed=None)
-
-        return dict(content=None, embed=self.post_data.to_embed())
 
     def get_data(self):
         return self

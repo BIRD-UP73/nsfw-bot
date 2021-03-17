@@ -6,6 +6,7 @@ from discord.ext.commands import Context, Bot
 
 from posts.data.post_data import PostData
 from posts.data.post_entry import PostEntry
+from posts.message.post_message_content import PostMessageContent
 from posts.message.reaction_handler import ReactionContext, ReactionHandler, EmptyReactionHandler, \
     AddFavoriteReactionHandler
 
@@ -39,8 +40,8 @@ class PageEmbedMessage(ABC):
         self.data: Union[List[PostEntry], Deque[PostEntry]] = data
 
     async def create_message(self):
-        page_content = self.get_current_page()
-        self.message = await self.channel.send(**page_content)
+        page_content = self.page_content()
+        self.message = await self.channel.send(**page_content.to_dict())
 
         self.bot.add_listener(self.on_reaction_add)
 
@@ -54,8 +55,8 @@ class PageEmbedMessage(ABC):
         await handler.on_reaction(reaction_context)
 
     async def update_message(self):
-        page_content = self.get_current_page()
-        await self.message.edit(**page_content)
+        page_content = self.page_content()
+        await self.message.edit(**page_content.to_dict())
 
     def get_data(self) -> PostEntry:
         return self.data[self.page]
@@ -66,7 +67,7 @@ class PageEmbedMessage(ABC):
         return entry_data.fetch_post()
 
     @abstractmethod
-    def get_current_page(self) -> dict:
+    def page_content(self) -> PostMessageContent:
         """
         Returns the content of the current page of the embed
         This should be in the form of a :type mapping: dict
