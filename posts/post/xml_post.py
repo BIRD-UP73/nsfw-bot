@@ -29,8 +29,11 @@ class XmlPostMessage(PostMessage):
         return fetch_xml_post(self.url, self.tags, self.post_page)
 
     def post_content(self) -> PostMessageContent:
+        self.post_data = self.get_post()
         message_content = self.post_data.to_message_content()
-        message_content.description = f'Post **{self.post_page}** of **{self.total_posts}**'
+
+        if message_content.embed:
+            message_content.embed.description = f'Post **{self.post_page}** of **{self.total_posts}**'
 
         return message_content
 

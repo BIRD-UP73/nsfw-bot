@@ -5,6 +5,7 @@ from discord import User, Message, DMChannel, TextChannel, Member, Reaction
 from discord.ext.commands import Context, Bot
 
 from posts.data.post_data import PostData, PostHasDisallowedTags
+from posts.message.post_message_content import PostMessageContent
 from posts.message.reaction_handler import ReactionHandler, ReactionContext, \
     DeleteMessageReactionHandler, AddFavoriteReactionHandler, EmptyReactionHandler
 
@@ -35,10 +36,7 @@ class PostMessage(ABC):
         """
         Creates a message with the post, and adds reaction listeners
         """
-        self.post_data = self.get_post()
-
-        message_content = self.post_data.to_message_content()
-        self.message = await self.channel.send(**message_content.to_dict())
+        self.message = await self.channel.send(**self.post_content().to_dict())
 
         self.bot.add_listener(self.on_reaction_add)
 
@@ -46,8 +44,7 @@ class PostMessage(ABC):
             await self.message.add_reaction(emoji)
 
     async def update_message(self):
-        self.post_data = self.get_post()
-        await self.message.edit(**self.post_data.to_message_content().to_dict())
+        await self.message.edit(**self.post_content().to_dict())
 
     async def on_reaction_add(self, reaction: Reaction, user: Union[Member, User]):
         reaction_context = ReactionContext(reaction, user, self)
@@ -64,6 +61,10 @@ class PostMessage(ABC):
 
     def get_data(self):
         return self
+
+    def post_content(self) -> PostMessageContent:
+        self.post_data = self.get_post()
+        return self.post_data.to_message_content()
 
     def get_post(self) -> PostData:
         post_data = self.fetch_post()
