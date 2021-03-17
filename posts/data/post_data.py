@@ -1,6 +1,7 @@
 from dateutil import parser
 from discord import Embed, Color
 
+from posts.message.post_message_content import PostMessageContent
 from util import util
 
 
@@ -23,10 +24,7 @@ class PostData:
     def is_animated(self) -> bool:
         return util.is_video(self.file_ext)
 
-    def to_text(self) -> str:
-        return self.file_url
-
-    def to_embed(self) -> Embed:
+    def to_message_content(self) -> PostMessageContent:
         embed = Embed()
         embed.colour = Color.green()
 
@@ -40,7 +38,7 @@ class PostData:
         if self.file_url:
             embed.set_image(url=self.file_url)
 
-        return embed
+        return PostMessageContent(self.is_animated(), self.file_url, embed)
 
 
 class PostError(PostData):

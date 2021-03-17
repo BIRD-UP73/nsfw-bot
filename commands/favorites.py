@@ -7,6 +7,7 @@ from discord.ext.commands import Cog, Context, is_nsfw
 from db import post_repository
 from posts.data.post_entry import PostEntry
 from posts.message.page_embed_message import PageEmbedMessage
+from posts.message.post_message_content import PostMessageContent
 from posts.message.reaction_handler import ReactionHandler, ReactionContext
 
 
@@ -37,21 +38,19 @@ class FavoritesMessage(PageEmbedMessage):
         self.author = ctx.author
         self.reaction_handlers['🗑️'] = RemoveFavoriteReactionHandler()
 
-    def get_current_page(self) -> dict:
+    def page_content(self) -> PostMessageContent:
         data = self.get_data()
         post_data = data.fetch_post()
 
-        if post_data.is_animated():
-            return dict(content=self.post_data.to_text(), embed=None)
+        message_content = post_data.to_message_content()
 
-        embed = post_data.to_embed()
-        embed.title = 'Favorites'
-        embed.description = f'Favorites for {self.user.mention}'
-        embed.timestamp = data.saved_at
+        if message_content.embed:
+            message_content.embed.title = 'Favorites'
+            message_content.embed.description = f'Favorites for {self.user.mention}'
+            message_content.embed.timestamp = data.saved_at
+            message_content.embed.set_footer(text=f'Page {self.page + 1} of {len(self.data)}')
 
-        embed.set_footer(text=f'Page {self.page + 1} of {len(self.data)}')
-
-        return dict(content=None, embed=embed)
+        return message_content
 
     async def clear_message(self):
         self.bot.remove_listener(self.on_reaction_add)

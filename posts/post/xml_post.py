@@ -7,6 +7,7 @@ from discord.ext.commands import Context, CommandError
 from posts.api.xml_api import send_request
 from posts.data.post_data import PostData, PostNoLongerExists
 from posts.data.xml_post_data import XmlPostData
+from posts.message.post_message_content import PostMessageContent
 from posts.post.post_message import PostMessage
 from util import util
 
@@ -27,14 +28,14 @@ class XmlPostMessage(PostMessage):
         self.post_page = random.randint(0, self.total_posts - 1)
         return fetch_xml_post(self.url, self.tags, self.post_page)
 
-    def post_content(self) -> dict:
-        if self.post_data.is_animated():
-            return dict(content=self.post_data.to_text(), embed=None)
+    def post_content(self) -> PostMessageContent:
+        self.post_data = self.get_post()
+        message_content = self.post_data.to_message_content()
 
-        embed = self.post_data.to_embed()
-        embed.description = f'Post **{self.post_page}** of **{self.total_posts}**'
+        if message_content.embed:
+            message_content.embed.description = f'Post **{self.post_page}** of **{self.total_posts}**'
 
-        return dict(content=None, embed=embed)
+        return message_content
 
 
 async def show_post(ctx: Context, tags: str, score: int, url: str, skip_score=False):
