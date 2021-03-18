@@ -1,6 +1,6 @@
-from typing import List
+from typing import List, Union
 
-from discord import User
+from discord import User, Reaction, Member
 from discord.ext import commands
 from discord.ext.commands import Cog, Context, is_nsfw
 
@@ -8,35 +8,48 @@ from db import post_repository
 from posts.data.post_entry import PostEntry
 from posts.message.page_embed_message import PageEmbedMessage
 from posts.message.post_message_content import PostMessageContent
-from posts.message.reaction_handler import ReactionHandler, ReactionContext
-
-
-class RemoveFavoriteReactionHandler(ReactionHandler):
-    async def handle_reaction(self, ctx: ReactionContext):
-        if ctx.user != ctx.post.user:
-            return
-
-        data = ctx.post.get_data()
-
-        post_repository.remove_favorite(ctx.user, data.url, data.post_id)
-        await ctx.post.channel.send(f'{ctx.user.mention}, removed favorite successfully.')
-        ctx.post.data.remove(data)
-
-        if len(ctx.post.data) == 0:
-            return await ctx.post.clear_message()
-
-        if ctx.post.page == len(ctx.post.data):
-            ctx.post.page = 0
-
-        await ctx.post.update_message()
 
 
 class FavoritesMessage(PageEmbedMessage):
     def __init__(self, ctx: Context, user: User, data: List[PostEntry]):
         super().__init__(ctx, data)
         self.user = user
-        self.author = ctx.author
-        self.reaction_handlers['🗑️'] = RemoveFavoriteReactionHandler()
+
+    async def add_favorite(self, user):
+        if user == self.author:
+            return True
+
+        await super().add_favorite(user)
+        return True
+
+    async def handle_reaction(self, reaction: Reaction, user: Union[Member, User]) -> bool:
+        result = await super().handle_reaction(reaction, user)
+
+        if result:
+            return result
+
+        if reaction.emoji == '🗑️':
+            await self.remove_favorite(user)
+            return True
+
+    async def remove_favorite(self, user: User):
+        if user != self.user:
+            return
+
+        data = self.get_data()
+
+        post_repository.remove_favorite(user, data.url, data.post_id)
+        await self.channel.send(f'{user.mention}, removed favorite successfully.')
+        self.data.remove(data)
+
+        if len(self.data) == 0:
+            return await self.clear_message()
+
+        if self.page == len(self.data):
+            self.page = 0
+
+        await self.update_message()
+        return False
 
     def page_content(self) -> PostMessageContent:
         data = self.get_data()

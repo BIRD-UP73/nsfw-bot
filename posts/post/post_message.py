@@ -1,56 +1,31 @@
-from abc import abstractmethod, ABC
-from typing import Union
+from abc import abstractmethod
+from datetime import datetime
+from typing import Union, Optional
 
-from discord import User, Message, DMChannel, TextChannel, Member, Reaction
-from discord.ext.commands import Context, Bot
+from discord import User, Member, Reaction
+from discord.ext.commands import Context
 
 from posts.data.post_data import PostData, PostHasDisallowedTags
+from posts.data.post_entry import PostEntry
 from posts.message.post_message_content import PostMessageContent
-from posts.message.reaction_handler import ReactionHandler, ReactionContext, \
-    DeleteMessageReactionHandler, AddFavoriteReactionHandler, EmptyReactionHandler
+from posts.message.reaction_handler import add_favorite
+from posts.post.abstract_post import AbstractPost
 
 
-class RandomPostReactionHandler(ReactionHandler):
-    async def handle_reaction(self, ctx: ReactionContext):
-        await ctx.post.update_message()
-
-
-class PostMessage(ABC):
-    message: Message = None
-    post_data: PostData = None
-
-    reaction_handlers = {
-        '🔁': RandomPostReactionHandler(author_only=True),
-        '🗑️': DeleteMessageReactionHandler(),
-        '⭐': AddFavoriteReactionHandler()
-    }
+class PostMessage(AbstractPost):
+    emojis = ['🔁', '⭐', '🗑️']
 
     def __init__(self, ctx: Context, url: str, tags: str):
-        self.bot: Bot = ctx.bot
-        self.channel: Union[TextChannel, DMChannel] = ctx.channel
-        self.author: Union[User, Member] = ctx.author
+        super().__init__(ctx)
         self.url: str = url
         self.tags: str = tags
-
-    async def create_message(self):
-        """
-        Creates a message with the post, and adds reaction listeners
-        """
-        self.message = await self.channel.send(**self.post_content().to_dict())
-
-        self.bot.add_listener(self.on_reaction_add)
-
-        for emoji in self.reaction_handlers:
-            await self.message.add_reaction(emoji)
+        self.post_data: Optional[PostData] = None
 
     async def update_message(self):
-        await self.message.edit(**self.post_content().to_dict())
-
-    async def on_reaction_add(self, reaction: Reaction, user: Union[Member, User]):
-        reaction_context = ReactionContext(reaction, user, self)
-
-        handler = self.reaction_handlers.get(reaction.emoji, EmptyReactionHandler())
-        await handler.on_reaction(reaction_context)
+        self.post_data = self.fetch_post()
+        post_content = self.post_data.to_message_content()
+        await self.message.edit(**post_content.to_dict())
+        return True
 
     def update_hist(self, post_data: PostData):
         """
@@ -59,12 +34,22 @@ class PostMessage(ABC):
         hist_cog = self.bot.get_cog('PostHist')
         hist_cog.add_to_history(self.channel, self.url, post_data)
 
-    def get_data(self):
-        return self
+    async def handle_reaction(self, reaction: Reaction, user: Union[Member, User]) -> bool:
+        if reaction.emoji == '🔁':
+            if user == self.author:
+                return await self.update_message()
+            return True
+        if reaction.emoji == '⭐':
+            return await self.add_favorite(user)
+        if reaction.emoji == '🗑️':
+            if user == self.author:
+                return await self.remove_message()
+            return True
 
-    def post_content(self) -> PostMessageContent:
-        self.post_data = self.get_post()
-        return self.post_data.to_message_content()
+    async def add_favorite(self, user: User) -> bool:
+        add_favorite(user, PostEntry(self.url, self.post_data.post_id, datetime.now(), self.post_data))
+        await self.channel.send(f'{user.mention}, succesfully added favorite.')
+        return True
 
     def get_post(self) -> PostData:
         post_data = self.fetch_post()
@@ -73,6 +58,10 @@ class PostMessage(ABC):
 
         self.update_hist(post_data)
         return post_data
+
+    def page_content(self) -> PostMessageContent:
+        self.post_data = self.get_post()
+        return self.fetch_post().to_message_content()
 
     @abstractmethod
     def fetch_post(self) -> PostData:

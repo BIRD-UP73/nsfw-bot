@@ -1,58 +1,44 @@
-from abc import abstractmethod, ABC
-from typing import List, Dict, Union, Deque
+from typing import List, Union, Deque
 
-from discord import TextChannel, Member, User, Message, DMChannel, Reaction
-from discord.ext.commands import Context, Bot
+from discord import Member, User, Reaction
+from discord.ext.commands import Context
 
 from posts.data.post_data import PostData
 from posts.data.post_entry import PostEntry
 from posts.message.post_message_content import PostMessageContent
-from posts.message.reaction_handler import ReactionContext, ReactionHandler, EmptyReactionHandler, \
-    AddFavoriteReactionHandler
+from posts.message.reaction_handler import add_favorite
+from posts.post.abstract_post import AbstractPost
 
 
-class NextPageReactionHandler(ReactionHandler):
-    async def handle_reaction(self, ctx: ReactionContext):
-        ctx.post.page = (ctx.post.page + 1) % len(ctx.post.data)
-        await ctx.post.update_message()
-
-
-class PreviousPageReactionHandler(ReactionHandler):
-    async def handle_reaction(self, ctx: ReactionContext):
-        ctx.post.page = (ctx.post.page - 1) % len(ctx.post.data)
-        await ctx.post.update_message()
-
-
-class PageEmbedMessage(ABC):
-    message: Message = None
-    page: int = 0
-
-    reaction_handlers: Dict[str, ReactionHandler] = {
-        '⬅': PreviousPageReactionHandler(),
-        '➡': NextPageReactionHandler(),
-        '⭐': AddFavoriteReactionHandler()
-    }
+class PageEmbedMessage(AbstractPost):
+    emojis = ['🗑️', '⬅', '➡', '⭐']
 
     def __init__(self, ctx: Context, data: Union[List[PostEntry], Deque[PostEntry]]):
-        self.bot: Bot = ctx.bot
-        self.author: Union[User, Member] = ctx.author
-        self.channel: Union[DMChannel, TextChannel] = ctx.channel
+        super().__init__(ctx)
         self.data: Union[List[PostEntry], Deque[PostEntry]] = data
+        self.page = 0
+        self.message = None
 
-    async def create_message(self):
-        page_content = self.page_content()
-        self.message = await self.channel.send(**page_content.to_dict())
+    async def handle_reaction(self, reaction: Reaction, user: Union[Member, User]) -> bool:
+        result = await super().handle_reaction(reaction, user)
 
-        self.bot.add_listener(self.on_reaction_add)
+        if result is not None:
+            return result
 
-        for reaction_emoji in self.reaction_handlers:
-            await self.message.add_reaction(reaction_emoji)
+        if reaction.emoji == '➡':
+            return await self.next_page()
+        if reaction.emoji == '⬅':
+            return await self.previous_page()
 
-    async def on_reaction_add(self, reaction: Reaction, user: Union[Member, User]):
-        reaction_context = ReactionContext(reaction, user, self)
+    async def next_page(self):
+        self.page = (self.page + 1) % len(self.data)
+        await self.update_message()
+        return True
 
-        handler = self.reaction_handlers.get(reaction.emoji, EmptyReactionHandler())
-        await handler.on_reaction(reaction_context)
+    async def previous_page(self):
+        self.page = (self.page - 1) % len(self.data)
+        await self.update_message()
+        return True
 
     async def update_message(self):
         page_content = self.page_content()
@@ -61,18 +47,15 @@ class PageEmbedMessage(ABC):
     def get_data(self) -> PostEntry:
         return self.data[self.page]
 
+    async def add_favorite(self, user):
+        add_favorite(user, self.get_data())
+        await self.channel.send(f'{user.mention}, successfully stored favorite.')
+        return True
+
+    def page_content(self) -> PostMessageContent:
+        return self.get_data().post_data.to_message_content()
+
     @property
     def post_data(self) -> PostData:
         entry_data = self.get_data()
         return entry_data.fetch_post()
-
-    @abstractmethod
-    def page_content(self) -> PostMessageContent:
-        """
-        Returns the content of the current page of the embed
-        This should be in the form of a :type mapping: dict
-        with both a 'content' and an 'embed' field
-
-        :return: the content of the page
-        """
-        pass
