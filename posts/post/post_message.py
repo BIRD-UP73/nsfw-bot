@@ -22,9 +22,7 @@ class PostMessage(AbstractPost):
         self.post_data: Optional[PostData] = None
 
     async def update_message(self):
-        self.post_data = self.get_post()
-        post_content = self.post_data.to_message_content()
-        await self.message.edit(**post_content.to_dict())
+        await self.message.edit(**self.page_content().to_dict())
         return True
 
     def update_hist(self, post_data: PostData):
