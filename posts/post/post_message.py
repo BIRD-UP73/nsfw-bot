@@ -22,7 +22,7 @@ class PostMessage(AbstractPost):
         self.post_data: Optional[PostData] = None
 
     async def update_message(self):
-        self.post_data = self.fetch_post()
+        self.post_data = self.get_post()
         post_content = self.post_data.to_message_content()
         await self.message.edit(**post_content.to_dict())
         return True
@@ -47,8 +47,11 @@ class PostMessage(AbstractPost):
             return True
 
     async def add_favorite(self, user: User) -> bool:
-        add_favorite(user, PostEntry(self.url, self.post_data.post_id, datetime.now(), self.post_data))
-        await self.channel.send(f'{user.mention}, succesfully added favorite.')
+        post_entry = PostEntry(self.url, self.post_data.post_id, datetime.now(), self.post_data)
+
+        if add_favorite(user, post_entry):
+            await self.channel.send(f'{user.mention}, succesfully added favorite.')
+
         return True
 
     def get_post(self) -> PostData:
@@ -61,7 +64,7 @@ class PostMessage(AbstractPost):
 
     def page_content(self) -> PostMessageContent:
         self.post_data = self.get_post()
-        return self.fetch_post().to_message_content()
+        return self.get_post().to_message_content()
 
     @abstractmethod
     def fetch_post(self) -> PostData:

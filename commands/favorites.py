@@ -57,11 +57,15 @@ class FavoritesMessage(PageEmbedMessage):
 
         message_content = post_data.to_message_content()
 
-        if message_content.embed:
-            message_content.embed.title = 'Favorites'
-            message_content.embed.description = f'Favorites for {self.user.mention}'
-            message_content.embed.timestamp = data.saved_at
-            message_content.embed.set_footer(text=f'Page {self.page + 1} of {len(self.data)}')
+        if message_content.embed is not None:
+            embed = message_content.embed
+
+            embed.title = 'Favorites'
+            embed.description = f'Favorites for {self.user.mention}'
+            embed.timestamp = data.saved_at
+            embed.set_footer(text=f'Page {self.page + 1} of {len(self.data)}')
+
+            message_content.embed = embed
 
         return message_content
 
@@ -84,7 +88,7 @@ class Favorites(Cog):
 
     @is_nsfw()
     @commands.command(name='favorites', aliases=['favs'], description=description)
-    async def favorites(self, ctx: Context, user: User = None):
+    async def favorites(self, ctx: Context, user: Member = None):
         user = user or ctx.author
         favorites = post_repository.get_favorites(user)
 

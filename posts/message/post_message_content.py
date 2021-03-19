@@ -1,11 +1,10 @@
-from typing import Dict, Union
+from typing import Dict, Union, Optional
 
 from discord import Embed
 
 
-class PostMessageContent(Embed):
-    def __init__(self, is_animated: bool, content: str, embed: Embed = None):
-        super().__init__()
+class PostMessageContent:
+    def __init__(self, is_animated: bool = False, content: Optional[str] = None, embed: Embed = None):
         self.is_animated: bool = is_animated
         self.content: str = content
         self.embed = embed

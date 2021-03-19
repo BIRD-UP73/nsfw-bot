@@ -55,14 +55,14 @@ class PostError(PostData):
     def is_error(self) -> bool:
         return True
 
-    def to_embed(self) -> Embed:
+    def to_message_content(self) -> PostMessageContent:
         embed = Embed()
         embed.colour = Color.red()
+        embed.description = ''
 
-        embed.title = 'Error'
         embed.add_field(name='Error', value=self.message)
 
-        return embed
+        return PostMessageContent(embed=embed)
 
 
 class PostNoLongerExists(PostError):

@@ -48,8 +48,8 @@ class PageEmbedMessage(AbstractPost):
         return self.data[self.page]
 
     async def add_favorite(self, user):
-        add_favorite(user, self.get_data())
-        await self.channel.send(f'{user.mention}, successfully stored favorite.')
+        if add_favorite(user, self.get_data()):
+            await self.channel.send(f'{user.mention}, successfully stored favorite.')
         return True
 
     def page_content(self) -> PostMessageContent:
