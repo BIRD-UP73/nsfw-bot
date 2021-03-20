@@ -42,7 +42,7 @@ class PostMessage(AbstractPost):
         if reaction.emoji == '🗑️':
             if user == self.author:
                 await self.remove_message()
-            return True
+            return False
 
     async def add_favorite(self, user: User):
         post_entry = PostEntry(self.url, self.post_data.post_id, datetime.now(), self.post_data)

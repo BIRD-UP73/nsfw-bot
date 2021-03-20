@@ -11,6 +11,8 @@ from posts.message.post_message_content import PostMessageContent
 
 
 class FavoritesMessage(PageEmbedMessage):
+    emojis = ['⛔', '🗑️', '⬅', '➡', '⭐']
+
     def __init__(self, ctx: Context, user: User, data: List[PostEntry]):
         super().__init__(ctx, data)
         self.user = user
@@ -25,7 +27,7 @@ class FavoritesMessage(PageEmbedMessage):
         if result:
             return result
 
-        if reaction.emoji == '🗑️':
+        if reaction.emoji == '⛔':
             await self.remove_favorite(user)
             return True
 
