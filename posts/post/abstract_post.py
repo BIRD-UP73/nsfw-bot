@@ -37,7 +37,7 @@ class AbstractPost(ABC):
         if delete_reaction and self.message.guild:
             await self.message.remove_reaction(reaction.emoji, user)
 
-    async def handle_reaction(self, reaction: Reaction, user: Union[Member, User]) -> bool:
+    async def handle_reaction(self, reaction: Reaction, user: Union[Member, User]) -> Optional[bool]:
         """
         :return: whether the reaction should be deleted after
         """

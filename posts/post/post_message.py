@@ -32,7 +32,7 @@ class PostMessage(AbstractPost):
         hist_cog = self.bot.get_cog('PostHist')
         hist_cog.add_to_history(self.channel, self.url, post_data)
 
-    async def handle_reaction(self, reaction: Reaction, user: Union[Member, User]) -> bool:
+    async def handle_reaction(self, reaction: Reaction, user: Union[Member, User]) -> Optional[bool]:
         if reaction.emoji == '🔁':
             if user == self.author:
                 return await self.update_message()

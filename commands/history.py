@@ -1,6 +1,6 @@
 from collections import deque
 from datetime import datetime
-from typing import Union, Dict, Deque
+from typing import Union, Dict, Deque, Optional
 
 from discord import DMChannel, TextChannel, Reaction, Member, User
 from discord.ext import commands
@@ -17,7 +17,7 @@ class HistoryMessage(PageEmbedMessage):
     def __init__(self, ctx: Context, data: Deque[PostEntry]):
         super().__init__(ctx, data)
 
-    async def handle_reaction(self, reaction: Reaction, user: Union[Member, User]) -> bool:
+    async def handle_reaction(self, reaction: Reaction, user: Union[Member, User]) -> Optional[bool]:
         result = await super().handle_reaction(reaction, user)
 
         if result:

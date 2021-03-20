@@ -1,4 +1,4 @@
-from typing import List, Union, Deque
+from typing import List, Union, Deque, Optional
 
 from discord import Member, User, Reaction
 from discord.ext.commands import Context
@@ -19,7 +19,7 @@ class PageEmbedMessage(AbstractPost):
         self.page = 0
         self.message = None
 
-    async def handle_reaction(self, reaction: Reaction, user: Union[Member, User]) -> bool:
+    async def handle_reaction(self, reaction: Reaction, user: Union[Member, User]) -> Optional[bool]:
         result = await super().handle_reaction(reaction, user)
 
         if result is not None:

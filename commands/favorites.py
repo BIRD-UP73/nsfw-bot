@@ -1,4 +1,4 @@
-from typing import List, Union
+from typing import List, Union, Optional
 
 from discord import User, Reaction, Member
 from discord.ext import commands
@@ -22,7 +22,7 @@ class FavoritesMessage(PageEmbedMessage):
         await super().add_favorite(user)
         return True
 
-    async def handle_reaction(self, reaction: Reaction, user: Union[Member, User]) -> bool:
+    async def handle_reaction(self, reaction: Reaction, user: Union[Member, User]) -> Optional[bool]:
         result = await super().handle_reaction(reaction, user)
 
         if result:
