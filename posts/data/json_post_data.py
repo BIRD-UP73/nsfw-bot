@@ -1,5 +1,3 @@
-from discord import Embed
-
 from posts.data.post_data import PostData
 from posts.message.post_message_content import PostMessageContent
 from util import util

@@ -8,7 +8,6 @@ from discord.ext.commands import Context
 from posts.data.post_data import PostData, PostHasDisallowedTags
 from posts.data.post_entry import PostEntry
 from posts.message.post_message_content import PostMessageContent
-from posts.message.reaction_handler import add_favorite
 from posts.post.abstract_post import AbstractPost
 
 
@@ -44,11 +43,8 @@ class PostMessage(AbstractPost):
                 await self.remove_message()
             return False
 
-    async def add_favorite(self, user: User):
-        post_entry = PostEntry(self.url, self.post_data.post_id, datetime.now(), self.post_data)
-
-        if add_favorite(user, post_entry):
-            await self.channel.send(f'{user.mention}, succesfully added favorite.')
+    def to_post_entry(self) -> PostEntry:
+        return PostEntry(self.url, self.post_data.post_id, datetime.now(), self.post_data)
 
     def get_post(self) -> PostData:
         post_data = self.fetch_post()

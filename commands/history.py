@@ -18,7 +18,7 @@ class HistoryMessage(PageEmbedMessage):
         super().__init__(ctx, data)
 
     def page_content(self) -> PostMessageContent:
-        entry_data = self.get_data()
+        entry_data = self.to_post_entry()
         post_data = entry_data.fetch_post()
 
         message_content = post_data.to_message_content()

@@ -6,7 +6,6 @@ from discord.ext.commands import Context
 from posts.data.post_data import PostData
 from posts.data.post_entry import PostEntry
 from posts.message.post_message_content import PostMessageContent
-from posts.message.reaction_handler import add_favorite
 from posts.post.abstract_post import AbstractPost
 
 
@@ -47,17 +46,13 @@ class PageEmbedMessage(AbstractPost):
         page_content = self.page_content()
         await self.message.edit(**page_content.to_dict())
 
-    def get_data(self) -> PostEntry:
+    def to_post_entry(self) -> PostEntry:
         return self.data[self.page]
 
-    async def add_favorite(self, user):
-        if add_favorite(user, self.get_data()):
-            await self.channel.send(f'{user.mention}, successfully stored favorite.')
-
     def page_content(self) -> PostMessageContent:
-        return self.get_data().post_data.to_message_content()
+        return self.to_post_entry().post_data.to_message_content()
 
     @property
     def post_data(self) -> PostData:
-        entry_data = self.get_data()
+        entry_data = self.to_post_entry()
         return entry_data.fetch_post()

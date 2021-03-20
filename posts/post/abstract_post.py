@@ -5,7 +5,9 @@ from discord import Reaction, Member, Message
 from discord.abc import User, Messageable
 from discord.ext.commands import Context, Bot
 
+from posts.data.post_entry import PostEntry
 from posts.message.post_message_content import PostMessageContent
+from posts.message.reaction_handler import add_favorite
 
 
 class AbstractPost(ABC):
@@ -51,8 +53,12 @@ class AbstractPost(ABC):
     async def remove_message(self):
         await self.message.delete()
 
-    @abstractmethod
     async def add_favorite(self, user: User):
+        if add_favorite(user, self.to_post_entry()):
+            await self.channel.send(f'{user.mention}, successfully stored favorite.')
+
+    @abstractmethod
+    def to_post_entry(self) -> PostEntry:
         pass
 
     @abstractmethod

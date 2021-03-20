@@ -18,7 +18,7 @@ class FavoritesMessage(PageEmbedMessage):
         self.user = user
 
     async def add_favorite(self, user):
-        if user == self.author:
+        if user != self.author:
             await super().add_favorite(user)
 
     async def handle_reaction(self, reaction: Reaction, user: Union[Member, User]) -> Optional[bool]:
@@ -35,7 +35,7 @@ class FavoritesMessage(PageEmbedMessage):
         if user != self.user:
             return
 
-        data = self.get_data()
+        data = self.to_post_entry()
 
         post_repository.remove_favorite(user, data.url, data.post_id)
         await self.channel.send(f'{user.mention}, removed favorite successfully.')
@@ -50,7 +50,7 @@ class FavoritesMessage(PageEmbedMessage):
         await self.update_message()
 
     def page_content(self) -> PostMessageContent:
-        data = self.get_data()
+        data = self.to_post_entry()
         post_data = data.fetch_post()
 
         message_content = post_data.to_message_content()
