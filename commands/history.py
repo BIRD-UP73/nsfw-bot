@@ -1,8 +1,8 @@
 from collections import deque
 from datetime import datetime
-from typing import Union, Dict, Deque, Optional
+from typing import Union, Dict, Deque
 
-from discord import DMChannel, TextChannel, Reaction, Member, User
+from discord import DMChannel, TextChannel
 from discord.ext import commands
 from discord.ext.commands import Context, is_nsfw
 
@@ -16,16 +16,6 @@ from util.url_util import parse_url
 class HistoryMessage(PageEmbedMessage):
     def __init__(self, ctx: Context, data: Deque[PostEntry]):
         super().__init__(ctx, data)
-
-    async def handle_reaction(self, reaction: Reaction, user: Union[Member, User]) -> Optional[bool]:
-        result = await super().handle_reaction(reaction, user)
-
-        if result:
-            return result
-
-        if reaction.emoji == '🗑️':
-            await self.remove_message()
-            return False
 
     def page_content(self) -> PostMessageContent:
         entry_data = self.get_data()
