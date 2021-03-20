@@ -17,10 +17,7 @@ class FavoritesMessage(PageEmbedMessage):
 
     async def add_favorite(self, user):
         if user == self.author:
-            return True
-
-        await super().add_favorite(user)
-        return True
+            await super().add_favorite(user)
 
     async def handle_reaction(self, reaction: Reaction, user: Union[Member, User]) -> Optional[bool]:
         result = await super().handle_reaction(reaction, user)
@@ -49,7 +46,6 @@ class FavoritesMessage(PageEmbedMessage):
             self.page = 0
 
         await self.update_message()
-        return False
 
     def page_content(self) -> PostMessageContent:
         data = self.get_data()

@@ -24,7 +24,8 @@ class HistoryMessage(PageEmbedMessage):
             return result
 
         if reaction.emoji == '🗑️':
-            return await self.remove_message()
+            await self.remove_message()
+            return False
 
     def page_content(self) -> PostMessageContent:
         entry_data = self.get_data()

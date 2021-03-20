@@ -26,19 +26,19 @@ class PageEmbedMessage(AbstractPost):
             return result
 
         if reaction.emoji == '➡':
-            return await self.next_page()
+            await self.next_page()
+            return True
         if reaction.emoji == '⬅':
-            return await self.previous_page()
+            await self.previous_page()
+            return True
 
     async def next_page(self):
         self.page = (self.page + 1) % len(self.data)
         await self.update_message()
-        return True
 
     async def previous_page(self):
         self.page = (self.page - 1) % len(self.data)
         await self.update_message()
-        return True
 
     async def update_message(self):
         page_content = self.page_content()
@@ -50,7 +50,6 @@ class PageEmbedMessage(AbstractPost):
     async def add_favorite(self, user):
         if add_favorite(user, self.get_data()):
             await self.channel.send(f'{user.mention}, successfully stored favorite.')
-        return True
 
     def page_content(self) -> PostMessageContent:
         return self.get_data().post_data.to_message_content()

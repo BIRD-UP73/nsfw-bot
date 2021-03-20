@@ -23,7 +23,6 @@ class PostMessage(AbstractPost):
 
     async def update_message(self):
         await self.message.edit(**self.page_content().to_dict())
-        return True
 
     def update_hist(self, post_data: PostData):
         """
@@ -35,22 +34,21 @@ class PostMessage(AbstractPost):
     async def handle_reaction(self, reaction: Reaction, user: Union[Member, User]) -> Optional[bool]:
         if reaction.emoji == '🔁':
             if user == self.author:
-                return await self.update_message()
+                await self.update_message()
             return True
         if reaction.emoji == '⭐':
-            return await self.add_favorite(user)
+            await self.add_favorite(user)
+            return True
         if reaction.emoji == '🗑️':
             if user == self.author:
-                return await self.remove_message()
+                await self.remove_message()
             return True
 
-    async def add_favorite(self, user: User) -> bool:
+    async def add_favorite(self, user: User):
         post_entry = PostEntry(self.url, self.post_data.post_id, datetime.now(), self.post_data)
 
         if add_favorite(user, post_entry):
             await self.channel.send(f'{user.mention}, succesfully added favorite.')
-
-        return True
 
     def get_post(self) -> PostData:
         post_data = self.fetch_post()

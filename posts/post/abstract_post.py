@@ -45,14 +45,14 @@ class AbstractPost(ABC):
             return True
 
         if reaction.emoji == '⭐':
-            return await self.add_favorite(user)
+            await self.add_favorite(user)
+            return True
 
-    async def remove_message(self) -> bool:
+    async def remove_message(self):
         await self.message.delete()
-        return False
 
     @abstractmethod
-    async def add_favorite(self, user: User) -> bool:
+    async def add_favorite(self, user: User):
         pass
 
     @abstractmethod
