@@ -28,7 +28,7 @@ class XmlPostMessage(PostMessage):
         self.post_page = random.randint(0, self.total_posts - 1)
         return fetch_xml_post(self.url, self.tags, self.post_page)
 
-    def post_content(self) -> PostMessageContent:
+    def page_content(self) -> PostMessageContent:
         self.post_data = self.get_post()
         message_content = self.post_data.to_message_content()
 

@@ -8,7 +8,7 @@ class XmlPostData(PostData):
     def from_xml(cls, el: ElementTree):
         file_url = el.get('file_url')
 
-        return cls(
+        attrs = dict(
             file_url=file_url,
             file_ext=file_url.split('.')[-1],
             created_at=el.get('created_at'),
@@ -17,3 +17,5 @@ class XmlPostData(PostData):
             tags=el.get('tags'),
             id=el.get('id')
         )
+
+        return cls(**attrs)

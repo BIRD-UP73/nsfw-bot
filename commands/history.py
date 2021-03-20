@@ -10,17 +10,15 @@ from posts.data.post_data import PostData
 from posts.data.post_entry import PostEntry
 from posts.message.page_embed_message import PageEmbedMessage
 from posts.message.post_message_content import PostMessageContent
-from posts.message.reaction_handler import DeleteMessageReactionHandler
 from util.url_util import parse_url
 
 
 class HistoryMessage(PageEmbedMessage):
     def __init__(self, ctx: Context, data: Deque[PostEntry]):
         super().__init__(ctx, data)
-        self.reaction_handlers['🗑️'] = DeleteMessageReactionHandler()
 
     def page_content(self) -> PostMessageContent:
-        entry_data = self.get_data()
+        entry_data = self.to_post_entry()
         post_data = entry_data.fetch_post()
 
         message_content = post_data.to_message_content()

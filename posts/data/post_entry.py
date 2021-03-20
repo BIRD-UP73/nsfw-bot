@@ -41,7 +41,9 @@ class PostEntry:
         resp_text = get_post_by_id(long_url, self.post_id)
         et_post = ElementTree.fromstring(resp_text)
 
-        if len(et_post) == 0:
+        count = et_post.get('count')
+
+        if count is None or int(count) == 0:
             return PostNoLongerExists()
 
         return XmlPostData.from_xml(et_post[0])
