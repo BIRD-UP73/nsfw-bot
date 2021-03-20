@@ -18,6 +18,11 @@ class HistoryMessage(PageEmbedMessage):
         super().__init__(ctx, data)
 
     async def handle_reaction(self, reaction: Reaction, user: Union[Member, User]) -> bool:
+        result = await super().handle_reaction(reaction, user)
+
+        if result:
+            return result
+
         if reaction.emoji == '🗑️':
             return await self.remove_message()
 

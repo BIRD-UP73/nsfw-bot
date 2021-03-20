@@ -15,7 +15,7 @@ class JsonPostData(PostData):
     def to_message_content(self) -> PostMessageContent:
         message_content = super().to_message_content()
 
-        if not message_content.embed:
+        if message_content.is_animated:
             return message_content
 
         if util.is_valid_field_text(self.artist_tag):
