@@ -23,5 +23,4 @@ async def show_post(ctx: Context, tags: str, score: int):
     if len(tags.split(' ')) < 2:
         tags = util.parse_tags(tags, score)
 
-    post = JsonPostMessage(ctx, danbooru_url, tags)
-    await post.create_message()
+    await JsonPostMessage(ctx, danbooru_url, tags).create_message()

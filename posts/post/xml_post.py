@@ -42,8 +42,7 @@ async def show_post(ctx: Context, tags: str, score: int, url: str, skip_score=Fa
     if not skip_score:
         tags = util.parse_tags(tags, score)
 
-    post = XmlPostMessage(ctx, url, tags)
-    await post.create_message()
+    await XmlPostMessage(ctx, url, tags).create_message()
 
 
 def get_total_posts(url: str, tags: str) -> int:

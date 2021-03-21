@@ -4,8 +4,7 @@ from discord import TextChannel
 from discord.ext import commands
 from discord.ext.commands import Context, NSFWChannelRequired, CommandError
 
-import posts.post.json_post
-import posts.post.xml_post
+from posts.post import xml_post, json_post
 from util import util
 from util.url_util import short_urls, get_long_url
 
@@ -56,23 +55,23 @@ def get_data(command_name: str):
 class PostCog(commands.Cog):
     @commands.command(**get_data('rule34'))
     async def rule34(self, ctx: Context, score: Optional[int] = 50, *, tags: str):
-        await posts.post.xml_post.show_post(ctx, tags, score, get_long_url(ctx.command.name))
+        await xml_post.show_post(ctx, tags, score, get_long_url(ctx.command.name))
 
     @commands.command(**get_data('xbooru'))
     async def xbooru(self, ctx: Context, score: Optional[int] = 50, *, tags: str):
-        await posts.post.xml_post.show_post(ctx, tags, score, get_long_url(ctx.command.name))
+        await xml_post.show_post(ctx, tags, score, get_long_url(ctx.command.name))
 
     @commands.command(**get_data('gelbooru'))
     async def gelbooru(self, ctx: Context, score: Optional[int] = 50, *, tags: str):
-        await posts.post.xml_post.show_post(ctx, tags, score, get_long_url(ctx.command.name))
+        await xml_post.show_post(ctx, tags, score, get_long_url(ctx.command.name))
 
     @commands.command(**get_data('tbib'))
     async def tbib(self, ctx: Context, *, tags: str):
-        await posts.post.xml_post.show_post(ctx, tags, 0, get_long_url(ctx.command.name), skip_score=True)
+        await xml_post.show_post(ctx, tags, 0, get_long_url(ctx.command.name), skip_score=True)
 
     @commands.command(**get_data('danbooru'))
     async def danbooru(self, ctx: Context, score: Optional[int] = 50, *, tags: str, ):
-        await posts.post.json_post.show_post(ctx, tags, score)
+        await json_post.show_post(ctx, tags, score)
 
     async def cog_before_invoke(self, ctx):
         if util.contains_disallowed_tags(ctx.kwargs.get('tags')):

@@ -50,8 +50,7 @@ class PostHist(commands.Cog):
         if not channel_hist:
             return await ctx.send('No history')
 
-        post_hist_message = HistoryMessage(ctx, channel_hist)
-        await post_hist_message.create_message()
+        await HistoryMessage(ctx, channel_hist).create_message()
 
     def add_to_history(self, channel: Union[TextChannel, DMChannel], url: str, post_data: PostData):
         self.post_hist.setdefault(channel.id, deque(maxlen=self.max_len))

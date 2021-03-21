@@ -26,6 +26,9 @@ class AbstractPost(ABC):
         self.bot.add_listener(self.on_reaction_add)
         await self.add_emojis()
 
+        listener_cog = self.bot.get_cog('Listeners')
+        listener_cog.add_post(self)
+
     async def add_emojis(self):
         for emoji in self.emojis:
             await self.message.add_reaction(emoji)
