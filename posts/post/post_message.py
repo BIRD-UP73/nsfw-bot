@@ -56,7 +56,7 @@ class PostMessage(AbstractPost):
 
     def page_content(self) -> PostMessageContent:
         self.post_data = self.get_post()
-        return self.get_post().to_message_content()
+        return self.post_data.to_message_content()
 
     @abstractmethod
     def fetch_post(self) -> PostData:
