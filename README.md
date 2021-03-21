@@ -24,6 +24,7 @@ Warning! These sites contain NSFW content.
 - 🗑️ to delete post messages or favorites
 - ⭐ to store a post as favorite
 - 🔁 to refresh posts
+- ⛔ to remove a favorite
 
 ## A note on reactions
 Removing reactions in DMs will not work
