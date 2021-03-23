@@ -27,4 +27,5 @@ Warning! These sites contain NSFW content.
 - ⛔ to remove a favorite
 
 ## A note on reactions
-Removing reactions in DMs will not work
+Removing reactions of other others in DMs is not allowed for bots.
+Therefore the bot will not automatically remove reactions in DMs.
