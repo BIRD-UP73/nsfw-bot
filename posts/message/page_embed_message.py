@@ -30,9 +30,6 @@ class PageEmbedMessage(AbstractPost):
         if reaction.emoji == '⬅':
             await self.previous_page()
             return True
-        if reaction.emoji == '🗑️':
-            await self.remove_message()
-            return False
 
     async def next_page(self):
         self.page = (self.page + 1) % len(self.data)

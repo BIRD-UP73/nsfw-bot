@@ -29,6 +29,17 @@ class AbstractPost(ABC):
         listener_cog = self.bot.get_cog('Listeners')
         listener_cog.add_post(self)
 
+    async def delete_message(self, deleting_user: User) -> bool:
+        """
+        Deletes the message belonging to the post
+
+        :param deleting_user: the user that wants to delete the message
+        :return: whether the reaction should be deleted
+        """
+        # Ignore deleting user here (anyone allowed to delete)
+        await self.message.delete()
+        return False
+
     async def add_emojis(self):
         for emoji in self.emojis:
             await self.message.add_reaction(emoji)
@@ -52,9 +63,8 @@ class AbstractPost(ABC):
         if reaction.emoji == '⭐':
             await self.add_favorite(user)
             return True
-
-    async def remove_message(self):
-        await self.message.delete()
+        if reaction.emoji == '🗑️':
+            return await self.delete_message(user)
 
     async def add_favorite(self, user: User):
         if add_favorite(user, self.to_post_entry()):

@@ -23,6 +23,13 @@ class PostMessage(AbstractPost):
     async def update_message(self):
         await self.message.edit(**self.page_content().to_dict())
 
+    async def delete_message(self, deleting_user: User):
+        if deleting_user.id == self.author.id:
+            await super(PostMessage, self).delete_message(deleting_user)
+            return False
+
+        return True
+
     def update_hist(self, post_data: PostData):
         """
         Adds the current post to the post history
@@ -31,6 +38,11 @@ class PostMessage(AbstractPost):
         hist_cog.add_to_history(self.channel, self.url, post_data)
 
     async def handle_reaction(self, reaction: Reaction, user: Union[Member, User]) -> Optional[bool]:
+        result = await super().handle_reaction(reaction, user)
+
+        if result is not None:
+            return result
+
         if reaction.emoji == '🔁':
             if user == self.author:
                 await self.update_message()
@@ -38,10 +50,6 @@ class PostMessage(AbstractPost):
         if reaction.emoji == '⭐':
             await self.add_favorite(user)
             return True
-        if reaction.emoji == '🗑️':
-            if user == self.author:
-                await self.remove_message()
-            return False
 
     def to_post_entry(self) -> PostEntry:
         return PostEntry(self.url, self.post_data.post_id, datetime.now(), self.post_data)

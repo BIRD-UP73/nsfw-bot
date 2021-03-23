@@ -24,7 +24,7 @@ class FavoritesMessage(PageEmbedMessage):
     async def handle_reaction(self, reaction: Reaction, user: Union[Member, User]) -> Optional[bool]:
         result = await super().handle_reaction(reaction, user)
 
-        if result:
+        if result is not None:
             return result
 
         if reaction.emoji == '⛔':
