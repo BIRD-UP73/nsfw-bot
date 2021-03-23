@@ -25,8 +25,7 @@ class PostMessage(AbstractPost):
 
     async def delete_message(self, deleting_user: User):
         if deleting_user.id == self.author.id:
-            await super(PostMessage, self).delete_message(deleting_user)
-            return False
+            return await super().delete_message(deleting_user)
 
         return True
 
