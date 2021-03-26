@@ -41,7 +41,7 @@ class PostData:
         return PostMessageContent(self.is_animated(), self.file_url, embed)
 
 
-class PostError(PostData):
+class ErrorPost(PostData):
     """
     Post used to indicate something went wrong
     """
@@ -65,11 +65,11 @@ class PostError(PostData):
         return PostMessageContent(embed=embed)
 
 
-class PostNoLongerExists(PostError):
+class NonExistentPost(ErrorPost):
     def __init__(self):
         super().__init__('Post no longer exists')
 
 
-class PostHasDisallowedTags(PostError):
+class DisallowedTagsPost(ErrorPost):
     def __init__(self):
         super().__init__('Post contains disallowed tags. Please try again.')

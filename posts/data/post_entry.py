@@ -4,7 +4,7 @@ from xml.etree import ElementTree
 from posts.api.json_api import json_post_by_id
 from posts.api.xml_api import get_post_by_id
 from posts.data.json_post_data import JsonPostData
-from posts.data.post_data import PostData, PostNoLongerExists
+from posts.data.post_data import PostData, NonExistentPost
 from posts.data.xml_post_data import XmlPostData
 from util.url_util import short_to_long
 
@@ -32,7 +32,7 @@ class PostEntry:
         json_post = json_post_by_id(long_url, self.post_id)
 
         if json_post.get('success') is False:
-            return PostNoLongerExists()
+            return NonExistentPost()
 
         return JsonPostData(**json_post)
 
@@ -44,6 +44,6 @@ class PostEntry:
         count = et_post.get('count')
 
         if count is None or int(count) == 0:
-            return PostNoLongerExists()
+            return NonExistentPost()
 
         return XmlPostData.from_xml(et_post[0])

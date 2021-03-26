@@ -5,7 +5,7 @@ from xml.etree import ElementTree
 from discord.ext.commands import Context, CommandError
 
 from posts.api.xml_api import send_request
-from posts.data.post_data import PostData, PostNoLongerExists
+from posts.data.post_data import PostData, NonExistentPost
 from posts.data.xml_post_data import XmlPostData
 from posts.message.post_message_content import PostMessageContent
 from posts.post.post_message import PostMessage
@@ -63,6 +63,6 @@ def fetch_xml_post(url: str, tags: str, page: int) -> Element:
     posts = ElementTree.fromstring(resp_text)
 
     if len(posts) == 0:
-        return PostNoLongerExists()
+        return NonExistentPost()
 
     return XmlPostData.from_xml(posts[0])

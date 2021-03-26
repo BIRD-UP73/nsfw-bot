@@ -5,7 +5,7 @@ from typing import Union, Optional
 from discord import User, Member, Reaction
 from discord.ext.commands import Context
 
-from posts.data.post_data import PostData, PostHasDisallowedTags
+from posts.data.post_data import PostData, DisallowedTagsPost
 from posts.data.post_entry import PostEntry
 from posts.message.post_message_content import PostMessageContent
 from posts.post.abstract_post import AbstractPost
@@ -56,7 +56,7 @@ class PostMessage(AbstractPost):
     def get_post(self) -> PostData:
         post_data = self.fetch_post()
         if post_data.has_disallowed_tags():
-            return PostHasDisallowedTags()
+            return DisallowedTagsPost()
 
         self.update_hist(post_data)
         return post_data
