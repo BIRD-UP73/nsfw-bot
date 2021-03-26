@@ -3,7 +3,6 @@ from typing import List, Union, Deque, Optional
 from discord import Member, User, Reaction
 from discord.ext.commands import Context
 
-from posts.data.post_data import PostData
 from posts.data.post_entry import PostEntry
 from posts.message.post_message_content import PostMessageContent
 from posts.post.abstract_post import AbstractPost
@@ -48,8 +47,3 @@ class PageEmbedMessage(AbstractPost):
 
     def page_content(self) -> PostMessageContent:
         return self.to_post_entry().post_data.to_message_content()
-
-    @property
-    def post_data(self) -> PostData:
-        entry_data = self.to_post_entry()
-        return entry_data.fetch_post()
