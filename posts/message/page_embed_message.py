@@ -9,13 +9,15 @@ from posts.post.abstract_post import AbstractPost
 
 
 class PageEmbedMessage(AbstractPost):
-    emojis = ['🗑️', '⬅', '➡', '⭐']
-
     def __init__(self, ctx: Context, data: Union[List[PostEntry], Deque[PostEntry]]):
         super().__init__(ctx)
         self.data: Union[List[PostEntry], Deque[PostEntry]] = data
         self.page = 0
         self.message = None
+
+    @property
+    def emojis(self) -> List[str]:
+        return super().emojis + ['⬅', '➡']
 
     async def handle_reaction(self, reaction: Reaction, user: Union[Member, User]) -> Optional[bool]:
         result = await super().handle_reaction(reaction, user)

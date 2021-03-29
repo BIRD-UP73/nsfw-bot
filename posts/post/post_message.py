@@ -1,6 +1,6 @@
 from abc import abstractmethod
 from datetime import datetime
-from typing import Union, Optional
+from typing import Union, Optional, List
 
 from discord import User, Member, Reaction
 from discord.ext.commands import Context
@@ -12,13 +12,15 @@ from posts.post.abstract_post import AbstractPost
 
 
 class PostMessage(AbstractPost):
-    emojis = ['🔁', '⭐', '🗑️']
-
     def __init__(self, ctx: Context, url: str, tags: str):
         super().__init__(ctx)
         self.url: str = url
         self.tags: str = tags
         self.post_data: Optional[PostData] = None
+
+    @property
+    def emojis(self) -> List[str]:
+        return super().emojis + ['🔁']
 
     async def update_message(self):
         await self.message.edit(**self.page_content().to_dict())

@@ -1,5 +1,5 @@
 from abc import abstractmethod, ABC
-from typing import Union, Optional
+from typing import Union, Optional, List
 
 from discord import Reaction, Member, Message
 from discord.abc import User, Messageable
@@ -11,13 +11,15 @@ from posts.message.reaction_handler import add_favorite
 
 
 class AbstractPost(ABC):
-    emojis = ['🗑️', '⭐']
-
     def __init__(self, ctx: Context):
         self.author: Union[User, Member] = ctx.author
         self.bot: Bot = ctx.bot
         self.channel: Union[Messageable] = ctx.channel
         self.message: Optional[Message] = None
+
+    @property
+    def emojis(self) -> List[str]:
+        return ['🗑️', '⭐']
 
     async def create_message(self):
         page_content = self.page_content()
