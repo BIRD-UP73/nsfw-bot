@@ -13,7 +13,6 @@ class PageEmbedMessage(AbstractPost):
         super().__init__(ctx)
         self.data: Union[List[PostEntry], Deque[PostEntry]] = data
         self.page = 0
-        self.message = None
 
     @property
     def emojis(self) -> List[str]:
