@@ -17,6 +17,11 @@ class PostMessage(AbstractPost):
         self.url: str = url
         self.tags: str = tags
         self.post_data: Optional[PostData] = None
+        self.page = 0
+
+    async def create_message(self):
+        self.fetch_random_post()
+        await super().create_message()
 
     @property
     def emojis(self) -> List[str]:
@@ -46,6 +51,7 @@ class PostMessage(AbstractPost):
 
         if reaction.emoji == '🔁':
             if user == self.author:
+                self.fetch_random_post()
                 await self.update_message()
             return True
         if reaction.emoji == '⭐':
@@ -56,19 +62,17 @@ class PostMessage(AbstractPost):
         return PostEntry(self.url, self.post_data.post_id, datetime.now(), self.post_data)
 
     def get_post(self) -> PostData:
-        post_data = self.fetch_post()
-        if post_data.has_disallowed_tags():
+        if self.post_data.has_disallowed_tags():
             return DisallowedTagsPost()
 
-        self.update_hist(post_data)
-        return post_data
+        self.update_hist(self.post_data)
+        return self.post_data
 
     def page_content(self) -> PostMessageContent:
-        self.post_data = self.get_post()
-        return self.post_data.to_message_content()
+        return self.get_post().to_message_content()
 
     @abstractmethod
-    def fetch_post(self) -> PostData:
+    def fetch_random_post(self):
         """
         Abstract method to fetch a post, should return :class:`PostData`
         """

@@ -14,7 +14,6 @@ from util import util
 
 class XmlPostMessage(PostMessage):
     total_posts: int = 0
-    post_page: int = 0
 
     async def create_message(self):
         self.total_posts = get_total_posts(self.url, self.tags)
@@ -24,16 +23,25 @@ class XmlPostMessage(PostMessage):
 
         await super().create_message()
 
-    def fetch_post(self) -> PostData:
-        self.post_page = random.randint(0, self.total_posts - 1)
-        return fetch_xml_post(self.url, self.tags, self.post_page)
+    def fetch_random_post(self):
+        self.page = random.randint(0, self.total_posts - 1)
+        self.post_data = fetch_xml_post(self.url, self.tags, self.page)
+
+    async def next_page(self):
+        self.page = (self.page + 1) % self.total_posts
+        self.post_data = fetch_xml_post(self.url, self.tags, self.page)
+        await self.update_message()
+
+    async def previous_page(self):
+        self.page = (self.page - 1) % self.total_posts
+        self.post_data = fetch_xml_post(self.url, self.tags, self.page)
+        await self.update_message()
 
     def page_content(self) -> PostMessageContent:
-        self.post_data = self.get_post()
-        message_content = self.post_data.to_message_content()
+        message_content = super().page_content()
 
         if message_content.embed:
-            message_content.embed.description = f'Post **{self.post_page}** of **{self.total_posts}**'
+            message_content.embed.description = f'Post **{self.page}** of **{self.total_posts}**'
 
         return message_content
 

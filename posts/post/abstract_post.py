@@ -19,7 +19,7 @@ class AbstractPost(ABC):
 
     @property
     def emojis(self) -> List[str]:
-        return ['🗑️', '⭐']
+        return ['⭐', '⬅', '➡', '🗑️']
 
     async def create_message(self):
         page_content = self.page_content()
@@ -65,6 +65,12 @@ class AbstractPost(ABC):
         if reaction.emoji == '⭐':
             await self.add_favorite(user)
             return True
+        if reaction.emoji == '➡':
+            await self.next_page()
+            return True
+        if reaction.emoji == '⬅':
+            await self.previous_page()
+            return True
         if reaction.emoji == '🗑️':
             return await self.delete_message(user)
 
@@ -85,4 +91,12 @@ class AbstractPost(ABC):
 
         :return: the content of the page
         """
+        pass
+
+    @abstractmethod
+    async def next_page(self):
+        pass
+
+    @abstractmethod
+    async def previous_page(self):
         pass

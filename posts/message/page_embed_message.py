@@ -16,20 +16,7 @@ class PageEmbedMessage(AbstractPost):
 
     @property
     def emojis(self) -> List[str]:
-        return super().emojis + ['⬅', '➡']
-
-    async def handle_reaction(self, reaction: Reaction, user: Union[Member, User]) -> Optional[bool]:
-        result = await super().handle_reaction(reaction, user)
-
-        if result is not None:
-            return result
-
-        if reaction.emoji == '➡':
-            await self.next_page()
-            return True
-        if reaction.emoji == '⬅':
-            await self.previous_page()
-            return True
+        return super().emojis
 
     async def next_page(self):
         self.page = (self.page + 1) % len(self.data)

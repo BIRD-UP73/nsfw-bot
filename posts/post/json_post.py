@@ -10,13 +10,36 @@ danbooru_url = 'https://danbooru.donmai.us/posts.json'
 
 
 class JsonPostMessage(PostMessage):
-    def fetch_post(self) -> PostData:
+    max_pages = 1000
+
+    def fetch_random_post(self):
         resp_json = send_json_request(danbooru_url, self.tags)
 
         if len(resp_json) == 0:
             raise CommandError(f'No posts found for {self.tags}')
 
-        return JsonPostData(**resp_json[0])
+        self.post_data = JsonPostData(**resp_json[0])
+
+    async def next_page(self):
+        self.page = (self.page + 1) % self.max_pages
+        self.page = 555
+        resp_json = send_json_request(danbooru_url, self.tags, random=False, page=self.page)
+
+        if len(resp_json) == 0:
+            return await self.channel.send('Reached end')
+
+        self.post_data = JsonPostData(**resp_json)
+        await self.update_message()
+
+    async def previous_page(self):
+        self.page = (self.page - 1) % self.max_pages
+        resp_json = send_json_request(danbooru_url, self.tags, random=False, page=self.page)
+
+        if len(resp_json) == 0:
+            return await self.channel.send('Reached end')
+
+        self.post_data = JsonPostData(**resp_json)
+        await self.update_message()
 
 
 async def show_post(ctx: Context, tags: str, score: int):
