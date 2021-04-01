@@ -1,8 +1,8 @@
 import random
 
-from discord.ext.commands import Context
+from discord.ext.commands import Context, CommandError
 
-from posts.api.json_api import send_json_request
+from posts.api.json_api import send_json_request, fetch_counts
 from posts.data.json_post_data import JsonPostData
 from posts.data.post_data import ErrorPost
 from posts.post.post_message import PostMessage
@@ -16,30 +16,30 @@ max_pages = 1000
 
 
 class JsonPostMessage(PostMessage):
-    total_posts = max_pages
-
     def __init__(self, ctx: Context, url: str, tags: str):
         super().__init__(ctx, url, tags)
         self.page = 1
+
+    async def create_message(self):
+        self.total_posts = min(1000, fetch_counts(self.tags))
+
+        if self.total_posts == 0:
+            raise CommandError(f'No posts found for {self.tags}')
+
+        await super().create_message()
 
     def fetch_random_post(self):
         self.page = random.randint(1, self.total_posts)
         self.fetch_post_for_page()
 
     async def next_page(self):
-        if self.page == max_pages:
-            self.page = 1
-        else:
-            self.page += 1
+        self.page = (self.page - 1) % self.total_posts
 
         self.fetch_post_for_page()
         await self.update_message()
 
     async def previous_page(self):
-        if self.page == 1:
-            self.page = max_pages
-        else:
-            self.page -= 1
+        self.page = (self.page + 1) % self.total_posts
 
         self.fetch_post_for_page()
         await self.update_message()

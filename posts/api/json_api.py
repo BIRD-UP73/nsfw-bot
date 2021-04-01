@@ -19,3 +19,18 @@ def send_json_request(url: str, tags: str, limit: int = 1, page: int = 0) -> dic
     resp.raise_for_status()
 
     return resp.json()
+
+
+def fetch_counts(tags: str) -> int:
+    params = {
+        'tags': tags
+    }
+
+    url = 'https://danbooru.donmai.us/counts/posts.json'
+
+    resp = requests.get(url, params)
+    resp.raise_for_status()
+
+    resp_json = resp.json()
+
+    return resp_json.get('counts', {}).get('posts') or 0
