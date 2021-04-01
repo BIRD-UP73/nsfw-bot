@@ -12,15 +12,16 @@ from posts.post.abstract_post import AbstractPost
 
 
 class PostMessage(AbstractPost):
+    total_posts: int
+
     def __init__(self, ctx: Context, url: str, tags: str):
         super().__init__(ctx)
         self.url: str = url
         self.tags: str = tags
         self.post_data: Optional[PostData] = None
-        self.page = 0
 
     async def create_message(self):
-        self.fetch_random_post()
+        self.fetch_post_for_page()
         await super().create_message()
 
     @property
@@ -69,11 +70,20 @@ class PostMessage(AbstractPost):
         return self.post_data
 
     def page_content(self) -> PostMessageContent:
-        return self.get_post().to_message_content()
+        message_content = self.get_post().to_message_content()
+
+        if message_content.embed:
+            message_content.embed.description = f'Post **{self.page}** of **{self.total_posts}**'
+
+        return message_content
 
     @abstractmethod
     def fetch_random_post(self):
         """
         Abstract method to fetch a post, should return :class:`PostData`
         """
+        pass
+
+    @abstractmethod
+    def fetch_post_for_page(self):
         pass

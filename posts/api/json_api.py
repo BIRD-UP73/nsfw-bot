@@ -8,15 +8,12 @@ def json_post_by_id(base_url: str, post_id: int) -> dict:
     return resp.json()
 
 
-def send_json_request(url: str, tags: str, limit: int = 1, random: bool = True, page: int = 0) -> dict:
+def send_json_request(url: str, tags: str, limit: int = 1, page: int = 0) -> dict:
     params = {
         'limit': limit,
-        'random': random,
-        'tags': tags
+        'tags': tags,
+        'page': page
     }
-
-    if not random:
-        params['page'] = page
 
     resp = requests.get(url, params)
     resp.raise_for_status()
