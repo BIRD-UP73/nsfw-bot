@@ -10,8 +10,6 @@ from util import util
 
 
 danbooru_url = 'https://danbooru.donmai.us/posts.json'
-
-
 max_pages = 1000
 
 
@@ -20,26 +18,27 @@ class JsonPostMessage(PostMessage):
         super().__init__(ctx, url, tags)
         self.page = 1
 
-    async def create_message(self):
+    def fetch_total_posts(self):
         self.total_posts = min(1000, fetch_counts(self.tags))
-
-        if self.total_posts == 0:
-            raise CommandError(f'No posts found for {self.tags}')
-
-        await super().create_message()
 
     def fetch_random_post(self):
         self.page = random.randint(1, self.total_posts)
         self.fetch_post_for_page()
 
     async def next_page(self):
-        self.page = (self.page - 1) % self.total_posts
+        if self.page == self.total_posts:
+            self.page = 1
+        else:
+            self.page += 1
 
         self.fetch_post_for_page()
         await self.update_message()
 
     async def previous_page(self):
-        self.page = (self.page + 1) % self.total_posts
+        if self.page == 1:
+            self.page = self.total_posts
+        else:
+            self.page -= 1
 
         self.fetch_post_for_page()
         await self.update_message()

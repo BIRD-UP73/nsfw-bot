@@ -3,7 +3,7 @@ from datetime import datetime
 from typing import Union, Optional, List
 
 from discord import User, Member, Reaction
-from discord.ext.commands import Context
+from discord.ext.commands import Context, CommandError
 
 from posts.data.post_data import PostData, DisallowedTagsPost
 from posts.data.post_entry import PostEntry
@@ -20,9 +20,17 @@ class PostMessage(AbstractPost):
         self.url: str = url
         self.tags: str = tags
         self.post_data: Optional[PostData] = None
+        self.total_posts = 0
+        self.page = 0
 
     async def create_message(self):
+        self.fetch_total_posts()
+
+        if self.total_posts == 0:
+            raise CommandError(f'No posts found for {self.tags}')
+
         self.fetch_post_for_page()
+
         await super().create_message()
 
     @property
@@ -87,4 +95,8 @@ class PostMessage(AbstractPost):
 
     @abstractmethod
     def fetch_post_for_page(self):
+        pass
+
+    @abstractmethod
+    def fetch_total_posts(self):
         pass

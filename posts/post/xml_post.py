@@ -12,19 +12,11 @@ from util import util
 
 
 class XmlPostMessage(PostMessage):
-    total_posts: int = 0
-
     def __init__(self, ctx: Context, url: str, tags: str):
         super().__init__(ctx, url, tags)
-        self.page = 0
 
-    async def create_message(self):
+    def fetch_total_posts(self):
         self.total_posts = get_total_posts(self.url, self.tags)
-
-        if self.total_posts == 0:
-            raise CommandError(f'No posts found for {self.tags}')
-
-        await super().create_message()
 
     def fetch_random_post(self):
         self.page = random.randint(0, self.total_posts - 1)
