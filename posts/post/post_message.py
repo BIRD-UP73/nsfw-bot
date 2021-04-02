@@ -3,7 +3,7 @@ from datetime import datetime
 from typing import Union, Optional, List
 
 from discord import User, Member, Reaction
-from discord.ext.commands import Context
+from discord.ext.commands import Context, CommandError
 
 from posts.data.post_data import PostData, DisallowedTagsPost
 from posts.data.post_entry import PostEntry
@@ -17,13 +17,21 @@ class PostMessage(AbstractPost):
         self.url: str = url
         self.tags: str = tags
         self.post_data: Optional[PostData] = None
+        self.total_posts = 0
+        self.page = 0
+
+    async def create_message(self):
+        self.fetch_total_posts()
+
+        if self.total_posts == 0:
+            raise CommandError(f'No posts found for {self.tags}')
+
+        self.fetch_post_for_page()
+        await super().create_message()
 
     @property
     def emojis(self) -> List[str]:
         return super().emojis + ['🔁']
-
-    async def update_message(self):
-        await self.message.edit(**self.page_content().to_dict())
 
     async def delete_message(self, deleting_user: User):
         if deleting_user.id == self.author.id:
@@ -46,6 +54,7 @@ class PostMessage(AbstractPost):
 
         if reaction.emoji == '🔁':
             if user == self.author:
+                self.fetch_random_post()
                 await self.update_message()
             return True
         if reaction.emoji == '⭐':
@@ -56,20 +65,28 @@ class PostMessage(AbstractPost):
         return PostEntry(self.url, self.post_data.post_id, datetime.now(), self.post_data)
 
     def get_post(self) -> PostData:
-        post_data = self.fetch_post()
-        if post_data.has_disallowed_tags():
+        if self.post_data.has_disallowed_tags():
             return DisallowedTagsPost()
 
-        self.update_hist(post_data)
-        return post_data
+        self.update_hist(self.post_data)
+        return self.post_data
 
     def page_content(self) -> PostMessageContent:
-        self.post_data = self.get_post()
-        return self.post_data.to_message_content()
+        message_content = self.get_post().to_message_content()
+
+        if message_content.embed:
+            message_content.embed.description = f'Post **{self.page}** of **{self.total_posts}**'
+
+        return message_content
 
     @abstractmethod
-    def fetch_post(self) -> PostData:
-        """
-        Abstract method to fetch a post, should return :class:`PostData`
-        """
+    def fetch_random_post(self):
+        pass
+
+    @abstractmethod
+    def fetch_post_for_page(self):
+        pass
+
+    @abstractmethod
+    def fetch_total_posts(self):
         pass

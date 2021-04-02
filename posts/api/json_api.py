@@ -8,14 +8,29 @@ def json_post_by_id(base_url: str, post_id: int) -> dict:
     return resp.json()
 
 
-def send_json_request(url: str, tags: str, limit: int = 1, random: bool = True) -> dict:
+def send_json_request(url: str, tags: str, limit: int = 1, page: int = 0) -> dict:
     params = {
         'limit': limit,
-        'random': random,
-        'tags': tags
+        'tags': tags,
+        'page': page
     }
 
     resp = requests.get(url, params)
     resp.raise_for_status()
 
     return resp.json()
+
+
+def fetch_counts(tags: str) -> int:
+    params = {
+        'tags': tags
+    }
+
+    url = 'https://danbooru.donmai.us/counts/posts.json'
+
+    resp = requests.get(url, params)
+    resp.raise_for_status()
+
+    resp_json = resp.json()
+
+    return resp_json.get('counts', {}).get('posts') or 0

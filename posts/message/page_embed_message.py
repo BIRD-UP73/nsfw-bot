@@ -1,6 +1,5 @@
-from typing import List, Union, Deque, Optional
+from typing import List, Union, Deque
 
-from discord import Member, User, Reaction
 from discord.ext.commands import Context
 
 from posts.data.post_entry import PostEntry
@@ -14,23 +13,6 @@ class PageEmbedMessage(AbstractPost):
         self.data: Union[List[PostEntry], Deque[PostEntry]] = data
         self.page = 0
 
-    @property
-    def emojis(self) -> List[str]:
-        return super().emojis + ['⬅', '➡']
-
-    async def handle_reaction(self, reaction: Reaction, user: Union[Member, User]) -> Optional[bool]:
-        result = await super().handle_reaction(reaction, user)
-
-        if result is not None:
-            return result
-
-        if reaction.emoji == '➡':
-            await self.next_page()
-            return True
-        if reaction.emoji == '⬅':
-            await self.previous_page()
-            return True
-
     async def next_page(self):
         self.page = (self.page + 1) % len(self.data)
         await self.update_message()
@@ -38,10 +20,6 @@ class PageEmbedMessage(AbstractPost):
     async def previous_page(self):
         self.page = (self.page - 1) % len(self.data)
         await self.update_message()
-
-    async def update_message(self):
-        page_content = self.page_content()
-        await self.message.edit(**page_content.to_dict())
 
     def to_post_entry(self) -> PostEntry:
         return self.data[self.page]

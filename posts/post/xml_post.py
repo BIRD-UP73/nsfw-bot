@@ -2,40 +2,38 @@ import random
 from xml.dom.minidom import Element
 from xml.etree import ElementTree
 
-from discord.ext.commands import Context, CommandError
+from discord.ext.commands import Context
 
 from posts.api.xml_api import send_request
-from posts.data.post_data import PostData, NonExistentPost
+from posts.data.post_data import NonExistentPost
 from posts.data.xml_post_data import XmlPostData
-from posts.message.post_message_content import PostMessageContent
 from posts.post.post_message import PostMessage
 from util import util
 
 
 class XmlPostMessage(PostMessage):
-    total_posts: int = 0
-    post_page: int = 0
+    def __init__(self, ctx: Context, url: str, tags: str):
+        super().__init__(ctx, url, tags)
 
-    async def create_message(self):
+    def fetch_total_posts(self):
         self.total_posts = get_total_posts(self.url, self.tags)
 
-        if self.total_posts == 0:
-            raise CommandError(f'No posts found for {self.tags}')
+    def fetch_random_post(self):
+        self.page = random.randint(0, self.total_posts - 1)
+        self.fetch_post_for_page()
 
-        await super().create_message()
+    async def next_page(self):
+        self.page = (self.page + 1) % self.total_posts
+        self.fetch_post_for_page()
+        await self.update_message()
 
-    def fetch_post(self) -> PostData:
-        self.post_page = random.randint(0, self.total_posts - 1)
-        return fetch_xml_post(self.url, self.tags, self.post_page)
+    async def previous_page(self):
+        self.page = (self.page - 1) % self.total_posts
+        self.fetch_post_for_page()
+        await self.update_message()
 
-    def page_content(self) -> PostMessageContent:
-        self.post_data = self.get_post()
-        message_content = self.post_data.to_message_content()
-
-        if message_content.embed:
-            message_content.embed.description = f'Post **{self.post_page}** of **{self.total_posts}**'
-
-        return message_content
+    def fetch_post_for_page(self):
+        self.post_data = fetch_xml_post(self.url, self.tags, self.page)
 
 
 async def show_post(ctx: Context, tags: str, score: int, url: str, skip_score=False):
