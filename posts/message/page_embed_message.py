@@ -21,10 +21,6 @@ class PageEmbedMessage(AbstractPost):
         self.page = (self.page - 1) % len(self.data)
         await self.update_message()
 
-    async def update_message(self):
-        page_content = self.page_content()
-        await self.message.edit(**page_content.to_dict())
-
     def to_post_entry(self) -> PostEntry:
         return self.data[self.page]
 

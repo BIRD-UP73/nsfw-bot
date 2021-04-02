@@ -34,9 +34,6 @@ class PostMessage(AbstractPost):
     def emojis(self) -> List[str]:
         return super().emojis + ['🔁']
 
-    async def update_message(self):
-        await self.message.edit(**self.page_content().to_dict())
-
     async def delete_message(self, deleting_user: User):
         if deleting_user.id == self.author.id:
             return await super().delete_message(deleting_user)

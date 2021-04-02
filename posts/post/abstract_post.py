@@ -78,6 +78,10 @@ class AbstractPost(ABC):
         if add_favorite(user, self.to_post_entry()):
             await self.channel.send(f'{user.mention}, successfully stored favorite.')
 
+    async def update_message(self):
+        page_content = self.page_content()
+        await self.message.edit(**page_content.to_dict())
+
     @abstractmethod
     def to_post_entry(self) -> PostEntry:
         pass
