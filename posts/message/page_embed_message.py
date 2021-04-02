@@ -1,6 +1,5 @@
-from typing import List, Union, Deque, Optional
+from typing import List, Union, Deque
 
-from discord import Member, User, Reaction
 from discord.ext.commands import Context
 
 from posts.data.post_entry import PostEntry
@@ -13,10 +12,6 @@ class PageEmbedMessage(AbstractPost):
         super().__init__(ctx)
         self.data: Union[List[PostEntry], Deque[PostEntry]] = data
         self.page = 0
-
-    @property
-    def emojis(self) -> List[str]:
-        return super().emojis
 
     async def next_page(self):
         self.page = (self.page + 1) % len(self.data)
