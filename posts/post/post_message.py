@@ -88,9 +88,6 @@ class PostMessage(AbstractPost):
 
     @abstractmethod
     def fetch_random_post(self):
-        """
-        Abstract method to fetch a post, should return :class:`PostData`
-        """
         pass
 
     @abstractmethod
