@@ -8,7 +8,6 @@ from posts.data.post_data import ErrorPost
 from posts.post.post_message import PostMessage
 from util import util
 
-
 danbooru_url = 'https://danbooru.donmai.us/posts.json'
 max_pages = 1000
 

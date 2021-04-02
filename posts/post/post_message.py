@@ -27,7 +27,6 @@ class PostMessage(AbstractPost):
             raise CommandError(f'No posts found for {self.tags}')
 
         self.fetch_post_for_page()
-
         await super().create_message()
 
     @property
