@@ -1,8 +1,8 @@
-from abc import abstractmethod
+from abc import ABC
 from datetime import datetime
-from typing import Union, Optional, List
+from typing import Optional
 
-from discord import User, Member, Reaction
+from discord import User
 from discord.ext.commands import Context, CommandError
 
 from posts.data.post_data import PostData, DisallowedTagsPost
@@ -11,14 +11,12 @@ from posts.message.post_message_content import PostMessageContent
 from posts.post.abstract_post import AbstractPost
 
 
-class PostMessage(AbstractPost):
+class PostMessage(AbstractPost, ABC):
     def __init__(self, ctx: Context, url: str, tags: str):
         super().__init__(ctx)
         self.url: str = url
         self.tags: str = tags
         self.post_data: Optional[PostData] = None
-        self.total_posts = 0
-        self.page = 0
 
     async def create_message(self):
         self.fetch_total_posts()
@@ -28,10 +26,6 @@ class PostMessage(AbstractPost):
 
         self.fetch_post_for_page()
         await super().create_message()
-
-    @property
-    def emojis(self) -> List[str]:
-        return super().emojis + ['🔁']
 
     async def delete_message(self, deleting_user: User):
         if deleting_user.id == self.author.id:
@@ -45,21 +39,6 @@ class PostMessage(AbstractPost):
         """
         hist_cog = self.bot.get_cog('PostHist')
         hist_cog.add_to_history(self.channel, self.url, post_data)
-
-    async def handle_reaction(self, reaction: Reaction, user: Union[Member, User]) -> Optional[bool]:
-        result = await super().handle_reaction(reaction, user)
-
-        if result is not None:
-            return result
-
-        if reaction.emoji == '🔁':
-            if user == self.author:
-                self.fetch_random_post()
-                await self.update_message()
-            return True
-        if reaction.emoji == '⭐':
-            await self.add_favorite(user)
-            return True
 
     def to_post_entry(self) -> PostEntry:
         return PostEntry(self.url, self.post_data.post_id, datetime.now(), self.post_data)
@@ -78,15 +57,3 @@ class PostMessage(AbstractPost):
             message_content.embed.description = f'Post **{self.page}** of **{self.total_posts}**'
 
         return message_content
-
-    @abstractmethod
-    def fetch_random_post(self):
-        pass
-
-    @abstractmethod
-    def fetch_post_for_page(self):
-        pass
-
-    @abstractmethod
-    def fetch_total_posts(self):
-        pass

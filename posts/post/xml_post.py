@@ -1,4 +1,3 @@
-import random
 from xml.dom.minidom import Element
 from xml.etree import ElementTree
 
@@ -12,25 +11,8 @@ from util import util
 
 
 class XmlPostMessage(PostMessage):
-    def __init__(self, ctx: Context, url: str, tags: str):
-        super().__init__(ctx, url, tags)
-
     def fetch_total_posts(self):
         self.total_posts = get_total_posts(self.url, self.tags)
-
-    def fetch_random_post(self):
-        self.page = random.randint(0, self.total_posts - 1)
-        self.fetch_post_for_page()
-
-    async def next_page(self):
-        self.page = (self.page + 1) % self.total_posts
-        self.fetch_post_for_page()
-        await self.update_message()
-
-    async def previous_page(self):
-        self.page = (self.page - 1) % self.total_posts
-        self.fetch_post_for_page()
-        await self.update_message()
 
     def fetch_post_for_page(self):
         self.post_data = fetch_xml_post(self.url, self.tags, self.page)

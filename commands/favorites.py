@@ -11,11 +11,13 @@ from posts.message.post_message_content import PostMessageContent
 
 
 class FavoritesMessage(PageEmbedMessage):
-    emojis = ['⛔', '🗑️', '⬅', '➡', '⭐']
-
     def __init__(self, ctx: Context, user: User, data: List[PostEntry]):
         super().__init__(ctx, data)
         self.user = user
+
+    @property
+    def emojis(self) -> List[str]:
+        return super().emojis + ['⛔']
 
     async def add_favorite(self, user):
         if user != self.author:
