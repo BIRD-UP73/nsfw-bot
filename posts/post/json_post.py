@@ -1,6 +1,6 @@
 import random
 
-from discord.ext.commands import Context, CommandError
+from discord.ext.commands import Context
 
 from posts.api.json_api import send_json_request, fetch_counts
 from posts.data.json_post_data import JsonPostData

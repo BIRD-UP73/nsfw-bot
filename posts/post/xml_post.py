@@ -2,7 +2,7 @@ import random
 from xml.dom.minidom import Element
 from xml.etree import ElementTree
 
-from discord.ext.commands import Context, CommandError
+from discord.ext.commands import Context
 
 from posts.api.xml_api import send_request
 from posts.data.post_data import NonExistentPost
