@@ -12,9 +12,6 @@ from posts.post.abstract_post import AbstractPost
 
 
 class PostMessage(AbstractPost):
-    total_posts: int
-    page: int
-
     def __init__(self, ctx: Context, url: str, tags: str):
         super().__init__(ctx)
         self.url: str = url
