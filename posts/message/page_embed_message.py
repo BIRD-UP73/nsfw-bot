@@ -11,15 +11,12 @@ class PageEmbedMessage(AbstractPost):
     def __init__(self, ctx: Context, data: Union[List[PostEntry], Deque[PostEntry]]):
         super().__init__(ctx)
         self.data: Union[List[PostEntry], Deque[PostEntry]] = data
-        self.page = 0
 
-    async def next_page(self):
-        self.page = (self.page + 1) % len(self.data)
-        await self.update_message()
+    def fetch_post_for_page(self):
+        return None
 
-    async def previous_page(self):
-        self.page = (self.page - 1) % len(self.data)
-        await self.update_message()
+    def fetch_total_posts(self):
+        self.total_posts = len(self.data)
 
     def to_post_entry(self) -> PostEntry:
         return self.data[self.page]

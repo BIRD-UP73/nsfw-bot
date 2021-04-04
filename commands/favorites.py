@@ -11,11 +11,13 @@ from posts.message.post_message_content import PostMessageContent
 
 
 class FavoritesMessage(PageEmbedMessage):
-    emojis = ['⛔', '🗑️', '⬅', '➡', '⭐']
-
     def __init__(self, ctx: Context, user: User, data: List[PostEntry]):
         super().__init__(ctx, data)
         self.user = user
+
+    @property
+    def emojis(self) -> List[str]:
+        return super().emojis + ['⛔']
 
     async def add_favorite(self, user):
         if user != self.author:
@@ -56,14 +58,10 @@ class FavoritesMessage(PageEmbedMessage):
         message_content = post_data.to_message_content()
 
         if message_content.embed is not None:
-            embed = message_content.embed
-
-            embed.title = 'Favorites'
-            embed.description = f'Favorites for {self.user.mention}'
-            embed.timestamp = data.saved_at
-            embed.set_footer(text=f'Page {self.page + 1} of {len(self.data)}')
-
-            message_content.embed = embed
+            message_content.embed.title = 'Favorites'
+            message_content.embed.description = f'Favorites for {self.user.mention}'
+            message_content.embed.timestamp = data.saved_at
+            message_content.embed.set_footer(text=f'Page {self.page + 1} of {len(self.data)}')
 
         return message_content
 

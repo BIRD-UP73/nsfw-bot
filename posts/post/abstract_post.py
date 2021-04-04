@@ -1,3 +1,4 @@
+import random
 from abc import abstractmethod, ABC
 from typing import Union, Optional, List
 
@@ -16,12 +17,16 @@ class AbstractPost(ABC):
         self.bot: Bot = ctx.bot
         self.channel: Union[Messageable] = ctx.channel
         self.message: Optional[Message] = None
+        self.page = 0
+        self.total_posts = 0
 
     @property
     def emojis(self) -> List[str]:
-        return ['⭐', '⬅', '➡', '🗑️']
+        return ['⭐', '⬅', '➡', '🔁', '🗑️']
 
     async def create_message(self):
+        self.fetch_total_posts()
+
         page_content = self.page_content()
         self.message = await self.channel.send(**page_content.to_dict())
 
@@ -65,6 +70,11 @@ class AbstractPost(ABC):
         if reaction.emoji == '⭐':
             await self.add_favorite(user)
             return True
+        if reaction.emoji == '🔁':
+            if user == self.author:
+                self.fetch_random_post()
+                await self.update_message()
+            return True
         if reaction.emoji == '➡':
             await self.next_page()
             return True
@@ -82,6 +92,20 @@ class AbstractPost(ABC):
         page_content = self.page_content()
         await self.message.edit(**page_content.to_dict())
 
+    def fetch_random_post(self):
+        self.page = random.randint(0, self.total_posts - 1)
+        self.fetch_post_for_page()
+
+    async def next_page(self):
+        self.page = (self.page + 1) % self.total_posts
+        self.fetch_post_for_page()
+        await self.update_message()
+
+    async def previous_page(self):
+        self.page = (self.page - 1) % self.total_posts
+        self.fetch_post_for_page()
+        await self.update_message()
+
     @abstractmethod
     def to_post_entry(self) -> PostEntry:
         pass
@@ -98,9 +122,9 @@ class AbstractPost(ABC):
         pass
 
     @abstractmethod
-    async def next_page(self):
+    def fetch_post_for_page(self):
         pass
 
     @abstractmethod
-    async def previous_page(self):
+    def fetch_total_posts(self):
         pass
