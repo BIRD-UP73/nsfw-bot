@@ -1,20 +1,21 @@
 from discord import User
 
 from db import post_repository
-from posts.data.post_entry import PostEntry
+from posts.data.post_data import PostData
+from util.url_util import parse_url
 
 
-def add_favorite(user: User, entry: PostEntry):
+def add_favorite(user: User, post_data: PostData):
     """
     Adds a post to a user's favorites
     :param user: the user
-    :param entry: the entry with the post
+    :param post_data: the entry with the post
     :return: whether adding the favorite succeeded
     """
-    post_data = entry.post_data
+    url = parse_url(post_data.file_url)
 
-    if post_data.is_error() or post_repository.exists(user, entry.url, post_data.post_id):
+    if post_data.is_error() or post_repository.exists(user, url, post_data.post_id):
         return False
 
-    post_repository.store_favorite(user, entry.url, post_data.post_id)
+    post_repository.store_favorite(user, url, post_data.post_id)
     return True
