@@ -40,12 +40,12 @@ class FavoritesMessage(AbstractPost):
 
         post_repository.remove_favorite(user, parse_url(data.file_url), data.post_id)
         await self.channel.send(f'{user.mention}, removed favorite successfully.')
-        self.fetcher.remove_post(self.page)
+        self.fetcher.remove_post(self.fetcher.current_page())
 
         if len(self.fetcher.data) == 0:
             return await self.clear_message()
 
-        if self.page == len(self.fetcher.data):
+        if self.fetcher.current_page() == len(self.fetcher.data):
             self.fetcher.page = 0
 
         await self.update_message()

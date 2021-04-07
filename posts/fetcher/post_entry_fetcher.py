@@ -29,7 +29,6 @@ class PostEntryFetcher(AbstractPostFetcher):
 
     def remove_post(self, page):
         del self.data[page]
-        print(self.data)
 
     def current_post_timestamp(self) -> datetime:
         return self.data[self.paginator.page].saved_at

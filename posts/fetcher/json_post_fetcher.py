@@ -7,7 +7,7 @@ from posts.data.json_post_data import JsonPostData
 from posts.data.post_data import ErrorPost
 from posts.fetcher.post_fetcher import PostFetcher
 from posts.history import PostHistory
-
+from posts.paginator.json_post_paginator import JsonPostPaginator
 
 danbooru_url = 'https://danbooru.donmai.us/posts.json'
 
@@ -15,18 +15,7 @@ danbooru_url = 'https://danbooru.donmai.us/posts.json'
 class JsonPostFetcher(PostFetcher):
     def __init__(self, tags: str):
         super().__init__(danbooru_url, tags)
-
-    def next_page(self, source: Union[DMChannel, TextChannel]):
-        page = self.paginator.next_page()
-        self.fetch_for_page(page, source)
-
-    def previous_page(self, source: Union[DMChannel, TextChannel]):
-        page = self.paginator.previous_page()
-        self.fetch_for_page(page, source)
-
-    def random_page(self, source: Union[DMChannel, TextChannel]):
-        page = self.paginator.random_page()
-        self.fetch_for_page(page, source)
+        self.paginator = JsonPostPaginator()
 
     def fetch_count(self):
         self.paginator.post_count = min(1000, fetch_counts(self.tags))

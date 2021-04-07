@@ -18,9 +18,9 @@ class HistoryMessage(AbstractPost):
         message_content = post_data.to_message_content()
 
         if message_content.embed:
-            message_content.embed.title = 'History'
-            message_content.embed.description = f'Page **{self.fetcher.current_page() + 1}**' \
-                                                f' of **{len(self.fetcher.data)}**'
-            message_content.embed.timestamp = self.fetcher.current_post_timestamp()
+            message_content.title = 'History'
+            message_content.description = f'Page **{self.fetcher.current_page() + 1}**' \
+                                          f' of **{len(self.fetcher.data)}**'
+            message_content.timestamp = self.fetcher.current_post_timestamp()
 
         return message_content

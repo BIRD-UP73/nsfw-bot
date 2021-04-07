@@ -14,3 +14,6 @@ class PostMessageContent:
             return dict(content=self.content, embed=None)
 
         return dict(content=None, embed=self.embed)
+
+    def __setattr__(self, key, value):
+        setattr(self.embed, key, value)
