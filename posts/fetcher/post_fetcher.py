@@ -7,7 +7,6 @@ from posts.fetcher.abstract_post_fetcher import AbstractPostFetcher
 
 class PostFetcher(AbstractPostFetcher, ABC):
     def __init__(self, url: str, tags: str):
-        super().__init__()
         self.url = url
         self.tags = tags
         self.post_data: Optional[PostData] = None

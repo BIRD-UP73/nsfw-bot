@@ -24,4 +24,4 @@ async def favorites(ctx: Context, user: Member = None):
     if not favorites:
         return await ctx.send('No favorites found')
 
-    await FavoritesMessage(ctx, fav_list, user).create_message()
+    await FavoritesMessage(ctx, fav_list).create_message()

@@ -13,11 +13,10 @@ from util.url_util import parse_url
 
 
 class FavoritesMessage(AbstractPost):
-    def __init__(self, ctx: Context, data: List[PostEntry], user: User):
+    def __init__(self, ctx: Context, data: List[PostEntry]):
         paginator = DefaultPaginator()
         self.fetcher = PostEntryFetcher(data, paginator)
         super().__init__(self.fetcher, ctx, paginator)
-        self.user = user
 
     @property
     def emojis(self) -> List[str]:
@@ -38,7 +37,7 @@ class FavoritesMessage(AbstractPost):
             return True
 
     async def remove_favorite(self, user: User):
-        if user != self.user:
+        if user != self.author:
             return
 
         data = self.fetcher.get_post()
@@ -63,7 +62,7 @@ class FavoritesMessage(AbstractPost):
 
         if embed := message_content.embed:
             embed.title = 'Favorites'
-            embed.description = f'Favorites for {self.user.mention}. '
+            embed.description = f'Favorites for {self.author.mention}. '
             embed.timestamp = self.fetcher.current_entry().saved_at
             embed.set_footer(text=f'Page {self.paginator.page + 1} of {self.paginator.post_count}'
                                   f' • Score: {post_data.score}')

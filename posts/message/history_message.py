@@ -23,6 +23,7 @@ class HistoryMessage(AbstractPost):
             embed.title = 'Post history'
             embed.description = f'Page **{self.paginator.page + 1}** of **{self.paginator.post_count}**'
             embed.timestamp = self.fetcher.current_entry().saved_at
-            embed.set_footer(text=f'Page 1 of 10 | Score: {post_data.score}')
+            embed.set_footer(text=f'Page {self.paginator.page + 1} of {self.paginator.post_count}'
+                                  f' • Score: {post_data.score}')
 
         return message_content
