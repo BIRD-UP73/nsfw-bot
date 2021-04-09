@@ -50,12 +50,12 @@ class FavoritesMessage(AbstractPost):
         if len(self.fetcher.data) == 0:
             return await self.clear_message()
 
-        if self.paginator.page == len(self.fetcher.data):
-            self.paginator.page = 0
-
-        self.paginator.post_count -= 1
-
         await self.update_message()
+
+    async def clear_message(self):
+        self.bot.remove_listener(self.on_reaction_add)
+        await self.message.clear_reactions()
+        await self.message.edit(content='No favorites.', embed=None)
 
     def page_content(self) -> PostMessageContent:
         post_data = self.fetcher.get_post()
@@ -72,8 +72,3 @@ class FavoritesMessage(AbstractPost):
         message_content.embed = embed
 
         return message_content
-
-    async def clear_message(self):
-        self.bot.remove_listener(self.on_reaction_add)
-        await self.message.clear_reactions()
-        await self.message.edit(content='No favorites.', embed=None)

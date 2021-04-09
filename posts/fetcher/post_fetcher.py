@@ -1,7 +1,7 @@
 from abc import ABC
 from typing import Optional
 
-from posts.data.post_data import PostData, DisallowedTagsPost, NonExistentPost
+from posts.data.post_data import PostData, NonExistentPost
 from posts.fetcher.abstract_post_fetcher import AbstractPostFetcher
 
 
