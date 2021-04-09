@@ -1,7 +1,6 @@
 from typing import Dict, Union, Optional
 
 from discord import Embed
-from discord.embeds import EmptyEmbed
 
 
 class PostMessageContent:

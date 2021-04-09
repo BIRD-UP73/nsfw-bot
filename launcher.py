@@ -5,9 +5,9 @@ from discord.ext import commands
 from commands.cogs.listeners import Listeners
 from commands.cogs.posts_cog import PostCog
 from commands.favorites import favorites
-from commands.history import post_history
 from commands.github import github
 from commands.help import CustomHelpCommand
+from commands.history import post_history
 from commands.latency import latency
 
 config = configparser.RawConfigParser()
