@@ -1,40 +1,45 @@
-import random
-from abc import abstractmethod, ABC
+from abc import ABC, abstractmethod
 from typing import Union, Optional, List
 
-from discord import Reaction, Member, Message
-from discord.abc import User, Messageable
-from discord.ext.commands import Context, Bot
+from discord import Reaction, Member, Message, DMChannel, TextChannel
+from discord.abc import User
+from discord.ext.commands import Context, Bot, UserInputError
 
-from posts.data.post_entry import PostEntry
+from posts.fetcher.abstract_post_fetcher import AbstractPostFetcher
 from posts.message.post_message_content import PostMessageContent
 from posts.message.reaction_handler import add_favorite
+from posts.paginator.paginator import Paginator, DefaultPaginator
 
 
 class AbstractPost(ABC):
-    def __init__(self, ctx: Context):
+    def __init__(self, fetcher: AbstractPostFetcher, ctx: Context, paginator=None):
+        self.fetcher: AbstractPostFetcher = fetcher
         self.author: Union[User, Member] = ctx.author
         self.bot: Bot = ctx.bot
-        self.channel: Union[Messageable] = ctx.channel
+        self.channel: Union[TextChannel, DMChannel] = ctx.channel
         self.message: Optional[Message] = None
-        self.page = 0
-        self.total_posts = 0
+        self.paginator: Paginator = paginator or DefaultPaginator()
 
     @property
     def emojis(self) -> List[str]:
         return ['⭐', '⬅', '➡', '🔁', '🗑️']
 
-    async def create_message(self):
-        self.fetch_total_posts()
+    @staticmethod
+    def is_page_emoji(emoji: str) -> bool:
+        return emoji in ['⬅', '➡', '🔁']
 
-        page_content = self.page_content()
-        self.message = await self.channel.send(**page_content.to_dict())
+    async def create_message(self):
+        self.paginator.post_count = self.fetcher.fetch_count()
+
+        if self.paginator.post_count == 0:
+            raise UserInputError('No posts found.')
+
+        self.fetcher.fetch_for_page(self.paginator.page, self.channel)
+
+        self.message = await self.channel.send(**self.page_content().to_dict())
 
         self.bot.add_listener(self.on_reaction_add)
         await self.add_emojis()
-
-        listener_cog = self.bot.get_cog('Listeners')
-        listener_cog.add_post(self)
 
     async def delete_message(self, deleting_user: User) -> bool:
         """
@@ -70,45 +75,31 @@ class AbstractPost(ABC):
         if reaction.emoji == '⭐':
             await self.add_favorite(user)
             return True
-        if reaction.emoji == '🔁':
-            if user == self.author:
-                self.fetch_random_post()
-                await self.update_message()
-            return True
-        if reaction.emoji == '➡':
-            await self.next_page()
-            return True
-        if reaction.emoji == '⬅':
-            await self.previous_page()
-            return True
         if reaction.emoji == '🗑️':
             return await self.delete_message(user)
 
+        if self.is_page_emoji(reaction.emoji):
+            if reaction.emoji == '🔁':
+                if user == self.author:
+                    self.paginator.random_page()
+                else:
+                    return True
+
+            if reaction.emoji == '➡':
+                self.paginator.next_page()
+            if reaction.emoji == '⬅':
+                self.paginator.previous_page()
+
+            self.fetcher.fetch_for_page(self.paginator.page, self.channel)
+            await self.update_message()
+            return True
+
     async def add_favorite(self, user: User):
-        if add_favorite(user, self.to_post_entry()):
+        if add_favorite(user, self.fetcher.get_post()):
             await self.channel.send(f'{user.mention}, successfully stored favorite.')
 
     async def update_message(self):
-        page_content = self.page_content()
-        await self.message.edit(**page_content.to_dict())
-
-    def fetch_random_post(self):
-        self.page = random.randint(0, self.total_posts - 1)
-        self.fetch_post_for_page()
-
-    async def next_page(self):
-        self.page = (self.page + 1) % self.total_posts
-        self.fetch_post_for_page()
-        await self.update_message()
-
-    async def previous_page(self):
-        self.page = (self.page - 1) % self.total_posts
-        self.fetch_post_for_page()
-        await self.update_message()
-
-    @abstractmethod
-    def to_post_entry(self) -> PostEntry:
-        pass
+        await self.message.edit(**self.page_content().to_dict())
 
     @abstractmethod
     def page_content(self) -> PostMessageContent:
@@ -119,12 +110,4 @@ class AbstractPost(ABC):
 
         :return: the content of the page
         """
-        pass
-
-    @abstractmethod
-    def fetch_post_for_page(self):
-        pass
-
-    @abstractmethod
-    def fetch_total_posts(self):
         pass

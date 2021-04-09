@@ -4,10 +4,10 @@ from discord.ext import commands
 
 from commands.cogs.listeners import Listeners
 from commands.cogs.posts_cog import PostCog
-from commands.favorites import Favorites
+from commands.favorites import favorites
 from commands.github import github
 from commands.help import CustomHelpCommand
-from commands.history import PostHist
+from commands.history import post_history
 from commands.latency import latency
 
 config = configparser.RawConfigParser()
@@ -25,12 +25,12 @@ bot = commands.Bot(
 )
 
 bot.add_cog(PostCog())
-bot.add_cog(PostHist())
 bot.add_cog(Listeners(bot))
-bot.add_cog(Favorites())
 
 bot.add_command(github)
 bot.add_command(latency)
+bot.add_command(favorites)
+bot.add_command(post_history)
 
 if __name__ == "__main__":
     bot.run(token)
