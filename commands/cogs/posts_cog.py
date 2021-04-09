@@ -8,10 +8,6 @@ from posts.post import xml_post, json_post
 from util import util
 from util.url_util import short_urls, get_long_url
 
-aliases = {
-    'danbooru': ['dbooru']
-}
-
 desc = {
     'danbooru': """
     Searches images from danbooru.com
@@ -65,7 +61,7 @@ class PostCog(commands.Cog):
     async def tbib(self, ctx: Context, *, tags: str):
         await xml_post.show_post(ctx, tags, 0, get_long_url(ctx.command.name), skip_score=True)
 
-    @commands.command(**get_data('danbooru'))
+    @commands.command(**get_data('danbooru'), aliases=['dbooru'])
     async def danbooru(self, ctx: Context, score: Optional[int] = 50, *, tags: str, ):
         await json_post.show_post(ctx, tags, score)
 
