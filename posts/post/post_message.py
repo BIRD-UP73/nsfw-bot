@@ -25,8 +25,7 @@ class PostMessage(AbstractPost):
     def page_content(self) -> PostMessageContent:
         message_content = self.fetcher.get_post().to_message_content()
 
-        if message_content.embed:
-            message_content.embed.description = f'Post **{self.paginator.page}**' \
-                                                f' of **{self.paginator.post_count}**'
+        if embed := message_content.embed:
+            embed.description = f'Post **{self.paginator.page}** of **{self.paginator.post_count}**'
 
         return message_content
