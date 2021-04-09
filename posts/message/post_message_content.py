@@ -5,8 +5,6 @@ from discord.embeds import EmptyEmbed
 
 
 class PostMessageContent:
-    embed = None
-
     def __init__(self, is_animated: bool = False, content: Optional[str] = None, embed: Embed = None):
         self.is_animated: bool = is_animated
         self.content: str = content
@@ -17,7 +15,3 @@ class PostMessageContent:
             return dict(content=self.content, embed=None)
 
         return dict(content=None, embed=self.embed)
-
-    def set_footer(self, *, text: str = EmptyEmbed, icon_url: str = EmptyEmbed):
-        if self.embed:
-            self.embed.set_footer(text=text, icon_url=icon_url)

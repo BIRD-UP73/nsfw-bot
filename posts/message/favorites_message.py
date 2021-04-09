@@ -61,14 +61,11 @@ class FavoritesMessage(AbstractPost):
         post_data = self.fetcher.get_post()
         message_content = post_data.to_message_content()
 
-        embed = message_content.embed
-
-        if embed is not None:
+        if embed := message_content.embed:
             embed.title = 'Favorites'
-            embed.description = f'Favorites for {self.user.mention}'
+            embed.description = f'Favorites for {self.user.mention}. '
             embed.timestamp = self.fetcher.current_entry().saved_at
-            embed.set_footer(text=f'Page {self.paginator.page + 1} of {self.paginator.post_count}')
-
-        message_content.embed = embed
+            embed.set_footer(text=f'Page {self.paginator.page + 1} of {self.paginator.post_count}'
+                                  f' • Score: {post_data.score}')
 
         return message_content
