@@ -12,6 +12,9 @@ class PostHistory(metaclass=Singleton):
     history: Dict[int, Deque[PostEntry]] = {}
 
     def add_to_history(self, channel: Union[DMChannel, TextChannel], post: PostData):
+        if post.is_error():
+            return
+
         channel_id = channel.id if isinstance(channel, DMChannel) else channel.guild.id
 
         self.history.setdefault(channel_id, deque(maxlen=25))

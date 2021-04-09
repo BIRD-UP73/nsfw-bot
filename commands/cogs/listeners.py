@@ -1,5 +1,5 @@
 from discord import Game
-from discord.ext.commands import Bot, Cog, Context
+from discord.ext.commands import Bot, Cog, Context, UserInputError
 
 
 class Listeners(Cog):
@@ -15,5 +15,9 @@ class Listeners(Cog):
 
     @Cog.listener()
     async def on_command_error(self, ctx: Context, exception: Exception):
-        await ctx.send(str(exception))
+        if isinstance(exception, UserInputError):
+            await ctx.send(str(exception))
+        else:
+            await ctx.send('Something went wrong.')
+
         raise exception

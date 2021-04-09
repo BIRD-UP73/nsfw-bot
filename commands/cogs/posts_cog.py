@@ -9,7 +9,6 @@ from util import util
 from util.url_util import short_urls, get_long_url
 
 aliases = {
-    'rule34': ['r34'],
     'danbooru': ['dbooru']
 }
 
@@ -46,14 +45,11 @@ def get_data(command_name: str):
         description=description,
     )
 
-    if command_name in aliases:
-        data_dict['aliases'] = aliases.get(command_name)
-
     return data_dict
 
 
 class PostCog(commands.Cog):
-    @commands.command(**get_data('rule34'))
+    @commands.command(**get_data('rule34'), aliases=['r34'])
     async def rule34(self, ctx: Context, score: Optional[int] = 50, *, tags: str):
         await xml_post.show_post(ctx, tags, score, get_long_url(ctx.command.name))
 

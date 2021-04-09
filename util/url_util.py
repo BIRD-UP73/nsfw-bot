@@ -14,6 +14,9 @@ short_urls = {
 def parse_url(url: str) -> str:
     parsed_url = urlparse(url).hostname or url
 
+    if 'donmai.us' in parsed_url:
+        return danbooru
+
     split_hostname = parsed_url.split('.')
 
     if len(split_hostname) > 2:
@@ -23,7 +26,7 @@ def parse_url(url: str) -> str:
 
 
 def short_to_long(short_url):
-    if short_url == 'danbooru.donmai.us':
+    if short_url in danbooru:
         return 'https://danbooru.donmai.us/posts'
 
     long_url = f'https://{short_url}/index.php'

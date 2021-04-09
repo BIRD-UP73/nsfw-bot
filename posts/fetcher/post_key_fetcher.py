@@ -13,7 +13,7 @@ from util.url_util import short_to_long
 class PostKeyFetcher:
     @staticmethod
     def fetch(post_key: PostEntryKey) -> PostData:
-        if post_key.url == danbooru:
+        if post_key.url in danbooru:
             return PostKeyFetcher.get_json_post(post_key)
 
         return PostKeyFetcher.get_xml_post(post_key)

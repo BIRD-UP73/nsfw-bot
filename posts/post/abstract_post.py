@@ -1,31 +1,40 @@
-import random
 from abc import ABC, abstractmethod
 from typing import Union, Optional, List
 
 from discord import Reaction, Member, Message, DMChannel, TextChannel
 from discord.abc import User
-from discord.ext.commands import Context, Bot
+from discord.ext.commands import Context, Bot, UserInputError
 
 from posts.fetcher.abstract_post_fetcher import AbstractPostFetcher
 from posts.message.post_message_content import PostMessageContent
 from posts.message.reaction_handler import add_favorite
+from posts.paginator.paginator import Paginator, DefaultPaginator
 
 
 class AbstractPost(ABC):
-    def __init__(self, fetcher: AbstractPostFetcher, ctx: Context):
+    def __init__(self, fetcher: AbstractPostFetcher, ctx: Context, paginator=None):
         self.fetcher: AbstractPostFetcher = fetcher
         self.author: Union[User, Member] = ctx.author
         self.bot: Bot = ctx.bot
         self.channel: Union[TextChannel, DMChannel] = ctx.channel
         self.message: Optional[Message] = None
+        self.paginator: Paginator = paginator or DefaultPaginator()
 
     @property
     def emojis(self) -> List[str]:
         return ['⭐', '⬅', '➡', '🔁', '🗑️']
 
+    @staticmethod
+    def is_page_emoji(emoji: str) -> bool:
+        return emoji in ['⬅', '➡', '🔁']
+
     async def create_message(self):
-        self.fetcher.fetch_count()
-        self.fetcher.next_page(self.channel)
+        self.paginator.post_count = self.fetcher.fetch_count()
+
+        if self.paginator.post_count == 0:
+            raise UserInputError('No posts found.')
+
+        self.fetcher.fetch_for_page(self.paginator.page, self.channel)
 
         self.message = await self.channel.send(**self.page_content().to_dict())
 
@@ -69,16 +78,21 @@ class AbstractPost(ABC):
         if reaction.emoji == '🗑️':
             return await self.delete_message(user)
 
-        if reaction.emoji == '🔁':
-            if user == self.author:
-                self.fetcher.random_page(self.channel)
-        if reaction.emoji == '➡':
-            self.fetcher.next_page(self.channel)
-        if reaction.emoji == '⬅':
-            self.fetcher.previous_page(self.channel)
+        if self.is_page_emoji(reaction.emoji):
+            if reaction.emoji == '🔁':
+                if user == self.author:
+                    self.paginator.random_page()
+                else:
+                    return True
 
-        await self.update_message()
-        return True
+            if reaction.emoji == '➡':
+                self.paginator.next_page()
+            if reaction.emoji == '⬅':
+                self.paginator.previous_page()
+
+            self.fetcher.fetch_for_page(self.paginator.page, self.channel)
+            await self.update_message()
+            return True
 
     async def add_favorite(self, user: User):
         if add_favorite(user, self.fetcher.get_post()):

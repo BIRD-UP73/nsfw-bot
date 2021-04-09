@@ -8,7 +8,7 @@ class JsonPostPaginator(DefaultPaginator):
         super().__init__()
         self.page = 1
 
-    def random_page(self) -> int:
+    def random_page(self):
         self.page = random.randint(1, self.post_count)
         return self.page
 

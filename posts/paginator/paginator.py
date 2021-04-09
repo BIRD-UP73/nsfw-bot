@@ -3,8 +3,8 @@ from abc import ABC, abstractmethod
 
 
 class Paginator(ABC):
-    def __init__(self, post_count: int = 0):
-        self.post_count = post_count
+    def __init__(self):
+        self.post_count: int = 0
         self.page: int = 0
 
     @abstractmethod

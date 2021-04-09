@@ -17,8 +17,8 @@ class JsonPostFetcher(PostFetcher):
         super().__init__(danbooru_url, tags)
         self.paginator = JsonPostPaginator()
 
-    def fetch_count(self):
-        self.paginator.post_count = min(1000, fetch_counts(self.tags))
+    def fetch_count(self) -> int:
+        return min(1000, fetch_counts(self.tags))
 
     def fetch_for_page(self, page: int, source: Union[DMChannel, TextChannel]):
         resp_json = send_json_request(danbooru_url, self.tags, page=page)

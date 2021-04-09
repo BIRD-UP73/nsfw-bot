@@ -1,4 +1,6 @@
 from datetime import datetime
+from typing import Optional
+
 from posts.data.post_data import PostData
 from util.url_util import parse_url
 
@@ -8,7 +10,7 @@ class PostEntry:
         self.url: str = url
         self.post_id: int = post_id
         self.saved_at: datetime = saved_at
-        self.post_data = post_data
+        self.post_data: Optional[PostData] = post_data
 
     @classmethod
     def from_post_data(cls, post_data: PostData):

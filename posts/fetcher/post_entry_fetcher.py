@@ -1,4 +1,3 @@
-from datetime import datetime
 from typing import List, Union
 
 from discord import TextChannel, DMChannel
@@ -8,15 +7,17 @@ from posts.data.post_entry import PostEntry
 from posts.fetcher.abstract_post_fetcher import AbstractPostFetcher
 from posts.fetcher.post_entry_cache import PostEntryKey, PostEntryCache
 from posts.history import PostHistory
+from posts.paginator.paginator import Paginator
 
 
 class PostEntryFetcher(AbstractPostFetcher):
-    def __init__(self, data: List[PostEntry]):
+    def __init__(self, data: List[PostEntry], paginator: Paginator):
         super().__init__()
         self.data = data
+        self.paginator = paginator
 
     def fetch_for_page(self, page: int, source: Union[TextChannel, DMChannel]):
-        entry = self.data[self.paginator.page]
+        entry = self.data[page]
         post_entry_key = PostEntryKey(entry.post_id, entry.url)
 
         post_data = PostEntryCache().get_post(post_entry_key)
@@ -24,14 +25,14 @@ class PostEntryFetcher(AbstractPostFetcher):
 
         PostHistory().add_to_history(source, post_data)
 
-    def fetch_count(self):
-        self.paginator.post_count = len(self.data)
+    def get_post(self) -> PostData:
+        return self.data[self.paginator.page].post_data
+
+    def fetch_count(self) -> int:
+        return len(self.data)
 
     def remove_post(self, page):
         del self.data[page]
 
-    def current_post_timestamp(self) -> datetime:
-        return self.data[self.paginator.page].saved_at
-
-    def get_post(self) -> PostData:
-        return self.data[self.paginator.page].post_data
+    def current_entry(self) -> PostEntry:
+        return self.data[self.paginator.page]

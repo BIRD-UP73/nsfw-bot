@@ -4,8 +4,6 @@ from posts.fetcher.json_post_fetcher import JsonPostFetcher
 from posts.post.post_message import PostMessage
 from util import util
 
-max_pages = 1000
-
 
 async def show_post(ctx: Context, tags: str, score: int):
     if len(tags.split(' ')) < 2:

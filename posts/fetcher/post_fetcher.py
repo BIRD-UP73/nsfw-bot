@@ -15,13 +15,4 @@ class PostFetcher(AbstractPostFetcher, ABC):
     def get_post(self) -> PostData:
         if self.post_data is None:
             return NonExistentPost()
-        if self.post_data.has_disallowed_tags():
-            return DisallowedTagsPost()
-
         return self.post_data
-
-    def current_page(self):
-        return self.paginator.page
-
-    def post_count(self):
-        return self.paginator.post_count

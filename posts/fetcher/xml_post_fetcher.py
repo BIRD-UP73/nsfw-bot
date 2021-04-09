@@ -1,5 +1,3 @@
-import random
-
 from typing import Union
 from xml.etree import ElementTree
 
@@ -13,25 +11,15 @@ from posts.history import PostHistory
 
 
 class XmlPostFetcher(PostFetcher):
-    def random_page(self, source: Union[DMChannel, TextChannel]):
-        page = random.randint(0, self.post_count)
-        self.fetch_for_page(page, source)
-
-    def next_page(self, source: Union[DMChannel, TextChannel]):
-        page = self.paginator.next_page()
-        self.fetch_for_page(page, source)
-
-    def previous_page(self, source: Union[DMChannel, TextChannel]):
-        page = self.paginator.previous_page()
-        self.fetch_for_page(page, source)
-
-    def fetch_count(self):
+    def fetch_count(self) -> int:
         # Fetch 0 posts to just get the post count
         resp_text = send_request(self.url, 0, self.tags, 0)
         posts = ElementTree.fromstring(resp_text)
 
         if text_count := posts.get('count'):
-            self.paginator.post_count = int(text_count)
+            return int(text_count)
+
+        return 0
 
     def fetch_for_page(self, page, source: Union[DMChannel, TextChannel]):
         resp_text = send_request(self.url, 1, self.tags, page)
