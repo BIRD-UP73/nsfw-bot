@@ -6,13 +6,14 @@ from discord.ext.commands import Context
 from posts.data.post_data import PostData
 from posts.fetcher.post_fetcher import PostFetcher
 from posts.message.post_message_content import PostMessageContent
+from posts.paginator.paginator import Paginator
 from posts.post.abstract_post import AbstractPost
 
 
 class PostMessage(AbstractPost):
-    def __init__(self, fetcher: PostFetcher, ctx: Context):
+    def __init__(self, fetcher: PostFetcher, ctx: Context, paginator: Paginator = None):
         self.fetcher = fetcher
-        super().__init__(fetcher, ctx)
+        super().__init__(fetcher, ctx, paginator)
         self.post_data: Optional[PostData] = None
 
     async def delete_message(self, deleting_user: User):

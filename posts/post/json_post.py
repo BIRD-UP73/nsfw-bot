@@ -1,6 +1,7 @@
 from discord.ext.commands import Context
 
 from posts.fetcher.json_post_fetcher import JsonPostFetcher
+from posts.paginator.json_post_paginator import JsonPostPaginator
 from posts.post.post_message import PostMessage
 from util import util
 
@@ -10,4 +11,4 @@ async def show_post(ctx: Context, tags: str, score: int):
         tags = util.parse_tags(tags, score)
 
     fetcher = JsonPostFetcher(tags)
-    await PostMessage(fetcher, ctx).create_message()
+    await PostMessage(fetcher, ctx, JsonPostPaginator()).create_message()
