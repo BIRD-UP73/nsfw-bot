@@ -16,7 +16,7 @@ class PostFactory:
         split_tags = tags.split(' ')
 
         if len(split_tags) > 2:
-            raise UserInputError('Too many tags entered')
+            raise UserInputError(f'Maximum of 2 tags allowed. You entered {len(split_tags)}')
         elif len(split_tags) < 2:
             tags = tag_util.parse_tags(tags, score)
 

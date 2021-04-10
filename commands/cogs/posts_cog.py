@@ -2,7 +2,7 @@ from typing import Optional
 
 from discord import TextChannel
 from discord.ext import commands
-from discord.ext.commands import Context, NSFWChannelRequired, CommandError
+from discord.ext.commands import Context, NSFWChannelRequired, UserInputError
 
 from posts.post.factory.post_factory import PostFactory
 from util import tag_util
@@ -67,7 +67,7 @@ class PostCog(commands.Cog):
 
     async def cog_before_invoke(self, ctx):
         if tag_util.contains_disallowed_tags(ctx.kwargs.get('tags')):
-            raise CommandError('Post contains disallowed tag')
+            raise UserInputError('You searched for disallowed tags.')
 
     def cog_check(self, ctx):
         ch = ctx.channel

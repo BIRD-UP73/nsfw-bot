@@ -32,7 +32,7 @@ class AbstractPostMessage(ABC):
         self.paginator.post_count = self.fetcher.fetch_count()
 
         if self.paginator.post_count == 0:
-            raise UserInputError('No posts found.')
+            raise UserInputError(f'No posts found.')
 
         self.fetcher.fetch_for_page(self.paginator.page, self.channel)
 
