@@ -12,7 +12,6 @@ from posts.paginator.paginator import Paginator
 
 class PostEntryFetcher(AbstractPostFetcher):
     def __init__(self, data: List[PostEntry], paginator: Paginator):
-        super().__init__()
         self.data = data
         self.paginator = paginator
 

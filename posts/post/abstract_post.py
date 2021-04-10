@@ -17,8 +17,8 @@ class AbstractPostMessage(ABC):
         self.author: Union[User, Member] = ctx.author
         self.bot: Bot = ctx.bot
         self.channel: Union[TextChannel, DMChannel] = ctx.channel
-        self.message: Optional[Message] = None
         self.paginator: Paginator = paginator or DefaultPaginator()
+        self.message: Optional[Message] = None
 
     @property
     def emojis(self) -> List[str]:
@@ -101,13 +101,13 @@ class AbstractPostMessage(ABC):
     async def update_message(self):
         await self.message.edit(**self.page_content().to_dict())
 
-    @abstractmethod
-    def page_content(self) -> PostMessageContent:
-        """
-        Returns the content of the current page of the embed
-        This should be in the form of a :type mapping: dict
-        with both a 'content' and an 'embed' field
-
-        :return: the content of the page
-        """
-        pass
+    # @abstractmethod
+    # def page_content(self) -> PostMessageContent:
+    #     """
+    #     Returns the content of the current page of the embed
+    #     This should be in the form of a :type mapping: dict
+    #     with both a 'content' and an 'embed' field
+    #
+    #     :return: the content of the page
+    #     """
+    #     pass
