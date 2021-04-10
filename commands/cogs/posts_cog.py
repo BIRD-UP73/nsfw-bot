@@ -58,8 +58,8 @@ class PostCog(commands.Cog):
         await PostFactory.create_xml_post(ctx, tags, score)
 
     @commands.command(**get_data('tbib'))
-    async def tbib(self, ctx: Context, *, tags: str):
-        await PostFactory.create_tbib_post(ctx, tags)
+    async def tbib(self, ctx: Context, score: Optional[int] = 0, *, tags: str):
+        await PostFactory.create_xml_post(ctx, tags, score)
 
     @commands.command(**get_data('danbooru'), aliases=['dbooru'])
     async def danbooru(self, ctx: Context, score: Optional[int] = 50, *, tags: str, ):

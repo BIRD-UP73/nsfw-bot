@@ -26,7 +26,7 @@ def has_disallowed_tags(tags: str) -> bool:
 
 
 def parse_tags(tags: str, score: int) -> str:
-    if 'score:>' not in tags:
-        return f'{tags} score:>{score}'
+    if 'score' not in tags:
+        return f'{tags} score:>={score}'
 
     return tags

@@ -30,13 +30,3 @@ class PostFactory:
 
         fetcher = XmlPostFetcher(long_url, tags)
         await PostMessage(fetcher, ctx).create_message()
-
-    @staticmethod
-    async def create_tbib_post(ctx: Context, tags: str):
-        """
-        Tbib does not use score
-        """
-        long_url = get_long_url(ctx.command.name)
-
-        fetcher = XmlPostFetcher(long_url, tags)
-        await PostMessage(fetcher, ctx).create_message()
