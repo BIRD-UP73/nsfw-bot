@@ -1,6 +1,6 @@
 from urllib.parse import urlparse
 
-from urls import danbooru, gelbooru, rule34, tbib, xbooru
+from urls import danbooru, gelbooru, rule34, tbib, xbooru, danbooru_full_url
 
 short_urls = {
     'danbooru': danbooru,
@@ -25,12 +25,11 @@ def parse_url(url: str) -> str:
     return parsed_url
 
 
-def short_to_long(short_url):
+def short_to_long(short_url: str) -> str:
     if short_url in danbooru:
-        return 'https://danbooru.donmai.us/posts'
+        return danbooru_full_url
 
-    long_url = f'https://{short_url}/index.php'
-    return long_url
+    return f'https://{short_url}/index.php'
 
 
 def get_long_url(command_name: str):

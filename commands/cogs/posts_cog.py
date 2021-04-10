@@ -5,7 +5,7 @@ from discord.ext import commands
 from discord.ext.commands import Context, NSFWChannelRequired, CommandError
 
 from posts.post.factory.post_factory import PostFactory
-from util import util
+from util import tag_util
 from util.url_util import short_urls
 
 desc = {
@@ -59,14 +59,14 @@ class PostCog(commands.Cog):
 
     @commands.command(**get_data('tbib'))
     async def tbib(self, ctx: Context, *, tags: str):
-        await PostFactory.create_json_post(ctx, tags)
+        await PostFactory.create_tbib_post(ctx, tags)
 
     @commands.command(**get_data('danbooru'), aliases=['dbooru'])
     async def danbooru(self, ctx: Context, score: Optional[int] = 50, *, tags: str, ):
         await PostFactory.create_json_post(ctx, tags, score)
 
     async def cog_before_invoke(self, ctx):
-        if util.contains_disallowed_tags(ctx.kwargs.get('tags')):
+        if tag_util.contains_disallowed_tags(ctx.kwargs.get('tags')):
             raise CommandError('Post contains disallowed tag')
 
     def cog_check(self, ctx):
