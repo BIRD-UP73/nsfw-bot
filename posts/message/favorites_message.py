@@ -46,9 +46,10 @@ class FavoritesMessage(AbstractPost):
         await self.channel.send(f'{user.mention}, removed favorite successfully.')
         self.fetcher.remove_post(self.paginator.page)
 
-        if len(self.fetcher.data) == 0:
+        if self.paginator.post_count == 0:
             return await self.clear_message()
 
+        self.fetcher.fetch_for_page(self.paginator.page, self.channel)
         await self.update_message()
 
     async def clear_message(self):

@@ -34,7 +34,7 @@ class PostEntryFetcher(AbstractPostFetcher):
     def remove_post(self, page):
         del self.data[page]
 
-        if self.paginator.page == len(self.data):
+        if self.paginator.page == self.paginator.post_count - 1:
             self.paginator.page = 0
 
         self.paginator.post_count -= 1
