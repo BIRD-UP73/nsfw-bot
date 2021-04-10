@@ -5,7 +5,7 @@ from discord.ext import commands
 from discord.ext.commands import Context, NSFWChannelRequired, CommandError
 
 from posts.post import xml_post, json_post
-from util import util
+from util import tag_util
 from util.url_util import short_urls, get_long_url
 
 desc = {
@@ -63,10 +63,10 @@ class PostCog(commands.Cog):
 
     @commands.command(**get_data('danbooru'), aliases=['dbooru'])
     async def danbooru(self, ctx: Context, score: Optional[int] = 50, *, tags: str, ):
-        await json_post.show_post(ctx, tags, score)
+        await json_post.show_post(ctx, tags, score, get_long_url(ctx.command.name))
 
     async def cog_before_invoke(self, ctx):
-        if util.contains_disallowed_tags(ctx.kwargs.get('tags')):
+        if tag_util.contains_disallowed_tags(ctx.kwargs.get('tags')):
             raise CommandError('Post contains disallowed tag')
 
     def cog_check(self, ctx):
