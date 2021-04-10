@@ -66,8 +66,12 @@ class PostCog(commands.Cog):
         await PostFactory.create_json_post(ctx, tags, score)
 
     async def cog_before_invoke(self, ctx):
-        if tag_util.contains_disallowed_tags(ctx.kwargs.get('tags')):
-            raise UserInputError('You searched for disallowed tags.')
+        tags = ctx.kwargs.get('tags')
+        disallowed_tags = tag_util.get_disallowed_tags(tags)
+
+        if len(disallowed_tags) > 0:
+            tag_txt = ', '.join(disallowed_tags)
+            raise UserInputError(f'You are not allowed to search for: {tag_txt}')
 
     def cog_check(self, ctx):
         ch = ctx.channel

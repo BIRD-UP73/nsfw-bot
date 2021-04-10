@@ -19,7 +19,7 @@ class Post:
         return False
 
     def has_disallowed_tags(self) -> bool:
-        return tag_util.contains_disallowed_tags(self.tags)
+        return tag_util.has_disallowed_tags(self.tags)
 
     def is_animated(self) -> bool:
         return tag_util.is_video(self.file_ext)
