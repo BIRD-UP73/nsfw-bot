@@ -5,7 +5,7 @@ from posts.message.post_message_content import PostMessageContent
 from util import util
 
 
-class PostData:
+class Post:
     def __init__(self, **kwargs):
         self.created_at: str = kwargs.get('created_at')
         self.file_ext: str = kwargs.get('file_ext')
@@ -41,7 +41,7 @@ class PostData:
         return PostMessageContent(self.is_animated(), self.file_url, embed)
 
 
-class ErrorPost(PostData):
+class ErrorPost(Post):
     """
     Post used to indicate something went wrong
     """

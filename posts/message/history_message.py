@@ -6,10 +6,10 @@ from posts.data.post_entry import PostEntry
 from posts.fetcher.post_entry_fetcher import PostEntryFetcher
 from posts.message.post_message_content import PostMessageContent
 from posts.paginator.paginator import DefaultPaginator
-from posts.post.abstract_post import AbstractPost
+from posts.post.abstract_post import AbstractPostMessage
 
 
-class HistoryMessage(AbstractPost):
+class HistoryMessage(AbstractPostMessage):
     def __init__(self, ctx: Context, data: List[PostEntry]):
         paginator = DefaultPaginator()
         self.fetcher = PostEntryFetcher(data, paginator)

@@ -2,7 +2,7 @@ from typing import List, Union
 
 from discord import TextChannel, DMChannel
 
-from posts.data.post_data import PostData
+from posts.data.post_data import Post
 from posts.data.post_entry import PostEntry
 from posts.fetcher.abstract_post_fetcher import AbstractPostFetcher
 from posts.fetcher.post_entry_cache import PostEntryKey, PostEntryCache
@@ -25,7 +25,7 @@ class PostEntryFetcher(AbstractPostFetcher):
 
         PostHistory().add_to_history(source, post_data)
 
-    def get_post(self) -> PostData:
+    def get_post(self) -> Post:
         return self.data[self.paginator.page].post_data
 
     def fetch_count(self) -> int:

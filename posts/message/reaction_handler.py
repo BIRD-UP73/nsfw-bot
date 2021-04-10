@@ -1,11 +1,11 @@
 from discord import User
 
 from db import post_repository
-from posts.data.post_data import PostData
+from posts.data.post_data import Post
 from util.url_util import parse_url
 
 
-def add_favorite(user: User, post_data: PostData):
+def add_favorite(user: User, post_data: Post):
     """
     Adds a post to a user's favorites
     :param user: the user

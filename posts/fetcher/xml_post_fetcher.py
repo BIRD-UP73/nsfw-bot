@@ -5,7 +5,7 @@ from discord import DMChannel, TextChannel
 
 from posts.api.xml_api import send_request
 from posts.data.post_data import NonExistentPost
-from posts.data.xml_post_data import XmlPostData
+from posts.data.xml_post_data import XmlPost
 from posts.fetcher.post_fetcher import PostFetcher
 from posts.history import PostHistory
 
@@ -28,6 +28,6 @@ class XmlPostFetcher(PostFetcher):
         if len(posts) == 0:
             self.post_data = NonExistentPost()
         else:
-            self.post_data = XmlPostData.from_xml(posts[0])
+            self.post_data = XmlPost.from_xml(posts[0])
 
         PostHistory().add_to_history(source, self.post_data)

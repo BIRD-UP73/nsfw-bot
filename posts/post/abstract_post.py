@@ -11,7 +11,7 @@ from posts.message.reaction_handler import add_favorite
 from posts.paginator.paginator import Paginator, DefaultPaginator
 
 
-class AbstractPost(ABC):
+class AbstractPostMessage(ABC):
     def __init__(self, fetcher: AbstractPostFetcher, ctx: Context, paginator=None):
         self.fetcher: AbstractPostFetcher = fetcher
         self.author: Union[User, Member] = ctx.author

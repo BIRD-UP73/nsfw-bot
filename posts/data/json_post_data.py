@@ -1,9 +1,9 @@
-from posts.data.post_data import PostData
+from posts.data.post_data import Post
 from posts.message.post_message_content import PostMessageContent
 from util import util
 
 
-class JsonPostData(PostData):
+class JsonPost(Post):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.artist_tag: str = kwargs.get('tag_string_artist')

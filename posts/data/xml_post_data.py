@@ -1,9 +1,9 @@
 from xml.etree import ElementTree
 
-from posts.data.post_data import PostData
+from posts.data.post_data import Post
 
 
-class XmlPostData(PostData):
+class XmlPost(Post):
     @classmethod
     def from_xml(cls, el: ElementTree):
         file_url = el.get('file_url')
