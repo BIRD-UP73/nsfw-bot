@@ -2,7 +2,7 @@ from dateutil import parser
 from discord import Embed, Color
 
 from posts.message.post_message_content import PostMessageContent
-from util import util
+from util import tag_util
 
 
 class PostData:
@@ -19,10 +19,10 @@ class PostData:
         return False
 
     def has_disallowed_tags(self) -> bool:
-        return util.contains_disallowed_tags(self.tags)
+        return tag_util.contains_disallowed_tags(self.tags)
 
     def is_animated(self) -> bool:
-        return util.is_video(self.file_ext)
+        return tag_util.is_video(self.file_ext)
 
     def to_message_content(self) -> PostMessageContent:
         embed = Embed()

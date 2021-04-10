@@ -1,6 +1,6 @@
 from posts.data.post_data import PostData
 from posts.message.post_message_content import PostMessageContent
-from util import util
+from util import tag_util
 
 
 class JsonPostData(PostData):
@@ -16,11 +16,11 @@ class JsonPostData(PostData):
         if message_content.is_animated:
             return message_content
 
-        if util.is_valid_field_text(self.artist_tag):
+        if tag_util.is_valid_field_text(self.artist_tag):
             message_content.embed.add_field(name='Artist', value=self.artist_tag)
-        if util.is_valid_field_text(self.character_tag):
+        if tag_util.is_valid_field_text(self.character_tag):
             message_content.embed.add_field(name='Characters', value=self.character_tag)
-        if util.is_valid_field_text(self.copyright_tag):
+        if tag_util.is_valid_field_text(self.copyright_tag):
             message_content.embed.add_field(name='Copyright', value=self.copyright_tag)
 
         return message_content
