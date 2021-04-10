@@ -3,7 +3,7 @@ from typing import Union
 
 from discord import DMChannel, TextChannel
 
-from posts.data.post_data import PostData
+from posts.data.post_data import Post
 
 
 class AbstractPostFetcher(ABC):
@@ -16,5 +16,5 @@ class AbstractPostFetcher(ABC):
         pass
 
     @abstractmethod
-    def get_post(self) -> PostData:
+    def get_post(self) -> Post:
         pass

@@ -16,15 +16,11 @@ def is_video(file_ext: str) -> bool:
 
 
 def contains_disallowed_tags(tags: str) -> bool:
-    for disallowed_tag in disallowed_tags:
-        if disallowed_tag in tags:
-            return True
-
-    return False
+    return any(dt in tags for dt in disallowed_tags)
 
 
 def parse_tags(tags: str, score: int) -> str:
     if 'score:>' not in tags:
-        return tags + f' score:>{score}'
+        return f'{tags} score:>{score}'
 
     return tags

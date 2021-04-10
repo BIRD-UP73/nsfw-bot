@@ -11,7 +11,7 @@ from posts.message.reaction_handler import add_favorite
 from posts.paginator.paginator import Paginator, DefaultPaginator
 
 
-class AbstractPost(ABC):
+class AbstractPostMessage(ABC):
     def __init__(self, fetcher: AbstractPostFetcher, ctx: Context, paginator=None):
         self.fetcher: AbstractPostFetcher = fetcher
         self.author: Union[User, Member] = ctx.author
@@ -32,7 +32,7 @@ class AbstractPost(ABC):
         self.paginator.post_count = self.fetcher.fetch_count()
 
         if self.paginator.post_count == 0:
-            raise UserInputError('No posts found.')
+            raise UserInputError(f'No posts found.')
 
         self.fetcher.fetch_for_page(self.paginator.page, self.channel)
 

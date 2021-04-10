@@ -3,7 +3,7 @@ from typing import Union
 from discord import TextChannel, DMChannel
 
 from posts.api.json_api import fetch_counts, send_json_request
-from posts.data.json_post_data import JsonPostData
+from posts.data.json_post_data import JsonPost
 from posts.data.post_data import ErrorPost
 from posts.fetcher.post_fetcher import PostFetcher
 from posts.history import PostHistory
@@ -24,6 +24,6 @@ class JsonPostFetcher(PostFetcher):
         if len(resp_json) == 0:
             self.post_data = ErrorPost('Could not find post.')
         else:
-            self.post_data = JsonPostData(**resp_json[0])
+            self.post_data = JsonPost(**resp_json[0])
 
         PostHistory().add_to_history(source, self.post_data)

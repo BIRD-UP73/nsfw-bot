@@ -3,7 +3,7 @@ from typing import Dict, Deque, Union, List
 
 from discord import DMChannel, TextChannel
 
-from posts.data.post_data import PostData
+from posts.data.post_data import Post
 from posts.data.post_entry import PostEntry
 from posts.singleton import Singleton
 
@@ -11,7 +11,7 @@ from posts.singleton import Singleton
 class PostHistory(metaclass=Singleton):
     history: Dict[int, Deque[PostEntry]] = {}
 
-    def add_to_history(self, channel: Union[DMChannel, TextChannel], post: PostData):
+    def add_to_history(self, channel: Union[DMChannel, TextChannel], post: Post):
         if post.is_error():
             return
 
