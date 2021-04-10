@@ -3,10 +3,10 @@ from typing import List, Union
 from discord import TextChannel, DMChannel
 
 from posts.data.post_data import Post
-from posts.data.post_entry import PostEntry
+from posts.post_entry import PostEntry
 from posts.fetcher.abstract_post_fetcher import AbstractPostFetcher
 from posts.fetcher.post_entry_cache import PostEntryKey, PostEntryCache
-from posts.history import PostHistory
+from posts.post_history import PostHistory
 from posts.paginator.paginator import Paginator
 
 

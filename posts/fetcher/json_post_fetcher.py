@@ -6,7 +6,7 @@ from posts.api.json_api import fetch_counts, send_json_request
 from posts.data.json_post_data import JsonPost
 from posts.data.post_data import ErrorPost
 from posts.fetcher.post_fetcher import PostFetcher
-from posts.history import PostHistory
+from posts.post_history import PostHistory
 from posts.paginator.json_post_paginator import JsonPostPaginator
 
 

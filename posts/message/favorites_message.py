@@ -4,7 +4,7 @@ from discord import User, Reaction, Member
 from discord.ext.commands import Context
 
 from db import post_repository
-from posts.data.post_entry import PostEntry
+from posts.post_entry import PostEntry
 from posts.fetcher.post_entry_fetcher import PostEntryFetcher
 from posts.message.post_message_content import PostMessageContent
 from posts.paginator.paginator import DefaultPaginator

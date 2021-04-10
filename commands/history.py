@@ -1,7 +1,7 @@
 from discord.ext import commands
 from discord.ext.commands import Context, is_nsfw
 
-from posts.history import PostHistory
+from posts.post_history import PostHistory
 from posts.message.history_message import HistoryMessage
 
 description = """

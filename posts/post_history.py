@@ -4,7 +4,7 @@ from typing import Dict, Deque, Union, List
 from discord import DMChannel, TextChannel
 
 from posts.data.post_data import Post
-from posts.data.post_entry import PostEntry
+from posts.post_entry import PostEntry
 from posts.singleton import Singleton
 
 

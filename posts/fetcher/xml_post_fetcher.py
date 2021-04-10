@@ -7,7 +7,7 @@ from posts.api.xml_api import send_request
 from posts.data.post_data import NonExistentPost
 from posts.data.xml_post_data import XmlPost
 from posts.fetcher.post_fetcher import PostFetcher
-from posts.history import PostHistory
+from posts.post_history import PostHistory
 
 
 class XmlPostFetcher(PostFetcher):

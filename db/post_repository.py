@@ -4,7 +4,7 @@ from typing import List
 from discord import User
 
 from db.model import session, Post as DBPost
-from posts.data.post_entry import PostEntry
+from posts.post_entry import PostEntry
 from util.url_util import parse_url
 
 
