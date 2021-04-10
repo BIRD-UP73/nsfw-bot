@@ -34,3 +34,11 @@ def short_to_long(short_url: str) -> str:
 
 def get_long_url(command_name: str):
     return short_to_long(short_urls.get(command_name))
+
+
+def cheat_sheet_url(command_name: str):
+    if command_name == 'danbooru':
+        return 'https://danbooru.donmai.us/wiki_pages/help:cheatsheet'
+
+    short_url = short_urls.get(command_name)
+    return f'https://{short_url}/index.php?page=help&topic=cheatsheet'

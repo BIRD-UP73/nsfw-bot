@@ -32,7 +32,7 @@ class AbstractPostMessage(ABC):
         self.paginator.post_count = self.fetcher.fetch_count()
 
         if self.paginator.post_count == 0:
-            raise UserInputError(f'No posts found.')
+            raise UserInputError('No posts found.')
 
         self.fetcher.fetch_for_page(self.paginator.page, self.channel)
 
@@ -101,13 +101,13 @@ class AbstractPostMessage(ABC):
     async def update_message(self):
         await self.message.edit(**self.page_content().to_dict())
 
-    # @abstractmethod
-    # def page_content(self) -> PostMessageContent:
-    #     """
-    #     Returns the content of the current page of the embed
-    #     This should be in the form of a :type mapping: dict
-    #     with both a 'content' and an 'embed' field
-    #
-    #     :return: the content of the page
-    #     """
-    #     pass
+    @abstractmethod
+    def page_content(self) -> PostMessageContent:
+        """
+        Returns the content of the current page of the embed
+        This should be in the form of a :type mapping: dict
+        with both a 'content' and an 'embed' field
+
+        :return: the content of the page
+        """
+        pass
