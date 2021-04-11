@@ -2,7 +2,7 @@ import random
 from abc import ABC, abstractmethod
 
 
-class Paginator(ABC):
+class AbstractPaginator(ABC):
     def __init__(self):
         self.post_count: int = 0
         self.page: int = 0
@@ -20,7 +20,7 @@ class Paginator(ABC):
         pass
 
 
-class DefaultPaginator(Paginator):
+class Paginator(AbstractPaginator):
     def random_page(self) -> int:
         self.page = random.randint(0, self.post_count - 1)
         return self.page

@@ -7,11 +7,11 @@ from posts.post_entry import PostEntry
 from posts.fetcher.abstract_post_fetcher import AbstractPostFetcher
 from posts.fetcher.post_entry_cache import PostEntryKey, PostEntryCache
 from posts.post_history import PostHistory
-from posts.paginator.paginator import Paginator
+from posts.paginator.abstractpaginator import AbstractPaginator
 
 
 class PostEntryFetcher(AbstractPostFetcher):
-    def __init__(self, data: List[PostEntry], paginator: Paginator):
+    def __init__(self, data: List[PostEntry], paginator: AbstractPaginator):
         self.data = data
         self.paginator = paginator
 

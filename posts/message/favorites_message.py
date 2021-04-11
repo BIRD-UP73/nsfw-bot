@@ -7,14 +7,14 @@ from db import post_repository
 from posts.post_entry import PostEntry
 from posts.fetcher.post_entry_fetcher import PostEntryFetcher
 from posts.message.post_message_content import PostMessageContent
-from posts.paginator.paginator import DefaultPaginator
+from posts.paginator.abstractpaginator import Paginator
 from posts.post.abstract_post import AbstractPostMessage
 from util.url_util import parse_url
 
 
 class FavoritesMessage(AbstractPostMessage):
     def __init__(self, ctx: Context, data: List[PostEntry]):
-        paginator = DefaultPaginator()
+        paginator = Paginator()
         self.fetcher = PostEntryFetcher(data, paginator)
         super().__init__(self.fetcher, ctx, paginator)
 

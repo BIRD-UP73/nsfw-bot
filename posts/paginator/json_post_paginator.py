@@ -1,9 +1,9 @@
 import random
 
-from posts.paginator.paginator import DefaultPaginator
+from posts.paginator.abstractpaginator import Paginator
 
 
-class JsonPostPaginator(DefaultPaginator):
+class JsonPostPaginator(Paginator):
     def __init__(self):
         super().__init__()
         self.page = 1

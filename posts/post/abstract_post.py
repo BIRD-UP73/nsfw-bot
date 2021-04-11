@@ -8,7 +8,7 @@ from discord.ext.commands import Context, Bot, UserInputError
 from posts.fetcher.abstract_post_fetcher import AbstractPostFetcher
 from posts.message.post_message_content import PostMessageContent
 from posts.message.reaction_handler import add_favorite
-from posts.paginator.paginator import Paginator, DefaultPaginator
+from posts.paginator.abstractpaginator import AbstractPaginator, Paginator
 
 
 class AbstractPostMessage(ABC):
@@ -17,7 +17,7 @@ class AbstractPostMessage(ABC):
         self.author: Union[User, Member] = ctx.author
         self.bot: Bot = ctx.bot
         self.channel: Union[TextChannel, DMChannel] = ctx.channel
-        self.paginator: Paginator = paginator or DefaultPaginator()
+        self.paginator: AbstractPaginator = paginator or Paginator()
         self.message: Optional[Message] = None
 
     @property
