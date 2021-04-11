@@ -9,7 +9,6 @@ from util.url_util import get_long_url
 
 
 class PostFactory:
-
     @staticmethod
     async def create_json_post(ctx: Context, tags: str, score: int):
         long_url = get_long_url(ctx.command.name)

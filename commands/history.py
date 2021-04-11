@@ -1,4 +1,3 @@
-from discord.ext import commands
 from discord.ext.commands import Context, is_nsfw
 
 from commands.nsfw_command import nsfw_command
