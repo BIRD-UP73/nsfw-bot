@@ -6,10 +6,9 @@ from discord.ext.commands import Context
 from db import post_repository
 from posts.post_entry import PostEntry
 from posts.fetcher.post_entry_fetcher import PostEntryFetcher
-from posts.message.post_message_content import PostMessageContent
-from posts.paginator.abstractpaginator import Paginator
-from posts.post.abstract_post import AbstractPostMessage
-from util.url_util import parse_url
+from posts.post_message.post_message_content import PostMessageContent
+from posts.paginator.paginator import Paginator
+from posts.post_message.abstract_post_message import AbstractPostMessage
 
 
 class FavoritesMessage(AbstractPostMessage):
@@ -40,9 +39,7 @@ class FavoritesMessage(AbstractPostMessage):
         if user != self.author:
             return
 
-        data = self.fetcher.get_post()
-
-        post_repository.remove_favorite(user, parse_url(data.file_url), data.post_id)
+        post_repository.remove_favorite(user, self.fetcher.get_post())
         await self.channel.send(f'{user.mention}, removed favorite successfully.')
         self.fetcher.remove_post(self.paginator.page)
 

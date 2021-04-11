@@ -4,9 +4,9 @@ from discord.ext.commands import Context
 
 from posts.post_entry import PostEntry
 from posts.fetcher.post_entry_fetcher import PostEntryFetcher
-from posts.message.post_message_content import PostMessageContent
-from posts.paginator.abstractpaginator import Paginator
-from posts.post.abstract_post import AbstractPostMessage
+from posts.post_message.post_message_content import PostMessageContent
+from posts.paginator.paginator import Paginator
+from posts.post_message.abstract_post_message import AbstractPostMessage
 
 
 class HistoryMessage(AbstractPostMessage):

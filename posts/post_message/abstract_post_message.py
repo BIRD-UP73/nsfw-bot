@@ -5,10 +5,10 @@ from discord import Reaction, Member, Message, DMChannel, TextChannel
 from discord.abc import User
 from discord.ext.commands import Context, Bot, UserInputError
 
+from db import post_repository
 from posts.fetcher.abstract_post_fetcher import AbstractPostFetcher
-from posts.message.post_message_content import PostMessageContent
-from posts.message.reaction_handler import add_favorite
-from posts.paginator.abstractpaginator import AbstractPaginator, Paginator
+from posts.post_message.post_message_content import PostMessageContent
+from posts.paginator.paginator import Paginator
 
 
 class AbstractPostMessage(ABC):
@@ -17,7 +17,7 @@ class AbstractPostMessage(ABC):
         self.author: Union[User, Member] = ctx.author
         self.bot: Bot = ctx.bot
         self.channel: Union[TextChannel, DMChannel] = ctx.channel
-        self.paginator: AbstractPaginator = paginator or Paginator()
+        self.paginator: Paginator = paginator or Paginator()
         self.message: Optional[Message] = None
 
     @property
@@ -40,17 +40,6 @@ class AbstractPostMessage(ABC):
 
         self.bot.add_listener(self.on_reaction_add)
         await self.add_emojis()
-
-    async def delete_message(self, deleting_user: User) -> bool:
-        """
-        Deletes the message belonging to the post
-
-        :param deleting_user: the user that wants to delete the message
-        :return: whether the reaction should be deleted
-        """
-        # Ignore deleting user here (anyone allowed to delete)
-        await self.message.delete()
-        return False
 
     async def add_emojis(self):
         for emoji in self.emojis:
@@ -75,16 +64,17 @@ class AbstractPostMessage(ABC):
         if reaction.emoji == '⭐':
             await self.add_favorite(user)
             return True
+
+        # Ignore non-author reactions below
+        if user != self.author:
+            return True
+
         if reaction.emoji == '🗑️':
-            return await self.delete_message(user)
+            return await self.message.delete()
 
         if self.is_page_emoji(reaction.emoji):
             if reaction.emoji == '🔁':
-                if user == self.author:
-                    self.paginator.random_page()
-                else:
-                    return True
-
+                self.paginator.random_page()
             if reaction.emoji == '➡':
                 self.paginator.next_page()
             if reaction.emoji == '⬅':
@@ -95,7 +85,7 @@ class AbstractPostMessage(ABC):
             return True
 
     async def add_favorite(self, user: User):
-        if add_favorite(user, self.fetcher.get_post()):
+        if post_repository.store_favorite(user, self.fetcher.get_post()):
             await self.channel.send(f'{user.mention}, successfully stored favorite.')
 
     async def update_message(self):

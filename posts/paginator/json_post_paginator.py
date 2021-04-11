@@ -1,6 +1,6 @@
 import random
 
-from posts.paginator.abstractpaginator import Paginator
+from posts.paginator.paginator import Paginator
 
 
 class JsonPostPaginator(Paginator):

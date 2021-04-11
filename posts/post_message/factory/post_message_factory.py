@@ -3,12 +3,12 @@ from discord.ext.commands import Context, UserInputError
 from posts.fetcher.json_post_fetcher import JsonPostFetcher
 from posts.fetcher.xml_post_fetcher import XmlPostFetcher
 from posts.paginator.json_post_paginator import JsonPostPaginator
-from posts.post.post_message import PostMessage
+from posts.post_message.post_message import PostMessage
 from util import tag_util
 from util.url_util import get_long_url
 
 
-class PostFactory:
+class PostMessageFactory:
     @staticmethod
     async def create_json_post(ctx: Context, tags: str, score: int):
         long_url = get_long_url(ctx.command.name)

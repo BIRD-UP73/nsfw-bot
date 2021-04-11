@@ -2,7 +2,7 @@ from discord.ext.commands import Context, is_nsfw
 
 from commands.nsfw_command import nsfw_command
 from posts.post_history import PostHistory
-from posts.message.history_message import HistoryMessage
+from posts.post_message.history_message import HistoryMessage
 
 
 @is_nsfw()

@@ -3,7 +3,7 @@ from discord.ext.commands import Context, is_nsfw
 
 from commands.nsfw_command import nsfw_command
 from db import post_repository
-from posts.message.favorites_message import FavoritesMessage
+from posts.post_message.favorites_message import FavoritesMessage
 
 
 @is_nsfw()

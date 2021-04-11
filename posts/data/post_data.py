@@ -1,7 +1,7 @@
 from dateutil import parser
 from discord import Embed, Color
 
-from posts.message.post_message_content import PostMessageContent
+from posts.post_message.post_message_content import PostMessageContent
 from util import tag_util
 
 
