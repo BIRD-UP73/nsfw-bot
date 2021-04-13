@@ -11,7 +11,7 @@ from util import tag_util
 class PostCog(Cog):
     @nsfw_command(name='rule34', aliases=['r34'])
     async def rule34(self, ctx: Context, score: Optional[int] = 50, *, tags: str = ''):
-        await PostMessageFactory.create_xml_post(ctx, tags, score)
+        await PostMessageFactory.create_xml_post(ctx, tags, score, 200000)
 
     @nsfw_command(name='xbooru')
     async def xbooru(self, ctx: Context, score: Optional[int] = 50, *, tags: str = ''):
@@ -19,7 +19,7 @@ class PostCog(Cog):
 
     @nsfw_command(name='gelbooru')
     async def gelbooru(self, ctx: Context, score: Optional[int] = 50, *, tags: str = ''):
-        await PostMessageFactory.create_xml_post(ctx, tags, score)
+        await PostMessageFactory.create_xml_post(ctx, tags, score, 20000)
 
     @nsfw_command(name='tbib')
     async def tbib(self, ctx: Context, score: Optional[int] = 0, *, tags: str = ''):

@@ -23,9 +23,9 @@ class PostMessageFactory:
         await PostMessage(fetcher, ctx, JsonPostPaginator()).create_message()
 
     @staticmethod
-    async def create_xml_post(ctx: Context, tags: str, score: int):
+    async def create_xml_post(ctx: Context, tags: str, score: int, max_count: int = None):
         long_url = get_long_url(ctx.command.name)
         tags = tag_util.parse_tags(tags, score)
 
-        fetcher = XmlPostFetcher(long_url, tags)
+        fetcher = XmlPostFetcher(long_url, tags, max_count)
         await PostMessage(fetcher, ctx).create_message()
