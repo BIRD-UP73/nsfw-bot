@@ -10,23 +10,23 @@ from util import tag_util
 
 class PostCog(Cog):
     @nsfw_command(name='rule34', aliases=['r34'])
-    async def rule34(self, ctx: Context, score: Optional[int] = 50, *, tags: str):
+    async def rule34(self, ctx: Context, score: Optional[int] = 50, *, tags: str = ''):
         await PostMessageFactory.create_xml_post(ctx, tags, score)
 
     @nsfw_command(name='xbooru')
-    async def xbooru(self, ctx: Context, score: Optional[int] = 50, *, tags: str):
+    async def xbooru(self, ctx: Context, score: Optional[int] = 50, *, tags: str = ''):
         await PostMessageFactory.create_xml_post(ctx, tags, score)
 
     @nsfw_command(name='gelbooru')
-    async def gelbooru(self, ctx: Context, score: Optional[int] = 50, *, tags: str):
+    async def gelbooru(self, ctx: Context, score: Optional[int] = 50, *, tags: str = ''):
         await PostMessageFactory.create_xml_post(ctx, tags, score)
 
     @nsfw_command(name='tbib')
-    async def tbib(self, ctx: Context, score: Optional[int] = 0, *, tags: str):
+    async def tbib(self, ctx: Context, score: Optional[int] = 0, *, tags: str = ''):
         await PostMessageFactory.create_xml_post(ctx, tags, score)
 
     @nsfw_command(name='danbooru', aliases=['dbooru'])
-    async def danbooru(self, ctx: Context, score: Optional[int] = 50, *, tags: str, ):
+    async def danbooru(self, ctx: Context, score: Optional[int] = 50, *, tags: str = ''):
         await PostMessageFactory.create_json_post(ctx, tags, score)
 
     async def cog_before_invoke(self, ctx):

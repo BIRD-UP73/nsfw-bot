@@ -1,4 +1,6 @@
 import configparser
+import logging
+import sys
 
 from discord.ext import commands
 
@@ -17,6 +19,12 @@ details_dict = dict(config.items('DEFAULT'))
 token = details_dict.get('token')
 prefix = details_dict.get('prefix')
 
+logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s %(message)s', stream=sys.stdout)
+
+console = logging.StreamHandler()
+console.setLevel(logging.INFO)
+
+logging.getLogger()
 
 bot = commands.Bot(
     case_insensitive=True,

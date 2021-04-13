@@ -1,3 +1,5 @@
+import logging
+
 from datetime import datetime
 from typing import List
 
@@ -18,6 +20,8 @@ def get_favorites(user: User) -> List[PostEntry]:
     """
     posts = session.query(DBPost).filter(DBPost.user_id == user.id).order_by(DBPost.saved_at.asc())
 
+    logging.info(f'Fetched favorites, user={user}')
+
     return [PostEntry(db_post.url, db_post.post_id, db_post.saved_at) for db_post in posts]
 
 
@@ -35,6 +39,7 @@ def remove_favorite(user: User, post: Post):
     db_post = session.query(DBPost).get((user.id, post.post_id, parsed_url))
 
     session.delete(db_post)
+    logging.info(f'Removed favorite, user={user}, post_id={post.post_id}, url={parsed_url}')
     session.commit()
 
 
@@ -69,4 +74,7 @@ def store_favorite(user: User, post: Post) -> bool:
     db_post = DBPost(user_id=user.id, post_id=post.post_id, url=parsed_url, saved_at=datetime.now())
     session.add(db_post)
     session.commit()
+
+    logging.info(f'Stored favorite, user={user}, post_id={post.post_id}, url={parsed_url}')
+
     return True

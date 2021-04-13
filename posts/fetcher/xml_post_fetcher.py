@@ -9,6 +9,8 @@ from posts.data.xml_post_data import XmlPost
 from posts.fetcher.post_fetcher import PostFetcher
 from posts.post_history import PostHistory
 
+max_posts = 200000
+
 
 class XmlPostFetcher(PostFetcher):
     def fetch_count(self) -> int:
@@ -17,7 +19,7 @@ class XmlPostFetcher(PostFetcher):
         posts = ElementTree.fromstring(resp_text)
 
         if text_count := posts.get('count'):
-            return int(text_count)
+            return min(int(text_count), max_posts)
 
         return 0
 

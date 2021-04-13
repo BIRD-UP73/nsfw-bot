@@ -19,7 +19,7 @@ class PostMessageFactory:
         elif len(split_tags) < 2:
             tags = tag_util.parse_tags(tags, score)
 
-        fetcher = JsonPostFetcher(tags, long_url)
+        fetcher = JsonPostFetcher(long_url, tags)
         await PostMessage(fetcher, ctx, JsonPostPaginator()).create_message()
 
     @staticmethod
