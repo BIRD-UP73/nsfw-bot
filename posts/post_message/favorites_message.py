@@ -8,10 +8,10 @@ from posts.post_entry import PostEntry
 from posts.fetcher.post_entry_fetcher import PostEntryFetcher
 from posts.post_message.post_message_content import PostMessageContent
 from posts.paginator.paginator import Paginator
-from posts.post_message.abstract_post_message import AbstractPostMessage
+from posts.post_message.post_message import PostMessage
 
 
-class FavoritesMessage(AbstractPostMessage):
+class FavoritesMessage(PostMessage):
     def __init__(self, ctx: Context, data: List[PostEntry]):
         paginator = Paginator()
         self.fetcher = PostEntryFetcher(data, paginator)
