@@ -1,31 +1,27 @@
 from typing import Optional
 
 from discord import TextChannel
-from discord.ext.commands import Cog, Context, NSFWChannelRequired, UserInputError
+from discord.ext.commands import Cog, Context, NSFWChannelRequired, UserInputError, command
 
-from commands.nsfw_command import nsfw_command
 from posts.post_message.factory.post_message_factory import PostMessageFactory
 from util import tag_util
 
 
 class PostCog(Cog):
-    @nsfw_command(name='rule34', aliases=['r34'])
-    async def rule34(self, ctx: Context, score: Optional[int] = 50, *, tags: str = ''):
-        await PostMessageFactory.create_xml_post(ctx, tags, score, 200000)
 
-    @nsfw_command(name='xbooru')
+    @command(name='xbooru')
     async def xbooru(self, ctx: Context, score: Optional[int] = 50, *, tags: str = ''):
         await PostMessageFactory.create_xml_post(ctx, tags, score)
 
-    @nsfw_command(name='gelbooru')
+    @command(name='gelbooru')
     async def gelbooru(self, ctx: Context, score: Optional[int] = 50, *, tags: str = ''):
         await PostMessageFactory.create_xml_post(ctx, tags, score, 20000)
 
-    @nsfw_command(name='tbib')
+    @command(name='tbib')
     async def tbib(self, ctx: Context, score: Optional[int] = 0, *, tags: str = ''):
         await PostMessageFactory.create_xml_post(ctx, tags, score)
 
-    @nsfw_command(name='danbooru', aliases=['dbooru'])
+    @command(name='danbooru', aliases=['dbooru'])
     async def danbooru(self, ctx: Context, score: Optional[int] = 50, *, tags: str = ''):
         await PostMessageFactory.create_json_post(ctx, tags, score)
 

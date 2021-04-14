@@ -18,19 +18,14 @@ def parse_url(url: str) -> str:
 
 
 def short_to_long(short_url: str) -> str:
-    if short_url in danbooru:
-        return danbooru_full_url
+    if short_url in URL.DANBOORU.long_url:
+        return URL.DANBOORU.long_url
 
     return f'https://{short_url}/index.php'
 
-
-def get_long_url(command_name: str):
-    return short_to_long(short_urls.get(command_name))
-
-
-def cheat_sheet_url(command_name: str):
-    if command_name == 'danbooru':
-        return
-
-    short_url = short_urls.get(command_name)
-    return
+# def cheat_sheet_url(command_name: str):
+#     if command_name == 'danbooru':
+#         return
+#
+#     short_url = short_urls.get(command_name)
+#     return

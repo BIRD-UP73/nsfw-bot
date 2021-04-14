@@ -40,5 +40,7 @@ bot.add_command(latency)
 bot.add_command(favorites)
 bot.add_command(post_history)
 
+bot.load_extension('commands.nsfw_command')
+
 if __name__ == "__main__":
     bot.run(token)
