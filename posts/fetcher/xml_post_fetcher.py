@@ -1,3 +1,5 @@
+import logging
+
 from typing import Union
 from xml.etree import ElementTree
 
@@ -27,11 +29,12 @@ class XmlPostFetcher(PostFetcher):
 
         return 0
 
-    def fetch_for_page(self, page, source: Union[DMChannel, TextChannel]):
+    def fetch_for_page(self, page: int, source: Union[DMChannel, TextChannel]):
         resp_text = send_request(self.url, 1, self.tags, page)
         posts = ElementTree.fromstring(resp_text)
 
         if len(posts) == 0:
+            logging.warning(f'XML post not found, url={self.url}, tags={self.tags}, page={page}')
             self.post_data = NonExistentPost()
         else:
             self.post_data = XmlPost.from_xml(posts[0])

@@ -1,3 +1,5 @@
+import logging
+
 from typing import Dict
 
 from posts.data.post_data import Post
@@ -18,11 +20,13 @@ class PostEntryCache(metaclass=Singleton):
             cached_entry = self.entries.get(post_key)
 
             if cached_entry:
+                logging.info(f'Fetching cached post, url={post_key.url}, id={post_key.post_id}')
                 return cached_entry
 
         post_data = PostKeyFetcher.fetch(post_key)
 
         if post_key not in self.entries:
+            logging.info(f'Adding post to cache, url={post_key.url}, id={post_key.post_id}')
             self.add_post_data(post_data, post_key.url)
 
         return post_data

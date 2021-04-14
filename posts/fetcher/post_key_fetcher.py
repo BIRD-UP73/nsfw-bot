@@ -1,3 +1,5 @@
+import logging
+
 from xml.etree import ElementTree
 
 from posts.api.json_api import json_post_by_id
@@ -24,6 +26,7 @@ class PostKeyFetcher:
         json_post = json_post_by_id(long_url, post_key.post_id)
 
         if json_post.get('success') is False:
+            logging.warning(f'JSON post not found, url={post_key.url}, id={post_key.post_id}')
             return NonExistentPost()
 
         return JsonPost(**json_post)
@@ -37,6 +40,7 @@ class PostKeyFetcher:
         count = et_post.get('count')
 
         if count is None or int(count) == 0:
+            logging.warning(f'XML post not found, url={post_key.url}, id={post_key.post_id}')
             return NonExistentPost()
 
         return XmlPost.from_xml(et_post[0])

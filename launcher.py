@@ -2,6 +2,7 @@ import configparser
 import logging
 import sys
 
+from discord import Intents
 from discord.ext import commands
 
 from commands.cogs.listeners import Listeners
@@ -26,10 +27,15 @@ console.setLevel(logging.INFO)
 
 logging.getLogger()
 
+intents = Intents.default()
+intents.reactions = True
+intents.members = True
+
 bot = commands.Bot(
     case_insensitive=True,
     command_prefix=prefix,
-    help_command=CustomHelpCommand()
+    help_command=CustomHelpCommand(),
+    intents=intents
 )
 
 bot.add_cog(PostCog())

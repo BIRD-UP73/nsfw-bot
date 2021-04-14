@@ -1,3 +1,5 @@
+import logging
+
 from typing import Union, Optional, List
 
 from discord import Reaction, Member, Message, DMChannel, TextChannel
@@ -66,6 +68,7 @@ class PostMessage:
 
         if reaction.emoji == '🗑️':
             await self.message.delete()
+            logging.info(f'Deleted message id={self.message.id}, author={self.author} ({self.author.id})')
             return False
 
         if reaction.emoji == '🔁':
