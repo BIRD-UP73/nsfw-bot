@@ -24,10 +24,6 @@ class AbstractPostMessage(ABC):
     def emojis(self) -> List[str]:
         return ['⭐', '⬅', '➡', '🔁', '🗑️']
 
-    @staticmethod
-    def is_page_emoji(emoji: str) -> bool:
-        return emoji in ['⬅', '➡', '🔁']
-
     async def create_message(self):
         self.paginator.post_count = self.fetcher.fetch_count()
 
@@ -70,19 +66,19 @@ class AbstractPostMessage(ABC):
             return True
 
         if reaction.emoji == '🗑️':
-            return await self.message.delete()
+            await self.message.delete()
+            return False
 
-        if self.is_page_emoji(reaction.emoji):
-            if reaction.emoji == '🔁':
-                self.paginator.random_page()
-            if reaction.emoji == '➡':
-                self.paginator.next_page()
-            if reaction.emoji == '⬅':
-                self.paginator.previous_page()
+        if reaction.emoji == '🔁':
+            self.paginator.random_page()
+        if reaction.emoji == '➡':
+            self.paginator.next_page()
+        if reaction.emoji == '⬅':
+            self.paginator.previous_page()
 
-            self.fetcher.fetch_for_page(self.paginator.page, self.channel)
-            await self.update_message()
-            return True
+        self.fetcher.fetch_for_page(self.paginator.page, self.channel)
+        await self.update_message()
+        return True
 
     async def add_favorite(self, user: User):
         if post_repository.store_favorite(user, self.fetcher.get_post()):
