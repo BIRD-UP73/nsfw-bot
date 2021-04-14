@@ -6,7 +6,7 @@ from discord.ext.commands import Context
 from db import post_repository
 from posts.post_entry import PostEntry
 from posts.fetcher.post_entry_fetcher import PostEntryFetcher
-from posts.post_message.post_message_content import PostMessageContent
+from posts.post_message.post_message_content import MessageContent
 from posts.paginator.paginator import Paginator
 from posts.post_message.post_message import PostMessage
 
@@ -54,7 +54,7 @@ class FavoritesMessage(PostMessage):
         await self.message.clear_reactions()
         await self.message.edit(content='No favorites.', embed=None)
 
-    def page_content(self) -> PostMessageContent:
+    def page_content(self) -> MessageContent:
         post_data = self.fetcher.get_post()
         message_content = post_data.to_message_content()
 

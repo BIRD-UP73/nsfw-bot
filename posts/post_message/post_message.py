@@ -6,7 +6,7 @@ from discord.ext.commands import Context, Bot, UserInputError
 
 from db import post_repository
 from posts.fetcher.abstract_post_fetcher import AbstractPostFetcher
-from posts.post_message.post_message_content import PostMessageContent
+from posts.post_message.post_message_content import MessageContent
 from posts.paginator.paginator import Paginator
 
 
@@ -86,7 +86,7 @@ class PostMessage:
     async def update_message(self):
         await self.message.edit(**self.page_content().to_dict())
 
-    def page_content(self) -> PostMessageContent:
+    def page_content(self) -> MessageContent:
         """
         Returns the content of the current page of the embed
         This should be in the form of a :type mapping: dict

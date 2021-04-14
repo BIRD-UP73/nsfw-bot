@@ -1,5 +1,5 @@
 from posts.data.post_data import Post
-from posts.post_message.post_message_content import PostMessageContent
+from posts.post_message.post_message_content import MessageContent
 from util import tag_util
 
 
@@ -10,7 +10,7 @@ class JsonPost(Post):
         self.character_tag: str = kwargs.get('tag_string_character')
         self.copyright_tag: str = kwargs.get('tag_string_copyright')
 
-    def to_message_content(self) -> PostMessageContent:
+    def to_message_content(self) -> MessageContent:
         message_content = super().to_message_content()
 
         if message_content.is_animated:

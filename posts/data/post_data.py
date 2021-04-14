@@ -1,7 +1,7 @@
 from dateutil import parser
 from discord import Embed, Color
 
-from posts.post_message.post_message_content import PostMessageContent
+from posts.post_message.post_message_content import MessageContent
 from util import tag_util
 
 
@@ -24,7 +24,7 @@ class Post:
     def is_animated(self) -> bool:
         return tag_util.is_video(self.file_ext)
 
-    def to_message_content(self) -> PostMessageContent:
+    def to_message_content(self) -> MessageContent:
         embed = Embed()
         embed.colour = Color.green()
 
@@ -38,7 +38,7 @@ class Post:
         if self.file_url:
             embed.set_image(url=self.file_url)
 
-        return PostMessageContent(self.is_animated(), self.file_url, embed)
+        return MessageContent(self.is_animated(), self.file_url, embed)
 
 
 class ErrorPost(Post):
@@ -55,14 +55,14 @@ class ErrorPost(Post):
     def is_error(self) -> bool:
         return True
 
-    def to_message_content(self) -> PostMessageContent:
+    def to_message_content(self) -> MessageContent:
         embed = Embed()
         embed.colour = Color.red()
         embed.description = ''
 
         embed.add_field(name='Error', value=self.message)
 
-        return PostMessageContent(embed=embed)
+        return MessageContent(embed=embed)
 
 
 class NonExistentPost(ErrorPost):

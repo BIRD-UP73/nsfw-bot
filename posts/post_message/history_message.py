@@ -4,7 +4,7 @@ from discord.ext.commands import Context
 
 from posts.post_entry import PostEntry
 from posts.fetcher.post_entry_fetcher import PostEntryFetcher
-from posts.post_message.post_message_content import PostMessageContent
+from posts.post_message.post_message_content import MessageContent
 from posts.paginator.paginator import Paginator
 from posts.post_message.post_message import PostMessage
 
@@ -15,7 +15,7 @@ class HistoryMessage(PostMessage):
         self.fetcher = PostEntryFetcher(data, paginator)
         super().__init__(self.fetcher, ctx, paginator)
 
-    def page_content(self) -> PostMessageContent:
+    def page_content(self) -> MessageContent:
         post_data = self.fetcher.get_post()
         message_content = post_data.to_message_content()
 
