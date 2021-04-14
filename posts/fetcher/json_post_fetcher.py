@@ -1,3 +1,5 @@
+import logging
+
 from typing import Union
 
 from discord import TextChannel, DMChannel
@@ -22,6 +24,7 @@ class JsonPostFetcher(PostFetcher):
         resp_json = send_json_request(self.url, self.tags, page=page)
 
         if len(resp_json) == 0:
+            logging.warning(f'JSON post not found, url={self.url}, tags={self.tags}, page={page}')
             self.post_data = ErrorPost('Could not find post.')
         else:
             self.post_data = JsonPost(**resp_json[0])
