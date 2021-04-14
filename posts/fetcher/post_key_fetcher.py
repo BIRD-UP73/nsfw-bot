@@ -6,7 +6,7 @@ from posts.data.json_post_data import JsonPost
 from posts.data.post_data import Post, NonExistentPost
 from posts.data.xml_post_data import XmlPost
 from posts.post_entry_key import PostEntryKey
-from urls import danbooru
+from url.urls import danbooru
 from util.url_util import short_to_long
 
 

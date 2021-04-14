@@ -1,21 +1,13 @@
 from urllib.parse import urlparse
 
-from urls import danbooru, gelbooru, rule34, tbib, xbooru, danbooru_full_url
-
-short_urls = {
-    'danbooru': danbooru,
-    'gelbooru': gelbooru,
-    'rule34': rule34,
-    'tbib': tbib,
-    'xbooru': xbooru
-}
+from url.urls import URL
 
 
 def parse_url(url: str) -> str:
     parsed_url = urlparse(url).hostname or url
 
     if 'donmai.us' in parsed_url:
-        return danbooru
+        return URL.DANBOORU
 
     split_hostname = parsed_url.split('.')
 
@@ -38,7 +30,7 @@ def get_long_url(command_name: str):
 
 def cheat_sheet_url(command_name: str):
     if command_name == 'danbooru':
-        return 'https://danbooru.donmai.us/wiki_pages/help:cheatsheet'
+        return
 
     short_url = short_urls.get(command_name)
-    return f'https://{short_url}/index.php?page=help&topic=cheatsheet'
+    return
