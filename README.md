@@ -10,7 +10,7 @@ prefix=!
 ```
 - Run `launcher.py`
 
-Note: enable the **Members** intent for the bot to work in DMs
+**Note:** enable the **Members** intent for the bot to work in DMs
 
 ## Supported sites
 Warning! These sites contain NSFW content.
