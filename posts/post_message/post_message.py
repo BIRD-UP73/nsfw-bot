@@ -54,8 +54,6 @@ class PostMessage:
         await self.on_reaction_add(reaction, user)
 
     async def on_reaction_add(self, reaction: Reaction, user: Union[Member, User]):
-        logging.warning(f'user: {user}, me: {reaction.me}')
-
         if user == self.bot.user or self.message.id != reaction.message.id:
             return
 
