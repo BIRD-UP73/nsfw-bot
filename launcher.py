@@ -4,8 +4,7 @@ import sys
 
 from discord.ext import commands
 
-from commands.cogs.listeners import Listeners
-from commands.cogs.posts_cog import PostCog
+from commands.nsfw.listeners import Listeners
 from commands.favorites import favorites
 from commands.github import github
 from commands.help import CustomHelpCommand
@@ -32,7 +31,6 @@ bot = commands.Bot(
     help_command=CustomHelpCommand()
 )
 
-bot.add_cog(PostCog())
 bot.add_cog(Listeners(bot))
 
 bot.add_command(github)
@@ -40,7 +38,7 @@ bot.add_command(latency)
 bot.add_command(favorites)
 bot.add_command(post_history)
 
-bot.load_extension('commands.nsfw_command')
+bot.load_extension('commands.nsfw._setup')
 
 if __name__ == "__main__":
     bot.run(token)

@@ -7,7 +7,7 @@ def parse_url(url: str) -> str:
     parsed_url = urlparse(url).hostname or url
 
     if 'donmai.us' in parsed_url:
-        return URL.DANBOORU
+        return URL.DANBOORU.short_url
 
     split_hostname = parsed_url.split('.')
 

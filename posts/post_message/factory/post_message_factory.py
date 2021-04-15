@@ -9,6 +9,14 @@ from util import tag_util
 
 
 class PostMessageFactory:
+
+    @staticmethod
+    async def create_post(ctx: Context, url: URL, tags: str, score: int, max_count: int = None):
+        if url == URL.DANBOORU:
+            await PostMessageFactory.create_json_post(ctx, url, tags, score)
+        else:
+            await PostMessageFactory.create_xml_post(ctx, url, tags, score, max_count)
+
     @staticmethod
     async def create_json_post(ctx: Context, url: URL, tags: str, score: int):
         split_tags = tags.split(' ')
