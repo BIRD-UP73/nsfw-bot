@@ -1,8 +1,7 @@
 import logging
-
 from typing import Union, Optional, List
 
-from discord import Reaction, Member, Message, DMChannel, TextChannel
+from discord import Reaction, Member, Message, DMChannel, TextChannel, RawReactionActionEvent
 from discord.abc import User
 from discord.ext.commands import Context, Bot, UserInputError
 
@@ -35,14 +34,28 @@ class PostMessage:
 
         self.message = await self.channel.send(**self.page_content().to_dict())
 
-        self.bot.add_listener(self.on_reaction_add)
+        if self.message.guild:
+            self.bot.add_listener(self.on_reaction_add)
+        else:
+            self.bot.add_listener(self.on_raw_reaction_add)
+
         await self.add_emojis()
 
     async def add_emojis(self):
         for emoji in self.emojis:
             await self.message.add_reaction(emoji)
 
+    async def on_raw_reaction_add(self, event: RawReactionActionEvent):
+        reaction_data = dict(me=False, count=0)
+        reaction = Reaction(message=self.message, data=reaction_data, emoji=str(event.emoji))
+
+        user = await self.bot.fetch_user(event.user_id)
+
+        await self.on_reaction_add(reaction, user)
+
     async def on_reaction_add(self, reaction: Reaction, user: Union[Member, User]):
+        logging.warning(f'user: {user}, me: {reaction.me}')
+
         if user == self.bot.user or self.message.id != reaction.message.id:
             return
 
@@ -68,7 +81,6 @@ class PostMessage:
 
         if reaction.emoji == '🗑️':
             await self.message.delete()
-            logging.info(f'Deleted message id={self.message.id}, author={self.author} ({self.author.id})')
             return False
 
         if reaction.emoji == '🔁':
