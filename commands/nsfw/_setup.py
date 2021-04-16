@@ -9,7 +9,7 @@ from commands.nsfw.xbooru import XbooruCommand
 
 def setup(bot: Bot):
     bot.add_command(DanbooruCommand())
-    bot.add_command(Rule34Command())
     bot.add_command(GelbooruCommand())
+    bot.add_command(Rule34Command())
     bot.add_command(TbibCommand())
     bot.add_command(XbooruCommand())
