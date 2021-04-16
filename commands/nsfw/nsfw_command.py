@@ -46,10 +46,11 @@ class NsfwCommand(Command):
 
     def __init__(self):
         super(NsfwCommand, self).__init__(self.func, name=self.name, aliases=self.aliases, brief=self.brief)
+        self.description = create_description(self.url, self.emojis)
+
         if self.url:
             self.brief: str = f'Fetches posts from {self.url.short_url}'
 
-        self.description = create_description(self.url, self.emojis)
         if self.check_tags:
             self.before_invoke(check_disallowed_tags)
 
