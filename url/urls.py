@@ -1,42 +1,30 @@
-from enum import Enum
 
+class URL:
+    short_url: str = ''
+    long_url: str = ''
+    cheatsheet_url: str = ''
 
-class URL(Enum):
-    def __new__(cls, *args, **kwds):
-        obj = object.__new__(cls)
-        obj._value_ = args[0]
-        return obj
-
-    def __init__(self, short_url: str, long_url: str = None, cheatsheet_url: str = None):
+    def __init__(self, short_url: str):
         self.short_url = short_url
-        self.long_url = long_url
-        self.cheatsheet_url = cheatsheet_url
+        self.long_url = f'https://{short_url}/index.php'
+        self.cheatsheet_url = f'https://{short_url}/index.php?page=help&topic=cheatsheet'
 
-    RULE34 = 'rule34.xxx'
-    GELBOORU = 'gelbooru.com'
-    XBOORU = 'xbooru.com'
-    TBIB = 'tbib.org'
-    DANBOORU = 'danbooru.donmai.us', 'https://danbooru.donmai.us',\
-               'https://danbooru.donmai.us/wiki_pages/help:cheatsheet'
 
-    @property
-    def long_url(self):
-        if self._long_url:
-            return self._long_url
+class Danbooru(URL):
+    short_url = 'danbooru.donmai.us'
+    long_url = 'https://danbooru.donmai.us'
+    cheatsheet_url = 'https://danbooru.donmai.us/wiki_pages/help:cheatsheet'
 
-        return f'https://{self.short_url}/index.php'
 
-    @long_url.setter
-    def long_url(self, value):
-        self._long_url = value
+class Hypnohub(URL):
+    short_url = 'hypnohub.net'
+    long_url = 'hypnohub.net/post/index.xml'
+    cheatsheet_url = 'https://hypnohub.net/help/cheatsheet'
 
-    @property
-    def cheatsheet_url(self):
-        if self._cheatsheet_url:
-            return self._cheatsheet_url
 
-        return f'https://{self.short_url}/index.php?page=help&topic=cheatsheet'
+Rule34 = URL('rule34.xxx')
+Gelbooru = URL('gelbooru.com')
+Xbooru = URL('xbooru.com')
+Tbib = URL('tbib.org')
 
-    @cheatsheet_url.setter
-    def cheatsheet_url(self, value):
-        self._cheatsheet_url = value
+print(Danbooru.long_url)

@@ -36,3 +36,10 @@ class PostMessageFactory:
 
         fetcher = XmlPostFetcher(options.url.long_url, tags, options.max_posts)
         await PostMessage(fetcher, ctx, options.emojis).create_message()
+
+    @staticmethod
+    async def create_hypnohub_post(ctx: Context, options: CommandOptions, tags: str, score: int):
+        tags = tag_util.parse_tags(tags, score)
+
+        fetcher = XmlPostFetcher(options.url.long_url, tags, options.max_posts)
+        await PostMessage(fetcher, ctx, options.emojis).create_message()
