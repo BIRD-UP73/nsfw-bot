@@ -26,14 +26,11 @@ class FavoritesMessage(PostMessage):
             await super().add_favorite(user)
 
     async def handle_reaction(self, reaction: Reaction, user: Union[Member, User]) -> Optional[bool]:
-        reaction_result = await super().handle_reaction(reaction, user)
-
-        if reaction_result is not None:
-            return reaction_result
-
         if reaction.emoji == '⛔':
             await self.remove_favorite(user)
             return True
+
+        return await super().handle_reaction(reaction, user)
 
     async def remove_favorite(self, user: User):
         if user != self.author:

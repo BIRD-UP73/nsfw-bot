@@ -7,7 +7,7 @@ from posts.post_message.favorites_message import FavoritesMessage
 
 
 @is_nsfw()
-@nsfw_command(name='favorites', aliases=['favs'], brief='Shows a user\'s favorites', extra_emojis=['⛔'])
+@nsfw_command(name='favorites', aliases=['favs'], brief='Shows a user\'s favorites')
 async def favorites(ctx: Context, user: Member = None):
     user = user or ctx.author
     fav_list = post_repository.get_favorites(user)
