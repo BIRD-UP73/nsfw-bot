@@ -1,17 +1,24 @@
 from discord import Member
-from discord.ext.commands import Context, is_nsfw, command
+from discord.ext.commands import Context, is_nsfw
 
+from commands.nsfw.nsfw_command import NSFWCommand, default_emojis
 from db import post_repository
 from posts.post_message.favorites_message import FavoritesMessage
 
 
-@is_nsfw()
-@command(name='favorites', aliases=['favs'], brief='Shows a user\'s favorites')
-async def favorites(ctx: Context, user: Member = None):
-    user = user or ctx.author
-    fav_list = post_repository.get_favorites(user)
+class Favorites(NSFWCommand):
+    name = 'favorites'
+    aliases = ['favs']
+    brief = 'Shows a user\'s favorites'
+    emojis = default_emojis + ['⛔']
+    check_tags = False
 
-    if not favorites:
-        return await ctx.send('No favorites found')
+    @is_nsfw()
+    async def func(self, ctx: Context, user: Member = None):
+        user = user or ctx.author
+        fav_list = post_repository.get_favorites(user)
 
-    await FavoritesMessage(ctx, fav_list).create_message()
+        if not fav_list:
+            return await ctx.send('No favorites found')
+
+        await FavoritesMessage(ctx, fav_list, self.emojis).create_message()

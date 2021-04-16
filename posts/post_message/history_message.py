@@ -10,10 +10,10 @@ from posts.post_message.post_message import PostMessage
 
 
 class HistoryMessage(PostMessage):
-    def __init__(self, ctx: Context, data: List[PostEntry]):
+    def __init__(self, ctx: Context, data: List[PostEntry], emojis: List[str]):
         paginator = Paginator()
         self.fetcher = PostEntryFetcher(data, paginator)
-        super().__init__(self.fetcher, ctx, paginator)
+        super().__init__(self.fetcher, ctx, emojis, paginator)
 
     def page_content(self) -> MessageContent:
         post_data = self.fetcher.get_post()
