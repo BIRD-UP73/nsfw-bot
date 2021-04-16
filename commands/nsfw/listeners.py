@@ -1,7 +1,7 @@
 import logging
 
 from discord import Game
-from discord.ext.commands import Bot, Cog, Context, UserInputError
+from discord.ext.commands import Bot, Cog, Context, UserInputError, CheckFailure
 
 
 class Listeners(Cog):
@@ -17,7 +17,7 @@ class Listeners(Cog):
 
     @Cog.listener()
     async def on_command_error(self, ctx: Context, exception: Exception):
-        if isinstance(exception, UserInputError):
+        if isinstance(exception, UserInputError) or isinstance(exception, CheckFailure):
             await ctx.send(str(exception))
         else:
             await ctx.send('Something went wrong.')

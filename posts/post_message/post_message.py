@@ -12,17 +12,14 @@ from posts.paginator.paginator import Paginator
 
 
 class PostMessage:
-    def __init__(self, fetcher: AbstractPostFetcher, ctx: Context, paginator=None):
+    def __init__(self, fetcher: AbstractPostFetcher, ctx: Context, emojis: List[str], paginator=None):
         self.fetcher: AbstractPostFetcher = fetcher
         self.author: Union[User, Member] = ctx.author
         self.bot: Bot = ctx.bot
         self.channel: Union[TextChannel, DMChannel] = ctx.channel
+        self.emojis = emojis
         self.paginator: Paginator = paginator or Paginator()
         self.message: Optional[Message] = None
-
-    @property
-    def emojis(self) -> List[str]:
-        return ['⭐', '⬅', '➡', '🔁', '🗑️']
 
     async def create_message(self):
         self.paginator.post_count = self.fetcher.fetch_count()

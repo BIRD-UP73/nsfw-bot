@@ -1,16 +1,21 @@
 from discord.ext.commands import Context, is_nsfw
 
-from commands.nsfw_command import nsfw_command
+from commands.nsfw.nsfw_command import NsfwCommand
 from posts.post_history import PostHistory
 from posts.post_message.history_message import HistoryMessage
 
 
-@is_nsfw()
-@nsfw_command(name='history', brief='Shows post history', aliases=['hist'])
-async def post_history(ctx: Context):
-    channel_hist = PostHistory().hist(ctx.channel)
+class History(NsfwCommand):
+    name = 'history'
+    aliases = ['hist']
+    brief = 'Shows post history'
+    check_tags = False
 
-    if not channel_hist:
-        return await ctx.send('No history')
+    @is_nsfw()
+    async def func(self, ctx: Context):
+        channel_hist = PostHistory().hist(ctx.channel)
 
-    await HistoryMessage(ctx, channel_hist).create_message()
+        if not channel_hist:
+            return await ctx.send('No history')
+
+        await HistoryMessage(ctx, channel_hist, self.emojis).create_message()
