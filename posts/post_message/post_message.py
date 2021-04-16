@@ -1,4 +1,3 @@
-import logging
 from typing import Union, Optional, List
 
 from discord import Reaction, Member, Message, DMChannel, TextChannel, RawReactionActionEvent

@@ -40,3 +40,6 @@ class URL(Enum):
     @cheatsheet_url.setter
     def cheatsheet_url(self, value):
         self._cheatsheet_url = value
+
+    def __str__(self):
+        return self.short_url

@@ -1,6 +1,8 @@
+from url.urls import URL
+
 
 class PostEntryKey:
-    def __init__(self, post_id: int, url: str):
+    def __init__(self, post_id: int, url: URL):
         self.post_id: int = post_id
         self.url = url
 

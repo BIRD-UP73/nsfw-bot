@@ -2,11 +2,13 @@ from dateutil import parser
 from discord import Embed, Color
 
 from posts.post_message.post_message_content import MessageContent
+from url.urls import URL
 from util import tag_util
 
 
 class Post:
-    def __init__(self, **kwargs):
+    def __init__(self, board_url: URL, **kwargs):
+        self.board_url: URL = board_url
         self.created_at: str = kwargs.get('created_at')
         self.file_ext: str = kwargs.get('file_ext')
         self.file_url: str = kwargs.get('file_url')
@@ -46,7 +48,7 @@ class ErrorPost(Post):
     Post used to indicate something went wrong
     """
     def __init__(self, message: str):
-        super().__init__()
+        super().__init__(None)
         self.message: str = message
 
     def is_animated(self) -> bool:

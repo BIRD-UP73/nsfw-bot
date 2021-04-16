@@ -1,11 +1,12 @@
 from posts.data.post_data import Post
 from posts.post_message.post_message_content import MessageContent
+from url.urls import URL
 from util import tag_util
 
 
 class JsonPost(Post):
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
+    def __init__(self, board_url: URL, **kwargs):
+        super().__init__(board_url, **kwargs)
         self.artist_tag: str = kwargs.get('tag_string_artist')
         self.character_tag: str = kwargs.get('tag_string_character')
         self.copyright_tag: str = kwargs.get('tag_string_copyright')
