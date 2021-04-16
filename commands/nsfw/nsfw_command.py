@@ -67,7 +67,7 @@ def create_description(url: URL, emojis: List[str]):
     cheatsheet_text = ''
 
     if url:
-        cheatsheet_text = f'For search terms, see {url.cheatsheet_url}'
+        cheatsheet_text = f'\nFor search terms, see {url.cheatsheet_url}'
 
     return description.format(emojis_text=emoji_txt, cheatsheet_text=cheatsheet_text)
 
