@@ -6,12 +6,12 @@ from discord.ext.commands import Context
 from db import post_repository
 from posts.post_entry import PostEntry
 from posts.fetcher.post_entry_fetcher import PostEntryFetcher
-from posts.post_message.post_message_content import PostMessageContent
+from posts.post_message.post_message_content import MessageContent
 from posts.paginator.paginator import Paginator
-from posts.post_message.abstract_post_message import AbstractPostMessage
+from posts.post_message.post_message import PostMessage
 
 
-class FavoritesMessage(AbstractPostMessage):
+class FavoritesMessage(PostMessage):
     def __init__(self, ctx: Context, data: List[PostEntry]):
         paginator = Paginator()
         self.fetcher = PostEntryFetcher(data, paginator)
@@ -26,14 +26,11 @@ class FavoritesMessage(AbstractPostMessage):
             await super().add_favorite(user)
 
     async def handle_reaction(self, reaction: Reaction, user: Union[Member, User]) -> Optional[bool]:
-        reaction_result = await super().handle_reaction(reaction, user)
-
-        if reaction_result is not None:
-            return reaction_result
-
         if reaction.emoji == '⛔':
             await self.remove_favorite(user)
             return True
+
+        return await super().handle_reaction(reaction, user)
 
     async def remove_favorite(self, user: User):
         if user != self.author:
@@ -54,7 +51,7 @@ class FavoritesMessage(AbstractPostMessage):
         await self.message.clear_reactions()
         await self.message.edit(content='No favorites.', embed=None)
 
-    def page_content(self) -> PostMessageContent:
+    def page_content(self) -> MessageContent:
         post_data = self.fetcher.get_post()
         message_content = post_data.to_message_content()
 

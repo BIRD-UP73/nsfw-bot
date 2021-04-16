@@ -23,12 +23,10 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s %(mess
 console = logging.StreamHandler()
 console.setLevel(logging.INFO)
 
-logging.getLogger()
-
 bot = commands.Bot(
     case_insensitive=True,
     command_prefix=prefix,
-    help_command=CustomHelpCommand()
+    help_command=CustomHelpCommand(),
 )
 
 bot.add_cog(Listeners(bot))
