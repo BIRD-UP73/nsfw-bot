@@ -8,7 +8,7 @@ from discord import User
 from db.model import session, Post as DBPost
 from posts.data.post_data import Post
 from posts.post_entry import PostEntry
-from util.url_util import parse_url
+from url.urls import URL
 
 
 def get_favorites(user: User) -> List[PostEntry]:
@@ -22,7 +22,7 @@ def get_favorites(user: User) -> List[PostEntry]:
 
     logging.info(f'Fetched favorites, user={user}')
 
-    return [PostEntry(db_post.url, db_post.post_id, db_post.saved_at) for db_post in posts]
+    return [PostEntry(URL(db_post.url), db_post.post_id, db_post.saved_at) for db_post in posts]
 
 
 def remove_favorite(user: User, post: Post):
@@ -35,11 +35,10 @@ def remove_favorite(user: User, post: Post):
     :param post: the post
     :return: True if removing succeeds, False if not
     """
-    parsed_url = parse_url(post.file_url)
-    db_post = session.query(DBPost).get((user.id, post.post_id, parsed_url))
+    db_post = session.query(DBPost).get((user.id, post.post_id, post.board_url.short_url))
 
     session.delete(db_post)
-    logging.info(f'Removed favorite, user={user}, post_id={post.post_id}, url={parsed_url}')
+    logging.info(f'Removed favorite, user={user}, post_id={post.post_id}, url={post.board_url}')
     session.commit()
 
 
@@ -51,8 +50,7 @@ def exists(user: User, post: Post) -> bool:
     :param post: the post
     :return: True if the post exists, False if not
     """
-    parsed_url = parse_url(post.file_url)
-    db_post = session.query(DBPost).get((user.id, post.post_id, parsed_url))
+    db_post = session.query(DBPost).get((user.id, post.post_id, post.board_url.short_url))
 
     return db_post is not None
 
@@ -69,12 +67,10 @@ def store_favorite(user: User, post: Post) -> bool:
     if post.is_error() or exists(user, post):
         return False
 
-    parsed_url = parse_url(post.file_url)
-
-    db_post = DBPost(user_id=user.id, post_id=post.post_id, url=parsed_url, saved_at=datetime.now())
+    db_post = DBPost(user_id=user.id, post_id=post.post_id, url=post.board_url.short_url, saved_at=datetime.now())
     session.add(db_post)
     session.commit()
 
-    logging.info(f'Stored favorite, user={user}, post_id={post.post_id}, url={parsed_url}')
+    logging.info(f'Stored favorite, user={user}, post_id={post.post_id}, url={post.board_url}')
 
     return True

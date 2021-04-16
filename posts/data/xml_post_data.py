@@ -1,14 +1,16 @@
 from xml.etree import ElementTree
 
 from posts.data.post_data import Post
+from url.urls import URL
 
 
 class XmlPost(Post):
     @classmethod
-    def from_xml(cls, el: ElementTree):
+    def from_xml(cls, board_url: URL, el: ElementTree):
         file_url = el.get('file_url')
 
         attrs = dict(
+            board_url=board_url,
             file_url=file_url,
             file_ext=file_url.split('.')[-1],
             created_at=el.get('created_at'),

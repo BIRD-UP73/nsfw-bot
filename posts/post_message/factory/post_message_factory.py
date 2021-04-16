@@ -9,30 +9,28 @@ from url.urls import URL
 from util import tag_util
 
 
+def fetcher_for_url(url: URL, tags: str, score: int, max_posts: int):
+    if url == URL.DANBOORU:
+        return JsonPostFetcher(url, tags)
+
+    return XmlPostFetcher(url, tags, score, max_posts)
+
+
+def paginator_for_url(url: URL):
+    if url == URL.DANBOORU:
+        return JsonPostPaginator()
+
+
 class PostMessageFactory:
-
     @staticmethod
-    async def create_post(ctx: Context, options: CommandOptions, tags: str, score: int):
-        if options.url == URL.DANBOORU:
-            await PostMessageFactory.create_json_post(ctx, options, tags, score)
-        else:
-            await PostMessageFactory.create_xml_post(ctx, options, tags, score)
+    async def create_post(ctx: Context, options: CommandOptions, parsed_tags: str, score: int):
+        split_tags = parsed_tags.split(' ')
 
-    @staticmethod
-    async def create_json_post(ctx: Context, options: CommandOptions, tags: str, score: int):
-        split_tags = tags.split(' ')
-
-        if len(split_tags) > 2:
+        if options.url == URL.DANBOORU and len(split_tags) > 2:
             raise UserInputError(f'Maximum of 2 tags allowed. You entered {len(split_tags)}')
-        elif len(split_tags) < 2:
-            tags = tag_util.parse_tags(tags, score)
 
-        fetcher = JsonPostFetcher(options.url.long_url, tags)
-        await PostMessage(fetcher, ctx, options.emojis, JsonPostPaginator()).create_message()
+        parsed_tags = tag_util.parse_tags(parsed_tags, score)
 
-    @staticmethod
-    async def create_xml_post(ctx: Context, options: CommandOptions, tags: str, score: int):
-        tags = tag_util.parse_tags(tags, score)
-
-        fetcher = XmlPostFetcher(options.url.long_url, tags, options.max_posts)
-        await PostMessage(fetcher, ctx, options.emojis).create_message()
+        fetcher = fetcher_for_url(options.url, parsed_tags, score, options.max_posts)
+        paginator = paginator_for_url(options.url)
+        await PostMessage(fetcher, ctx, options.emojis, paginator).create_message()

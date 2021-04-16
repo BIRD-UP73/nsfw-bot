@@ -2,16 +2,16 @@ from datetime import datetime
 from typing import Optional
 
 from posts.data.post_data import Post
-from util.url_util import parse_url
+from url.urls import URL
 
 
 class PostEntry:
-    def __init__(self, url: str, post_id: int, saved_at: datetime, post_data: Post = None):
-        self.url: str = url
+    def __init__(self, url: URL, post_id: int, saved_at: datetime, post_data: Post = None):
+        self.url: URL = url
         self.post_id: int = post_id
         self.saved_at: datetime = saved_at
         self.post_data: Optional[Post] = post_data
 
     @classmethod
-    def from_post_data(cls, post_data: Post):
-        return PostEntry(parse_url(post_data.file_url), post_data.post_id, datetime.now())
+    def from_post_data(cls, post: Post):
+        return PostEntry(post.board_url, post.post_id, datetime.now())
