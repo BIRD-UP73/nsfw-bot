@@ -1,8 +1,8 @@
-from commands.nsfw.nsfw_command import NSFWCommand
+from commands.nsfw.nsfw_command import NsfwCommand
 from url.urls import URL
 
 
-class DanbooruCommand(NSFWCommand):
+class DanbooruCommand(NsfwCommand):
     name = 'danbooru'
     url = URL.DANBOORU
     aliases = ['dbooru']

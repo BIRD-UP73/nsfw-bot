@@ -34,7 +34,7 @@ async def check_disallowed_tags(ctx: Context):
         raise UserInputError(f'You are not allowed to search for: {tag_txt}')
 
 
-class NSFWCommand(Command):
+class NsfwCommand(Command):
     name: str = None
     url: URL = None
     emojis: List[str] = default_emojis
@@ -45,7 +45,7 @@ class NSFWCommand(Command):
     check_tags = True
 
     def __init__(self):
-        super(NSFWCommand, self).__init__(self.func, name=self.name, aliases=self.aliases, brief=self.brief)
+        super(NsfwCommand, self).__init__(self.func, name=self.name, aliases=self.aliases, brief=self.brief)
         if self.url:
             self.brief: str = f'Fetches posts from {self.url.short_url}'
 

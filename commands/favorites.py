@@ -1,12 +1,12 @@
 from discord import Member
 from discord.ext.commands import Context, is_nsfw
 
-from commands.nsfw.nsfw_command import NSFWCommand, default_emojis
+from commands.nsfw.nsfw_command import NsfwCommand, default_emojis
 from db import post_repository
 from posts.post_message.favorites_message import FavoritesMessage
 
 
-class Favorites(NSFWCommand):
+class Favorites(NsfwCommand):
     name = 'favorites'
     aliases = ['favs']
     brief = 'Shows a user\'s favorites'
