@@ -22,10 +22,3 @@ def short_to_long(short_url: str) -> str:
         return URL.DANBOORU.long_url
 
     return f'https://{short_url}/index.php'
-
-# def cheat_sheet_url(command_name: str):
-#     if command_name == 'danbooru':
-#         return
-#
-#     short_url = short_urls.get(command_name)
-#     return
