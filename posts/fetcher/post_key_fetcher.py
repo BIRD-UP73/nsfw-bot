@@ -4,12 +4,11 @@ from xml.etree import ElementTree
 
 from posts.api.json_api import json_post_by_id
 from posts.api.xml_api import get_post_by_id
-from posts.data.hypnohub_post_data import HypnohubPost
 from posts.data.json_post_data import JsonPost
 from posts.data.post_data import Post, NonExistentPost
 from posts.data.xml_post_data import XmlPost
 from posts.post_entry_key import PostEntryKey
-from url.urls import Danbooru, URL, Hypnohub
+from url.urls import Danbooru, URL
 
 
 class PostKeyFetcher:
@@ -41,11 +40,5 @@ class PostKeyFetcher:
             logging.warning(f'XML post not found, url={post_key.url}, id={post_key.post_id}')
             return NonExistentPost()
 
-        return PostKeyFetcher.parse_post(post_key.url, et_post[0])
+        return XmlPost.from_xml(post_key.url, et_post[0])
 
-    @staticmethod
-    def parse_post(url: URL, et_post: ElementTree):
-        if url == Hypnohub:
-            return HypnohubPost.from_xml(url, et_post)
-
-        return XmlPost.from_xml(url, et_post)

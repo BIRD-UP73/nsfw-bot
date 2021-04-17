@@ -19,8 +19,6 @@ class URL:
             return Tbib
         if url == 'danbooru.donmai.us':
             return Danbooru
-        if url == 'hypnohub.net':
-            return Hypnohub
 
 
 class DefaultURL(URL):
@@ -40,12 +38,6 @@ class Danbooru(URL):
     short_url = 'danbooru.donmai.us'
     long_url = 'https://danbooru.donmai.us'
     cheatsheet_url = 'https://danbooru.donmai.us/wiki_pages/help:cheatsheet'
-
-
-class Hypnohub(URL):
-    short_url = 'hypnohub.net'
-    long_url = 'https://hypnohub.net/post/index.xml'
-    cheatsheet_url = 'https://hypnohub.net/help/cheatsheet'
 
 
 Rule34 = DefaultURL('rule34.xxx')
