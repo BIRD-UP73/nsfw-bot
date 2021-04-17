@@ -1,7 +1,7 @@
 from commands.nsfw.nsfw_command import NsfwCommand
-from url.urls import URL
+from url.urls import Xbooru
 
 
 class XbooruCommand(NsfwCommand):
     name = 'xbooru'
-    url = URL.XBOORU
+    url = Xbooru

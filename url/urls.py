@@ -1,8 +1,34 @@
+from typing import Dict
+
 
 class URL:
     short_url: str = ''
     long_url: str = ''
     cheatsheet_url: str = ''
+    api_options: Dict = {}
+
+    @staticmethod
+    def find(url: str):
+        if url == 'rule34.xxx':
+            return Rule34
+        if url == 'gelbooru.com':
+            return Gelbooru
+        if url == 'xbooru.com':
+            return Xbooru
+        if url == 'tbib.org':
+            return Tbib
+        if url == 'danbooru.donmai.us':
+            return Danbooru
+        if url == 'hypnohub.net':
+            return Hypnohub
+
+
+class DefaultURL(URL):
+    api_options = {
+        'page': 'dapi',
+        's': 'post',
+        'q': 'index'
+    }
 
     def __init__(self, short_url: str):
         self.short_url = short_url
@@ -18,13 +44,11 @@ class Danbooru(URL):
 
 class Hypnohub(URL):
     short_url = 'hypnohub.net'
-    long_url = 'hypnohub.net/post/index.xml'
+    long_url = 'https://hypnohub.net/post/index.xml'
     cheatsheet_url = 'https://hypnohub.net/help/cheatsheet'
 
 
-Rule34 = URL('rule34.xxx')
-Gelbooru = URL('gelbooru.com')
-Xbooru = URL('xbooru.com')
-Tbib = URL('tbib.org')
-
-print(Danbooru.long_url)
+Rule34 = DefaultURL('rule34.xxx')
+Gelbooru = DefaultURL('gelbooru.com')
+Xbooru = DefaultURL('xbooru.com')
+Tbib = DefaultURL('tbib.org')

@@ -10,12 +10,14 @@ from posts.data.post_data import NonExistentPost
 from posts.data.xml_post_data import XmlPost
 from posts.fetcher.post_fetcher import PostFetcher
 from posts.post_history import PostHistory
+from url.urls import URL
 
 
 class XmlPostFetcher(PostFetcher):
-    def __init__(self, url: str, tags: str, max_count: int = None):
+    def __init__(self, url: URL, tags: str, score: int, max_count: int = None):
         super().__init__(url, tags)
         self.max_count = max_count
+        self.score = score
 
     def fetch_count(self) -> int:
         # Fetch 0 posts to just get the post count
@@ -37,6 +39,9 @@ class XmlPostFetcher(PostFetcher):
             logging.warning(f'XML post not found, url={self.url}, tags={self.tags}, page={page}')
             self.post_data = NonExistentPost()
         else:
-            self.post_data = XmlPost.from_xml(posts[0])
+            self.post_data = self.parse_post(posts)
 
         PostHistory().add_to_history(source, self.post_data)
+
+    def parse_post(self, posts) -> XmlPost:
+        return XmlPost.from_xml(self.url, posts[0])
