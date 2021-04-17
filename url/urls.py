@@ -1,37 +1,56 @@
-from typing import Dict
-
-
 class URL:
     short_url: str = ''
     long_url: str = ''
     cheatsheet_url: str = ''
-    api_options: Dict = {}
 
     @staticmethod
     def find(url: str):
-        if url == 'rule34.xxx':
+        if url == Rule34.short_url:
             return Rule34
-        if url == 'gelbooru.com':
+        if url == Gelbooru.short_url:
             return Gelbooru
-        if url == 'xbooru.com':
+        if url == Xbooru.short_url:
             return Xbooru
-        if url == 'tbib.org':
+        if url == Tbib.short_url:
             return Tbib
-        if url == 'danbooru.donmai.us':
+        if url == Danbooru.short_url:
             return Danbooru
+        if url == Rule34Paheal.short_url:
+            return Rule34Paheal
+
+    @staticmethod
+    def create_api_params(**kwargs):
+        return kwargs
 
 
 class DefaultURL(URL):
-    api_options = {
-        'page': 'dapi',
-        's': 'post',
-        'q': 'index'
-    }
-
     def __init__(self, short_url: str):
         self.short_url = short_url
         self.long_url = f'https://{short_url}/index.php'
         self.cheatsheet_url = f'https://{short_url}/index.php?page=help&topic=cheatsheet'
+
+    @staticmethod
+    def create_api_params(**kwargs):
+        params = {
+            'page': 'dapi',
+            's': 'post',
+            'q': 'index',
+            'limit': kwargs.get('limit')
+        }
+        if post_id := kwargs.get('id'):
+            params['id'] = post_id
+        if tags := kwargs.get('tags'):
+            params['tags'] = tags
+        if page := kwargs.get('page'):
+            params['pid'] = page
+
+        return params
+
+
+class Rule34Paheal(URL):
+    short_url = 'rule34.paheal.net'
+    long_url = 'https://rule34.paheal.net/api/danbooru/find_posts'
+    cheatsheet_url = 'https://rule34.paheal.net/help/search'
 
 
 class Danbooru(URL):

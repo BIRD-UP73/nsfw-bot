@@ -6,12 +6,7 @@ from url.urls import URL
 
 
 def get_post_by_id(url: URL, post_id: int) -> str:
-    params = {
-        'page': 'dapi',
-        's': 'post',
-        'q': 'index',
-        'id': post_id
-    }
+    params = url.create_api_params(id=post_id)
 
     logging.info(f'Fetching post with id {post_id} request for url {url}')
 
@@ -22,14 +17,7 @@ def get_post_by_id(url: URL, post_id: int) -> str:
 
 
 def send_request(url: URL, limit: int, tags: str, page: int) -> str:
-    params = {
-        'page': 'dapi',
-        's': 'post',
-        'q': 'index',
-        'pig': page,
-        'limit': limit,
-        'tags': tags
-    }
+    params = url.create_api_params(limit=limit, tags=tags, page=page)
 
     logging.info(f'Fetching post for url={url}, tags={tags}, page={page}, limit={limit}')
 

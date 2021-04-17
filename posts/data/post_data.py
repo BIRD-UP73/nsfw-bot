@@ -1,3 +1,5 @@
+import datetime
+
 from dateutil import parser
 from discord import Embed, Color
 
@@ -33,7 +35,10 @@ class Post:
         if self.source:
             embed.add_field(name='Source', value=self.source, inline=False)
         if self.created_at:
-            embed.timestamp = parser.parse(self.created_at)
+            if self.created_at.isnumeric():
+                embed.timestamp = datetime.datetime.fromtimestamp(int(self.created_at))
+            else:
+                embed.timestamp = parser.parse(self.created_at)
         if self.score:
             embed.set_footer(text=f'Score: {self.score}')
 

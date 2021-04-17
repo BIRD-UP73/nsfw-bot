@@ -5,7 +5,7 @@ from posts.fetcher.json_post_fetcher import JsonPostFetcher
 from posts.fetcher.xml_post_fetcher import XmlPostFetcher
 from posts.paginator.json_post_paginator import JsonPostPaginator
 from posts.post_message.post_message import PostMessage
-from url.urls import URL, Danbooru
+from url.urls import URL, Danbooru, Rule34Paheal
 from util import tag_util
 
 
@@ -17,13 +17,15 @@ def fetcher_for_url(url: URL, tags: str, score: int, max_posts: int):
 
 
 def paginator_for_url(url: URL):
-    if url == Danbooru:
+    if url == Danbooru or url == Rule34Paheal:
         return JsonPostPaginator()
 
 
 class PostMessageFactory:
     @staticmethod
     async def create_post(ctx: Context, options: CommandOptions, parsed_tags: str, score: int):
+        parsed_tags = parsed_tags or ''
+
         split_tags = parsed_tags.split(' ')
 
         if options.url == Danbooru and len(split_tags) > 2:

@@ -26,7 +26,8 @@ description = """
 
 
 async def check_disallowed_tags(ctx: Context):
-    tags = ctx.kwargs.get('tags')
+    tags = ctx.kwargs.get('tags') or ''
+
     disallowed_tags = tag_util.get_disallowed_tags(tags)
 
     if len(disallowed_tags) > 0:
@@ -36,7 +37,7 @@ async def check_disallowed_tags(ctx: Context):
 
 class NsfwCommand(Command):
     name: str = None
-    url: URL = None
+    url: Optional[URL] = None
     emojis: List[str] = default_emojis
     brief = None
     max_posts: int = None
@@ -55,14 +56,15 @@ class NsfwCommand(Command):
             self.before_invoke(check_disallowed_tags)
 
     @is_nsfw()
-    async def func(self, ctx: Context, score: Optional[int] = default_score, *, tags: str = ''):
+    async def func(self, ctx: Context, score: Optional[int], *, tags: str = None):
+        score = score or self.default_score
         await PostMessageFactory.create_post(ctx, self.command_options(), tags, score)
 
     def command_options(self) -> CommandOptions:
         return CommandOptions(self.url, self.emojis, self.max_posts)
 
 
-def create_description(url: URL, emojis: List[str]):
+def create_description(url: Optional[URL], emojis: List[str]):
     emoji_txt = '\n'.join(emoji_explanation(emoji) for emoji in emojis)
 
     cheatsheet_text = ''

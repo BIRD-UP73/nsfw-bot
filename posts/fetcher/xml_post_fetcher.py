@@ -39,9 +39,6 @@ class XmlPostFetcher(PostFetcher):
             logging.warning(f'XML post not found, url={self.url}, tags={self.tags}, page={page}')
             self.post_data = NonExistentPost()
         else:
-            self.post_data = self.parse_post(posts)
+            self.post_data = XmlPost.from_xml(self.url, posts[0])
 
         PostHistory().add_to_history(source, self.post_data)
-
-    def parse_post(self, posts) -> XmlPost:
-        return XmlPost.from_xml(self.url, posts[0])
