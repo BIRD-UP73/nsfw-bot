@@ -8,7 +8,7 @@ from posts.data.json_post_data import JsonPost
 from posts.data.post_data import Post, NonExistentPost
 from posts.data.xml_post_data import XmlPost
 from posts.post_entry_key import PostEntryKey
-from url.urls import Danbooru, URL
+from url.urls import Danbooru
 
 
 class PostKeyFetcher:

@@ -6,7 +6,8 @@ from url.urls import URL
 
 
 def get_post_by_id(url: URL, post_id: int) -> str:
-    params = url.create_api_params(id=post_id)
+    params = url.create_api_params()
+    params['tags'] = f'id:{post_id}'
 
     logging.info(f'Fetching post with id {post_id} request for url {url}')
 

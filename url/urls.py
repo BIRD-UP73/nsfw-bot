@@ -1,3 +1,4 @@
+
 class URL:
     short_url: str = ''
     long_url: str = ''
@@ -5,18 +6,7 @@ class URL:
 
     @staticmethod
     def find(url: str):
-        if url == Rule34.short_url:
-            return Rule34
-        if url == Gelbooru.short_url:
-            return Gelbooru
-        if url == Xbooru.short_url:
-            return Xbooru
-        if url == Tbib.short_url:
-            return Tbib
-        if url == Danbooru.short_url:
-            return Danbooru
-        if url == Rule34Paheal.short_url:
-            return Rule34Paheal
+        return url_mapping.get(url)
 
     @staticmethod
     def create_api_params(**kwargs):
@@ -59,7 +49,30 @@ class Danbooru(URL):
     cheatsheet_url = 'https://danbooru.donmai.us/wiki_pages/help:cheatsheet'
 
 
+class Hypnohub(URL):
+    short_url = 'hypnohub.net'
+    long_url = 'https://hypnohub.net/post/index.xml?limit=1'
+    cheatsheet_url = 'https://hypnohub.net/help/cheatsheet'
+
+
+class KonachanCom(URL):
+    short_url = 'konachan.com'
+    long_url = 'https://konachan.com/post.xml'
+    cheatsheet_url = 'https://konachan.com/help/cheatsheet'
+
+
 Rule34 = DefaultURL('rule34.xxx')
 Gelbooru = DefaultURL('gelbooru.com')
 Xbooru = DefaultURL('xbooru.com')
 Tbib = DefaultURL('tbib.org')
+
+url_mapping = {
+    Rule34.short_url: Rule34,
+    Gelbooru.short_url: Gelbooru,
+    Xbooru.short_url: Xbooru,
+    Tbib.short_url: Tbib,
+    Danbooru.short_url: Danbooru,
+    Rule34Paheal.short_url: Rule34Paheal,
+    Hypnohub.short_url: Hypnohub,
+    KonachanCom.short_url: KonachanCom
+}
