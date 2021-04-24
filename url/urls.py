@@ -17,6 +17,8 @@ class URL:
             return Danbooru
         if url == Rule34Paheal.short_url:
             return Rule34Paheal
+        if url == Hypnohub.short_url:
+            return Hypnohub
 
     @staticmethod
     def create_api_params(**kwargs):
@@ -57,6 +59,12 @@ class Danbooru(URL):
     short_url = 'danbooru.donmai.us'
     long_url = 'https://danbooru.donmai.us'
     cheatsheet_url = 'https://danbooru.donmai.us/wiki_pages/help:cheatsheet'
+
+
+class Hypnohub(URL):
+    short_url = 'hypnohub.net'
+    long_url = 'https://hypnohub.net/post/index.xml?limit=1'
+    cheatsheet_url = 'https://hypnohub.net/help/cheatsheet'
 
 
 Rule34 = DefaultURL('rule34.xxx')
