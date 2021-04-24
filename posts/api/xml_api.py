@@ -5,21 +5,9 @@ import requests
 from url.urls import URL
 
 
-def get_post_id_tags(url: URL, post_id: int):
-    params = {
-        'tags': f'id:{post_id}'
-    }
-
-    logging.info(f'Fetching post with id {post_id} request for url {url}')
-
-    resp = requests.get(url.long_url, params)
-    resp.raise_for_status()
-
-    return resp.text
-
-
 def get_post_by_id(url: URL, post_id: int) -> str:
-    params = url.create_api_params(id=post_id)
+    params = url.create_api_params()
+    params['tags'] = f'id:{post_id}'
 
     logging.info(f'Fetching post with id {post_id} request for url {url}')
 
