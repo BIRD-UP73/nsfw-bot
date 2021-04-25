@@ -57,8 +57,12 @@ class NsfwCommand(Command):
             self.before_invoke(check_disallowed_tags)
 
     @is_nsfw()
-    async def func(self, ctx: Context, score: int = default_score, *, tags: str = default_tags):
-        score = score or self.default_score
+    async def func(self, ctx: Context, score: Optional[int], *, tags: str = None):
+        if score is None:
+            score = self.default_score
+        if tags is None:
+            tags = self.default_tags
+
         await PostMessageFactory.create_post(ctx, self.command_options(), tags, score)
 
     def command_options(self) -> CommandOptions:
