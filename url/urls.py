@@ -12,6 +12,9 @@ class URL:
     def create_api_params(**kwargs):
         return kwargs
 
+    def __str__(self):
+        return self.short_url
+
 
 class DefaultURL(URL):
     def __init__(self, short_url: str):
