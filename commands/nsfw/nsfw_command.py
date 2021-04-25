@@ -42,6 +42,7 @@ class NsfwCommand(Command):
     brief = None
     max_posts: int = None
     default_score: int = 50
+    default_tags: str = None
     aliases: List[str] = []
     check_tags = True
 
@@ -57,7 +58,11 @@ class NsfwCommand(Command):
 
     @is_nsfw()
     async def func(self, ctx: Context, score: Optional[int], *, tags: str = None):
-        score = score or self.default_score
+        if score is None:
+            score = self.default_score
+        if tags is None:
+            tags = self.default_tags
+
         await PostMessageFactory.create_post(ctx, self.command_options(), tags, score)
 
     def command_options(self) -> CommandOptions:

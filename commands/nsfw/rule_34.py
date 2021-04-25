@@ -6,3 +6,4 @@ class Rule34Command(NsfwCommand):
     url = Rule34
     name = 'rule34'
     aliases = ['r34']
+    max_posts = 200000
