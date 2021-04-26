@@ -62,8 +62,17 @@ class NsfwCommand(Command):
             score = self.default_score
         if tags is None:
             tags = self.default_tags
+        else:
+            tags = self.parsed_tags(tags, score)
 
         await PostMessageFactory.create_post(ctx, self.command_options(), tags, score)
+
+    @staticmethod
+    def parsed_tags(tags: str, score: int) -> str:
+        if 'score' not in tags:
+            return f'{tags} score:>={score}'
+
+        return tags
 
     def command_options(self) -> CommandOptions:
         return CommandOptions(self.url, self.emojis, self.max_posts)

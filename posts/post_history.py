@@ -1,5 +1,4 @@
 import logging
-
 from collections import deque
 from typing import Dict, Deque, Union, List
 

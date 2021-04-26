@@ -1,5 +1,4 @@
 import logging
-
 from xml.etree import ElementTree
 
 from posts.api.json_api import json_post_by_id

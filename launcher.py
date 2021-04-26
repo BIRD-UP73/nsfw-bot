@@ -4,12 +4,12 @@ import sys
 
 from discord.ext import commands
 
-from commands.nsfw.listeners import Listeners
 from commands.favorites import Favorites
 from commands.github import github
 from commands.help import CustomHelpCommand
 from commands.history import History
 from commands.latency import latency
+from commands.nsfw.listeners import Listeners
 
 config = configparser.RawConfigParser()
 config.read('config.properties')

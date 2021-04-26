@@ -6,8 +6,8 @@ from discord.ext.commands import Context, Bot, UserInputError
 
 from db import post_repository
 from posts.fetcher.abstract_post_fetcher import AbstractPostFetcher
-from posts.post_message.post_message_content import MessageContent
 from posts.paginator.paginator import Paginator
+from posts.post_message.post_message_content import MessageContent
 
 
 class PostMessage:

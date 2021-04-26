@@ -1,10 +1,9 @@
 import logging
-
 from typing import Dict
 
 from posts.data.post_data import Post
-from posts.post_entry_key import PostEntryKey
 from posts.fetcher.post_key_fetcher import PostKeyFetcher
+from posts.post_entry_key import PostEntryKey
 from posts.singleton import Singleton
 from url.urls import URL
 

@@ -1,5 +1,4 @@
 import logging
-
 from typing import Union
 
 from discord import TextChannel, DMChannel
@@ -8,8 +7,8 @@ from posts.api.json_api import fetch_counts, send_json_request
 from posts.data.json_post_data import JsonPost
 from posts.data.post_data import ErrorPost
 from posts.fetcher.post_fetcher import PostFetcher
-from posts.post_history import PostHistory
 from posts.paginator.json_post_paginator import JsonPostPaginator
+from posts.post_history import PostHistory
 from url.urls import URL
 
 

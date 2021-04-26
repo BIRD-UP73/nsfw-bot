@@ -1,5 +1,6 @@
-import requests
 import logging
+
+import requests
 
 
 def json_post_by_id(base_url: str, post_id: int) -> dict:

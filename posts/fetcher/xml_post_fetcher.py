@@ -1,5 +1,4 @@
 import logging
-
 from typing import Union
 from xml.etree import ElementTree
 
