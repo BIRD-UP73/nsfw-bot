@@ -40,4 +40,3 @@ class PostKeyFetcher:
             return NonExistentPost()
 
         return XmlPost.from_xml(post_key.url, et_post[0])
-
