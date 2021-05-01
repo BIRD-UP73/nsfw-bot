@@ -37,6 +37,9 @@ class PostMessage:
             await self.message.add_reaction(emoji)
 
     async def on_raw_reaction_add(self, event: RawReactionActionEvent):
+        """
+        This listener is used for DMs to bypass having to use member intents
+        """
         reaction_data = dict(me=False, count=0)
         reaction = Reaction(message=self.message, data=reaction_data, emoji=str(event.emoji))
 
