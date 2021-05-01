@@ -13,7 +13,7 @@ from posts.post_message.post_message_content import MessageContent
 
 class FavoritesMessage(PostMessage):
     def __init__(self, ctx: Context, data: List[PostEntry], emojis: List[str]):
-        self.fetcher = PostEntryFetcher(data,  Paginator())
+        self.fetcher: PostEntryFetcher = PostEntryFetcher(data,  Paginator())
         super().__init__(self.fetcher, ctx, emojis)
 
     async def add_favorite(self, user: User):

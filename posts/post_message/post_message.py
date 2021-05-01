@@ -16,7 +16,7 @@ class PostMessage:
         self.author: Union[User, Member] = ctx.author
         self.bot: Bot = ctx.bot
         self.channel: Union[TextChannel, DMChannel] = ctx.channel
-        self.emojis = emojis
+        self.emojis: List[str] = emojis
         self.message: Optional[Message] = None
 
     async def create_message(self):
