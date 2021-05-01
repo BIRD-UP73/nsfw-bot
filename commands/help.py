@@ -1,5 +1,8 @@
+import itertools
+from typing import Mapping, Optional, List
+
 from discord import Embed
-from discord.ext.commands import HelpCommand, Command
+from discord.ext.commands import HelpCommand, Command, Cog
 
 
 class CustomHelpCommand(HelpCommand):
@@ -16,18 +19,15 @@ class CustomHelpCommand(HelpCommand):
 
         await self.context.send(embed=embed)
 
-    async def send_bot_help(self, mapping: dict):
+    async def send_bot_help(self, mapping: Mapping[Optional[Cog], List[Command]]):
         embed = Embed()
         embed.title = 'Help'
         embed.description = '**Note:** Commands can only be used in NSFW channels'
 
-        cmd_names = []
+        unique_commands = {cmd.name: cmd for cmd in itertools.chain.from_iterable(mapping.values())}
 
-        for commands in mapping.values():
-            for cmd in commands:
-                if cmd.name != 'help' and cmd.name not in cmd_names:
-                    embed.add_field(name=self.get_signature(cmd), value=cmd.brief, inline=False)
-                    cmd_names.append(cmd.name)
+        for cmd in unique_commands.values():
+            embed.add_field(name=self.get_signature(cmd), value=cmd.brief, inline=False)
 
         await self.context.send(embed=embed)
 
