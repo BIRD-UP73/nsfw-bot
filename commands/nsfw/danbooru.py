@@ -9,8 +9,7 @@ class DanbooruCommand(NsfwCommand):
     url = Danbooru
     aliases = ['dbooru']
 
-    @staticmethod
-    def parsed_tags(tags: str, score: int) -> str:
+    def parsed_tags(self, tags: str, score: int) -> str:
         split_tags = tags.split(' ')
 
         if len(split_tags) > 2:

@@ -2,31 +2,25 @@ from typing import Union, Optional, List
 
 from discord import Reaction, Member, Message, DMChannel, TextChannel, RawReactionActionEvent
 from discord.abc import User
-from discord.ext.commands import Context, Bot, UserInputError
+from discord.ext.commands import Context, Bot
 
 from db import post_repository
-from posts.fetcher.abstract_post_fetcher import AbstractPostFetcher
-from posts.paginator.paginator import Paginator
+from posts.fetcher.post_fetcher import PostFetcher
 from posts.post_message.post_message_content import MessageContent
 
 
 class PostMessage:
-    def __init__(self, fetcher: AbstractPostFetcher, ctx: Context, emojis: List[str], paginator=None):
-        self.fetcher: AbstractPostFetcher = fetcher
+    def __init__(self, fetcher: PostFetcher, ctx: Context, emojis: List[str]):
+        self.fetcher: PostFetcher = fetcher
         self.author: Union[User, Member] = ctx.author
         self.bot: Bot = ctx.bot
         self.channel: Union[TextChannel, DMChannel] = ctx.channel
         self.emojis = emojis
-        self.paginator: Paginator = paginator or Paginator()
         self.message: Optional[Message] = None
 
     async def create_message(self):
-        self.paginator.post_count = self.fetcher.fetch_count()
-
-        if self.paginator.post_count == 0:
-            raise UserInputError('No posts found.')
-
-        self.fetcher.fetch_for_page(self.paginator.page, self.channel)
+        self.fetcher.fetch_count()
+        self.fetcher.fetch_current_page(self.channel)
 
         self.message = await self.channel.send(**self.page_content().to_dict())
 
@@ -78,13 +72,13 @@ class PostMessage:
             return False
 
         if reaction.emoji == '🔁':
-            self.paginator.random_page()
+            self.fetcher.paginator.random_page()
         if reaction.emoji == '➡':
-            self.paginator.next_page()
+            self.fetcher.paginator.next_page()
         if reaction.emoji == '⬅':
-            self.paginator.previous_page()
+            self.fetcher.paginator.previous_page()
 
-        self.fetcher.fetch_for_page(self.paginator.page, self.channel)
+        self.fetcher.fetch_current_page(self.channel)
         await self.update_message()
         return True
 
@@ -106,6 +100,8 @@ class PostMessage:
         message_content = self.fetcher.get_post().to_message_content()
 
         if embed := message_content.embed:
-            embed.description = f'Post **{self.paginator.page}** of **{self.paginator.post_count}**'
+            current_page = self.fetcher.paginator.page
+            post_count = self.fetcher.paginator.post_count
+            embed.description = f'Post **{current_page}** of **{post_count}**'
 
         return message_content

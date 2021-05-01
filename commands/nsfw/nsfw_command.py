@@ -67,8 +67,7 @@ class NsfwCommand(Command):
 
         await PostMessageFactory.create_post(ctx, self.command_options(), tags, score)
 
-    @staticmethod
-    def parsed_tags(tags: str, score: int) -> str:
+    def parsed_tags(self, tags: str, score: int) -> str:
         if 'score' not in tags:
             return f'{tags} score:>={score}'
 

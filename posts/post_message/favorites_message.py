@@ -13,9 +13,8 @@ from posts.post_message.post_message_content import MessageContent
 
 class FavoritesMessage(PostMessage):
     def __init__(self, ctx: Context, data: List[PostEntry], emojis: List[str]):
-        paginator = Paginator()
-        self.fetcher = PostEntryFetcher(data, paginator)
-        super().__init__(self.fetcher, ctx, emojis, paginator)
+        self.fetcher = PostEntryFetcher(data,  Paginator())
+        super().__init__(self.fetcher, ctx, emojis)
 
     async def add_favorite(self, user: User):
         if user != self.author:
@@ -34,12 +33,12 @@ class FavoritesMessage(PostMessage):
 
         post_repository.remove_favorite(user, self.fetcher.get_post())
         await self.channel.send(f'{user.mention}, removed favorite successfully.')
-        self.fetcher.remove_post(self.paginator.page)
+        self.fetcher.remove_post(self.fetcher.paginator.page)
 
-        if self.paginator.post_count == 0:
+        if self.fetcher.paginator.post_count == 0:
             return await self.clear_message()
 
-        self.fetcher.fetch_for_page(self.paginator.page, self.channel)
+        self.fetcher.fetch_for_page(self.fetcher.paginator.page, self.channel)
         await self.update_message()
 
     async def clear_message(self):
@@ -55,7 +54,7 @@ class FavoritesMessage(PostMessage):
             embed.title = 'Favorites'
             embed.description = f'Favorites for {self.author.mention}. '
             embed.timestamp = self.fetcher.current_entry().saved_at
-            embed.set_footer(text=f'Page {self.paginator.page + 1} of {self.paginator.post_count}'
+            embed.set_footer(text=f'Page {self.fetcher.paginator.page + 1} of {self.fetcher.paginator.post_count}'
                                   f' • Score: {post_data.score}')
 
         return message_content

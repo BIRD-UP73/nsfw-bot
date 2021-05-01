@@ -11,9 +11,8 @@ from posts.post_message.post_message_content import MessageContent
 
 class HistoryMessage(PostMessage):
     def __init__(self, ctx: Context, data: List[PostEntry], emojis: List[str]):
-        paginator = Paginator()
-        self.fetcher = PostEntryFetcher(data, paginator)
-        super().__init__(self.fetcher, ctx, emojis, paginator)
+        self.fetcher = PostEntryFetcher(data, Paginator())
+        super().__init__(self.fetcher, ctx, emojis)
 
     def page_content(self) -> MessageContent:
         post_data = self.fetcher.get_post()
@@ -21,9 +20,7 @@ class HistoryMessage(PostMessage):
 
         if embed := message_content.embed:
             embed.title = 'Post history'
-            embed.description = f'Page **{self.paginator.page + 1}** of **{self.paginator.post_count}**'
+            embed.description = f'Page **{self.fetcher.paginator.page + 1}** of **{self.fetcher.paginator.post_count}**'
             embed.timestamp = self.fetcher.current_entry().saved_at
-            embed.set_footer(text=f'Page {self.paginator.page + 1} of {self.paginator.post_count}'
-                                  f' • Score: {post_data.score}')
 
         return message_content
