@@ -4,9 +4,7 @@ from posts.paginator.paginator import Paginator
 
 
 class JsonPostPaginator(Paginator):
-    def __init__(self):
-        super().__init__()
-        self.page = 1
+    page: int = 1
 
     def random_page(self):
         self.page = random.randint(1, self.post_count)

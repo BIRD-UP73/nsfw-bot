@@ -103,6 +103,6 @@ class PostMessage:
         if embed := message_content.embed:
             current_page = self.fetcher.paginator.page
             post_count = self.fetcher.paginator.post_count
-            embed.description = f'Post **{current_page + 1}** of **{post_count}**'
+            embed.description = f'Post **{current_page}** of **{post_count}**'
 
         return message_content
