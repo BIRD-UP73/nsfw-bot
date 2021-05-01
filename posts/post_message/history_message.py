@@ -15,12 +15,9 @@ class HistoryMessage(PostMessage):
         super().__init__(self.fetcher, ctx, emojis)
 
     def page_content(self) -> MessageContent:
-        post_data = self.fetcher.get_post()
-        message_content = post_data.to_message_content()
+        message_content = super().page_content()
 
         if embed := message_content.embed:
             embed.title = 'Post history'
-            embed.description = f'Page **{self.fetcher.paginator.page + 1}** of **{self.fetcher.paginator.post_count}**'
-            embed.timestamp = self.fetcher.current_entry().saved_at
 
         return message_content

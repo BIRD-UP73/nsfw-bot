@@ -5,12 +5,13 @@ from discord.abc import User
 from discord.ext.commands import Context, Bot
 
 from db import post_repository
+from posts.fetcher.post_entry_fetcher import PostEntryFetcher
 from posts.fetcher.post_fetcher import PostFetcher
 from posts.post_message.post_message_content import MessageContent
 
 
 class PostMessage:
-    def __init__(self, fetcher: PostFetcher, ctx: Context, emojis: List[str]):
+    def __init__(self, fetcher: Union[PostFetcher, PostEntryFetcher], ctx: Context, emojis: List[str]):
         self.fetcher: PostFetcher = fetcher
         self.author: Union[User, Member] = ctx.author
         self.bot: Bot = ctx.bot
@@ -102,6 +103,6 @@ class PostMessage:
         if embed := message_content.embed:
             current_page = self.fetcher.paginator.page
             post_count = self.fetcher.paginator.post_count
-            embed.description = f'Post **{current_page}** of **{post_count}**'
+            embed.description = f'Post **{current_page + 1}** of **{post_count}**'
 
         return message_content
