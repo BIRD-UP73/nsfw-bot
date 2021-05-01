@@ -12,7 +12,8 @@ from posts.post_history import PostHistory
 
 class JsonPostFetcher(PostFetcher):
     def fetch_count(self):
-        self.paginator.post_count = min(1000, fetch_counts(self.url.long_url, self.tags))
+        fetched_counts = fetch_counts(self.url.long_url, self.tags)
+        self.paginator.post_count = min(1000, fetched_counts)
 
     def fetch_for_page(self, page: int, source: Union[DMChannel, TextChannel]):
         resp_json = send_json_request(self.url.long_url, self.tags, page=page)

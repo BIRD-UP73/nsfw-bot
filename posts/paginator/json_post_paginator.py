@@ -8,7 +8,6 @@ class JsonPostPaginator(Paginator):
 
     def random_page(self):
         self.page = random.randint(1, self.post_count)
-        return self.page
 
     def next_page(self):
         if self.page == self.post_count:
@@ -16,12 +15,8 @@ class JsonPostPaginator(Paginator):
         else:
             self.page += 1
 
-        return self.page
-
-    def previous_page(self) -> int:
+    def previous_page(self):
         if self.page == 1:
             self.page = self.post_count
         else:
             self.page -= 1
-
-        return self.page
