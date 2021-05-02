@@ -30,9 +30,9 @@ class PostMessage:
         else:
             self.bot.add_listener(self.on_raw_reaction_add)
 
-        await self.add_emojis()
+        await self.add_reactions()
 
-    async def add_emojis(self):
+    async def add_reactions(self):
         for emoji in self.emojis:
             await self.message.add_reaction(emoji)
 
