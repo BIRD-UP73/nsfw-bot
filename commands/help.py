@@ -27,11 +27,11 @@ class CustomHelpCommand(HelpCommand):
         unique_commands = {cmd.name: cmd for cmd in itertools.chain.from_iterable(mapping.values())}
 
         for cmd in unique_commands.values():
-            embed.add_field(name=self.get_signature(cmd), value=cmd.brief, inline=False)
+            embed.add_field(name=self.full_signature(cmd), value=cmd.brief, inline=False)
 
         await self.context.send(embed=embed)
 
-    def get_signature(self, cmd: Command):
+    def full_signature(self, cmd: Command):
         if cmd.signature:
             return f'`{self.clean_prefix}{cmd.name} {cmd.signature}`'
 

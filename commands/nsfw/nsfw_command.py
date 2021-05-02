@@ -2,8 +2,10 @@ from typing import List, Optional
 
 from discord.ext.commands import Command, Context, is_nsfw, UserInputError
 
-from commands.nsfw.command_options import CommandOptions
-from posts.post_message.factory.post_message_factory import PostMessageFactory
+from posts.fetcher.post_fetcher import PostFetcher
+from posts.fetcher.xml_post_fetcher import XmlPostFetcher
+from posts.paginator.paginator import Paginator
+from posts.post_message.post_message import PostMessage
 from url.urls import URL
 from util import tag_util
 
@@ -62,16 +64,22 @@ class NsfwCommand(Command):
         tags = tags or self.default_tags
         parsed_tags = self.parsed_tags(tags, score)
 
-        await PostMessageFactory.create_post(ctx, self.command_options(), parsed_tags, score)
+        fetcher = self.fetcher(parsed_tags, score)
+
+        await PostMessage(fetcher, ctx, self.emojis).create_message()
+
+    @staticmethod
+    def paginator():
+        return Paginator()
+
+    def fetcher(self, parsed_tags: str, score: int) -> PostFetcher:
+        return XmlPostFetcher(self.url, parsed_tags, score, self.paginator(), self.max_posts)
 
     def parsed_tags(self, tags: str, score: int) -> str:
         if 'score' not in tags:
             return f'{tags} score:>={score}'
 
         return tags
-
-    def command_options(self) -> CommandOptions:
-        return CommandOptions(self.url, self.emojis, self.max_posts)
 
 
 def create_description(url: Optional[URL], emojis: List[str]):
