@@ -58,14 +58,11 @@ class NsfwCommand(Command):
 
     @is_nsfw()
     async def func(self, ctx: Context, score: Optional[int], *, tags: str = None):
-        if score is None:
-            score = self.default_score
-        if tags is None:
-            tags = self.default_tags
-        else:
-            tags = self.parsed_tags(tags, score)
+        score = score or self.default_score
+        tags = tags or self.default_tags
+        parsed_tags = self.parsed_tags(tags, score)
 
-        await PostMessageFactory.create_post(ctx, self.command_options(), tags, score)
+        await PostMessageFactory.create_post(ctx, self.command_options(), parsed_tags, score)
 
     def parsed_tags(self, tags: str, score: int) -> str:
         if 'score' not in tags:
