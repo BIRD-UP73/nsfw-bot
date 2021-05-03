@@ -20,3 +20,6 @@ class JsonPostPaginator(Paginator):
             self.page = self.post_count
         else:
             self.page -= 1
+
+    def display_page(self) -> int:
+        return self.page

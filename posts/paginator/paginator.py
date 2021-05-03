@@ -13,3 +13,6 @@ class Paginator:
 
     def previous_page(self):
         self.page = (self.page - 1) % self.post_count
+
+    def display_page(self) -> int:
+        return self.page + 1
