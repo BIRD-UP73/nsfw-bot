@@ -9,15 +9,13 @@ class XmlPost(Post):
     def from_xml(cls, board_url: URL, el: ElementTree):
         file_url = el.get('file_url')
 
-        attrs = dict(
+        return cls(
             board_url=board_url,
+            created_at=el.get('created_at'),
             file_url=file_url,
             file_ext=file_url.split('.')[-1],
-            created_at=el.get('created_at'),
+            id=el.get('id'),
             score=el.get('score'),
             source=el.get('source'),
-            tags=el.get('tags'),
-            id=el.get('id')
+            tags=el.get('tags')
         )
-
-        return cls(**attrs)
