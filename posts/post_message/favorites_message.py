@@ -52,9 +52,12 @@ class FavoritesMessage(PostMessage):
 
         if embed := message_content.embed:
             embed.title = 'Favorites'
-            embed.description = f'Favorites for {self.author.mention}. '
+            embed.description = f'Favorites for {self.author.mention}'
             embed.timestamp = self.fetcher.current_entry().saved_at
-            embed.set_footer(text=f'Page {self.fetcher.paginator.page + 1} of {self.fetcher.paginator.post_count}'
-                                  f' • Score: {post_data.score}')
+
+            page = self.fetcher.paginator.display_page()
+            post_count = self.fetcher.paginator.post_count
+
+            embed.set_footer(text=f'Page {page} of {post_count} • Score: {post_data.score}')
 
         return message_content
