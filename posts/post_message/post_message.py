@@ -17,9 +17,11 @@ class PostMessage:
         self.bot: Bot = ctx.bot
         self.channel: Union[TextChannel, DMChannel] = ctx.channel
         self.emojis: List[str] = emojis
+        self.original_message: Message = ctx.message
         self.message: Optional[Message] = None
 
     async def create_message(self):
+        await self.original_message.delete()
         self.fetcher.fetch_count()
         self.fetcher.fetch_current_page(self.channel)
 

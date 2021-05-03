@@ -67,7 +67,6 @@ class NsfwCommand(Command):
         fetcher = self.fetcher(parsed_tags, score)
 
         await PostMessage(fetcher, ctx, self.emojis).create_message()
-        await ctx.message.delete()
 
     @staticmethod
     def paginator():
