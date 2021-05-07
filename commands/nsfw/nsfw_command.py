@@ -62,8 +62,8 @@ class NsfwCommand(Command):
     async def func(self, ctx: Context, score: Optional[int], *, tags: str = None):
         score = score or self.default_score
         tags = tags or self.default_tags
-        parsed_tags = self.parsed_tags(tags, score)
 
+        parsed_tags = self.parsed_tags(tags, score)
         fetcher = self.fetcher(parsed_tags, score)
 
         await PostMessage(fetcher, ctx, self.emojis).create_message()

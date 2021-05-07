@@ -37,8 +37,8 @@ def remove_favorite(user: User, post: Post):
     db_post = session.query(DBPost).get((user.id, post.post_id, post.board_url.short_url))
 
     session.delete(db_post)
-    logging.info(f'Removed favorite, user={user}, post_id={post.post_id}, url={post.board_url}')
     session.commit()
+    logging.info(f'Removed favorite, user={user}, post_id={post.post_id}, url={post.board_url}')
 
 
 def exists(user: User, post: Post) -> bool:
