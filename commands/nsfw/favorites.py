@@ -1,7 +1,7 @@
 from discord import Member
 from discord.ext.commands import Context, is_nsfw
 
-from commands.nsfw.nsfw_command import NsfwCommand, default_emojis
+from commands.nsfw.site.nsfw_command import NsfwCommand, default_emojis
 from db import post_repository
 from posts.post_message.favorites_message import FavoritesMessage
 

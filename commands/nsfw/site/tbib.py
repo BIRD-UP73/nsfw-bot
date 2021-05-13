@@ -1,4 +1,4 @@
-from commands.nsfw.nsfw_command import NsfwCommand
+from commands.nsfw.site.nsfw_command import NsfwCommand
 from url.urls import Tbib
 
 

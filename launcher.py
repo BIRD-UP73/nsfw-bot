@@ -4,12 +4,8 @@ import sys
 
 from discord.ext import commands
 
-from commands.favorites import Favorites
-from commands.github import github
-from commands.help import CustomHelpCommand
-from commands.history import History
-from commands.latency import latency
-from commands.nsfw.listeners import Listeners
+from commands.other.help import CustomHelpCommand
+from commands.other.listeners import Listeners
 
 config = configparser.RawConfigParser()
 config.read('config.properties')
@@ -31,12 +27,9 @@ bot = commands.Bot(
 
 bot.add_cog(Listeners(bot))
 
-bot.add_command(github)
-bot.add_command(latency)
-bot.add_command(Favorites())
-bot.add_command(History())
-
 bot.load_extension('commands.nsfw._setup')
+bot.load_extension('commands.nsfw.site._setup')
+bot.load_extension('commands.other._setup')
 
 if __name__ == "__main__":
     bot.run(token)

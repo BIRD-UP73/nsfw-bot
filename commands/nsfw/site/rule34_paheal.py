@@ -1,4 +1,4 @@
-from commands.nsfw.nsfw_command import NsfwCommand
+from commands.nsfw.site.nsfw_command import NsfwCommand
 from posts.paginator.json_post_paginator import JsonPostPaginator
 from url.urls import Rule34Paheal
 
