@@ -25,8 +25,6 @@ bot = commands.Bot(
     help_command=CustomHelpCommand(),
 )
 
-bot.add_cog(Listeners(bot))
-
 bot.load_extension('commands.nsfw._setup')
 bot.load_extension('commands.nsfw.site._setup')
 bot.load_extension('commands.other._setup')
