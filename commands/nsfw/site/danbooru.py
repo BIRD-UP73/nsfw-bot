@@ -1,6 +1,6 @@
 from discord.ext.commands import UserInputError
 
-from commands.nsfw.nsfw_command import NsfwCommand
+from commands.nsfw.site.nsfw_command import NsfwCommand
 from posts.fetcher.json_post_fetcher import JsonPostFetcher
 from posts.fetcher.post_fetcher import PostFetcher
 from posts.paginator.json_post_paginator import JsonPostPaginator

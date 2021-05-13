@@ -1,6 +1,6 @@
 from discord.ext.commands import Context, is_nsfw
 
-from commands.nsfw.nsfw_command import NsfwCommand
+from commands.nsfw.site.nsfw_command import NsfwCommand
 from posts.post_history import PostHistory
 from posts.post_message.history_message import HistoryMessage
 
