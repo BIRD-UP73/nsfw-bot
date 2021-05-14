@@ -44,7 +44,7 @@ class NsfwCommand(Command):
     brief = None
     max_posts: int = None
     default_score: int = 50
-    default_tags: str = None
+    default_tags: str = ''
     aliases: List[str] = []
     check_tags = True
 
