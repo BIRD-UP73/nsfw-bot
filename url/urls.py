@@ -27,15 +27,9 @@ class DefaultURL(URL):
         params = {
             'page': 'dapi',
             's': 'post',
-            'q': 'index',
-            'limit': kwargs.get('limit')
+            'q': 'index'
         }
-        if post_id := kwargs.get('id'):
-            params['id'] = post_id
-        if tags := kwargs.get('tags'):
-            params['tags'] = tags
-        if page := kwargs.get('page'):
-            params['pid'] = page
+        params.update(kwargs)
 
         return params
 
