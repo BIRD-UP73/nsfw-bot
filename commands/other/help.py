@@ -25,6 +25,7 @@ class CustomHelpCommand(HelpCommand):
         embed.description = '**Note:** Commands can only be used in NSFW channels'
 
         unique_commands = {cmd.name: cmd for cmd in itertools.chain.from_iterable(mapping.values())}
+        del unique_commands['help']
 
         for cmd in unique_commands.values():
             embed.add_field(name=self.full_signature(cmd), value=cmd.brief, inline=False)
