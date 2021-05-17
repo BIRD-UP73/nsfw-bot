@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Union, Optional, List
 
 from discord import Reaction, Member, Message, DMChannel, TextChannel, RawReactionActionEvent
@@ -5,8 +6,10 @@ from discord.abc import User
 from discord.ext.commands import Context, Bot
 
 from db import post_repository
+from posts.events.favorite_event import FavoriteEvent
 from posts.fetcher.post_entry_fetcher import PostEntryFetcher
 from posts.fetcher.post_fetcher import PostFetcher
+from posts.post_entry import PostEntry
 from posts.post_message.post_message_content import MessageContent
 
 
@@ -91,6 +94,9 @@ class PostMessage:
     async def add_favorite(self, user: User):
         if post_repository.store_favorite(user, self.fetcher.get_post()):
             await self.channel.send(f'{user.mention}, successfully stored favorite.')
+
+        new_entry = PostEntry(self.fetcher.url, self.fetcher.get_post().post_id, datetime.now())
+        self.bot.dispatch('favorite_add', FavoriteEvent(new_entry, user))
 
     async def update_message(self):
         await self.message.edit(**self.page_content().to_dict())

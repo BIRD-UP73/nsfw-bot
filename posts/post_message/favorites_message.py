@@ -1,9 +1,11 @@
+from datetime import datetime
 from typing import List, Union, Optional
 
 from discord import User, Reaction, Member
 from discord.ext.commands import Context
 
 from db import post_repository
+from posts.events.favorite_event import FavoriteEvent
 from posts.fetcher.post_entry_fetcher import PostEntryFetcher
 from posts.paginator.paginator import Paginator
 from posts.post_entry import PostEntry
@@ -15,6 +17,29 @@ class FavoritesMessage(PostMessage):
     def __init__(self, ctx: Context, data: List[PostEntry], emojis: List[str]):
         self.fetcher: PostEntryFetcher = PostEntryFetcher(data,  Paginator())
         super().__init__(self.fetcher, ctx, emojis)
+
+    async def create_message(self):
+        await super().create_message()
+
+        self.bot.add_listener(self.on_favorite_add)
+        self.bot.add_listener(self.on_favorite_remove)
+
+    async def on_favorite_add(self, event: FavoriteEvent):
+        if event.post_entry not in self.fetcher.data:
+            self.fetcher.data.append(event.post_entry)
+            self.fetcher.fetch_count()
+
+            await self.update_message()
+
+    async def on_favorite_remove(self, event: FavoriteEvent):
+        if event.post_entry in self.fetcher.data:
+            self.fetcher.data.remove(event.post_entry)
+            self.fetcher.fetch_count()
+
+            if self.fetcher.paginator.post_count == 0:
+                await self.clear_message()
+            else:
+                await self.update_message()
 
     async def add_favorite(self, user: User):
         if user != self.author:
@@ -31,7 +56,9 @@ class FavoritesMessage(PostMessage):
         if user != self.author:
             return
 
-        post_repository.remove_favorite(user, self.fetcher.get_post())
+        old_post = self.fetcher.get_post()
+
+        post_repository.remove_favorite(user, old_post)
         await self.channel.send(f'{user.mention}, removed favorite successfully.')
         self.fetcher.remove_post(self.fetcher.paginator.page)
 
@@ -40,6 +67,9 @@ class FavoritesMessage(PostMessage):
 
         self.fetcher.fetch_for_page(self.fetcher.paginator.page, self.channel)
         await self.update_message()
+
+        removed_entry = PostEntry(old_post.board_url, old_post.post_id, datetime.now())
+        self.bot.dispatch('favorite_remove', FavoriteEvent(removed_entry, user))
 
     async def clear_message(self):
         self.bot.remove_listener(self.on_reaction_add)
