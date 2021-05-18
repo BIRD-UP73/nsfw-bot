@@ -61,3 +61,7 @@ class PostEntryFetcher(AbstractPostFetcher):
             return None
 
         return self.data[self.paginator.page]
+
+    @property
+    def url(self):
+        return self.current_entry().url
