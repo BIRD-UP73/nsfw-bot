@@ -6,17 +6,14 @@ from discord.ext.commands import Context
 
 from db import post_repository
 from posts.events.favorite_event import FavoriteEvent
-from posts.fetcher.post_entry_fetcher import PostEntryFetcher
-from posts.paginator.paginator import Paginator
 from posts.post_entry import PostEntry
-from posts.post_message.post_message import PostMessage
+from posts.post_message.list_message import ListMessage
 from posts.post_message.post_message_content import MessageContent
 
 
-class FavoritesMessage(PostMessage):
+class FavoritesMessage(ListMessage):
     def __init__(self, ctx: Context, data: List[PostEntry], emojis: List[str]):
-        self.fetcher: PostEntryFetcher = PostEntryFetcher(data,  Paginator())
-        super().__init__(self.fetcher, ctx, emojis)
+        super().__init__(ctx, data, emojis)
 
     async def create_message(self):
         await super().create_message()
@@ -48,7 +45,7 @@ class FavoritesMessage(PostMessage):
         return await super().handle_reaction(reaction, user)
 
     async def remove_favorite(self, user: User):
-        if user != self.author:
+        if user != self.author or len(self.fetcher.data) == 0:
             return
 
         old_post = self.fetcher.get_post()
@@ -64,28 +61,24 @@ class FavoritesMessage(PostMessage):
 
     async def update_message(self):
         if self.fetcher.paginator.post_count == 0:
-            return await self.clear_message()
+            return await self.message.edit(content='No favorites.', embed=None)
 
         self.fetcher.fetch_for_page(self.fetcher.paginator.page, self.channel)
         await super().update_message()
 
-    async def clear_message(self):
-        self.bot.remove_listener(self.on_reaction_add)
-        await self.message.clear_reactions()
-        await self.message.edit(content='No favorites.', embed=None)
-
     def page_content(self) -> MessageContent:
-        post_data = self.fetcher.get_post()
-        message_content = post_data.to_message_content()
+        message_content = super().page_content()
 
         if embed := message_content.embed:
             embed.title = 'Favorites'
             embed.description = f'Favorites for {self.author.mention}'
-            embed.timestamp = self.fetcher.current_entry().saved_at
+
+            current_entry = self.fetcher.current_entry()
+            embed.timestamp = current_entry.saved_at
 
             page = self.fetcher.paginator.display_page()
             post_count = self.fetcher.paginator.post_count
 
-            embed.set_footer(text=f'Page {page} of {post_count} • Score: {post_data.score}')
+            embed.set_footer(text=f'Page {page} of {post_count} • Score: {current_entry.post_data.score}')
 
         return message_content

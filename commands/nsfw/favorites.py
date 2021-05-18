@@ -18,7 +18,4 @@ class Favorites(NsfwCommand):
         user = user or ctx.author
         fav_list = post_repository.get_favorites(user)
 
-        if not fav_list:
-            return await ctx.send('No favorites found')
-
         await FavoritesMessage(ctx, fav_list, self.emojis).create_message()

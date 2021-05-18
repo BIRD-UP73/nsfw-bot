@@ -1,4 +1,4 @@
-from typing import List, Union
+from typing import List, Union, Optional
 
 from discord import TextChannel, DMChannel
 
@@ -15,19 +15,26 @@ class PostEntryFetcher(AbstractPostFetcher):
         super().__init__(paginator)
         self.data: List[PostEntry] = data
 
-    def fetch_current_page(self, source: Union[DMChannel, TextChannel]):
+    def fetch_current_page(self, source: Union[DMChannel, TextChannel], update_hist=True):
         self.fetch_for_page(self.paginator.page, source)
 
-    def fetch_for_page(self, page: int, source: Union[TextChannel, DMChannel]):
+    def fetch_for_page(self, page: int, source: Union[TextChannel, DMChannel], update_hist=True):
+        if len(self.data) == 0:
+            return None
+
         entry = self.data[page]
         post_entry_key = PostEntryKey(entry.post_id, entry.url)
 
         post_data = PostEntryCache().get_post(post_entry_key)
         entry.post_data = post_data
 
-        PostHistory().add_to_history(source, post_data)
+        if update_hist:
+            PostHistory().add_to_history(source, post_data)
 
-    def get_post(self) -> Post:
+    def get_post(self) -> Optional[Post]:
+        if len(self.data) == 0:
+            return None
+
         return self.data[self.paginator.page].post_data
 
     def fetch_count(self):
@@ -49,5 +56,8 @@ class PostEntryFetcher(AbstractPostFetcher):
 
         self.paginator.post_count -= 1
 
-    def current_entry(self) -> PostEntry:
+    def current_entry(self) -> Optional[PostEntry]:
+        if len(self.data) == 0:
+            return None
+
         return self.data[self.paginator.page]

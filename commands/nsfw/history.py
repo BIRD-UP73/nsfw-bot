@@ -14,8 +14,4 @@ class History(NsfwCommand):
     @is_nsfw()
     async def func(self, ctx: Context):
         channel_hist = PostHistory().hist(ctx.channel)
-
-        if not channel_hist:
-            return await ctx.send('No history')
-
         await HistoryMessage(ctx, channel_hist, self.emojis).create_message()
