@@ -24,11 +24,13 @@ class PostMessage:
         self.message: Optional[Message] = None
 
     async def create_message(self):
-        await self.original_message.delete()
         self.fetcher.fetch_count()
         self.fetcher.fetch_current_page(self.channel)
 
         self.message = await self.channel.send(**self.page_content().to_dict())
+
+        if self.original_message.guild:
+            await self.original_message.delete()
 
         if self.message.guild:
             self.bot.add_listener(self.on_reaction_add)
@@ -45,15 +47,16 @@ class PostMessage:
         """
         This listener is used for DMs to bypass having to use member intents
         """
+        message = await self.channel.fetch_message(event.message_id)
         reaction_data = dict(me=False, count=0)
-        reaction = Reaction(message=self.message, data=reaction_data, emoji=str(event.emoji))
+        reaction = Reaction(message=message, data=reaction_data, emoji=str(event.emoji))
 
         user = await self.bot.fetch_user(event.user_id)
 
         await self.on_reaction_add(reaction, user)
 
     async def on_reaction_add(self, reaction: Reaction, user: Union[Member, User]):
-        if user == self.bot.user or self.message.id != reaction.message.id:
+        if user.id == self.bot.user.id or self.message.id != reaction.message.id:
             return
 
         delete_reaction = await self.handle_reaction(reaction, user)

@@ -25,14 +25,14 @@ class FavoritesMessage(PostMessage):
         self.bot.add_listener(self.on_favorite_remove)
 
     async def on_favorite_add(self, event: FavoriteEvent):
-        if event.post_entry not in self.fetcher.data:
+        if event.user.id == self.author.id and event.post_entry not in self.fetcher.data:
             self.fetcher.data.append(event.post_entry)
             self.fetcher.fetch_count()
 
             await self.update_message()
 
     async def on_favorite_remove(self, event: FavoriteEvent):
-        if event.post_entry in self.fetcher.data:
+        if event.user.id == self.author.id and event.post_entry in self.fetcher.data:
             self.fetcher.data.remove(event.post_entry)
             self.fetcher.fetch_count()
 
