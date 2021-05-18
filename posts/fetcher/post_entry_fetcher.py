@@ -13,7 +13,7 @@ from posts.post_history import PostHistory
 class PostEntryFetcher(AbstractPostFetcher):
     def __init__(self, data: List[PostEntry], paginator: Paginator):
         super().__init__(paginator)
-        self.data = data
+        self.data: List[PostEntry] = data
 
     def fetch_current_page(self, source: Union[DMChannel, TextChannel]):
         self.fetch_for_page(self.paginator.page, source)
@@ -33,11 +33,19 @@ class PostEntryFetcher(AbstractPostFetcher):
     def fetch_count(self):
         self.paginator.post_count = len(self.data)
 
-    def remove_post(self, page):
+    def remove_post(self, post_entry: PostEntry):
+        if post_entry in self.data:
+            post_index = self.data.index(post_entry)
+            self.remove_post_for_page(post_index)
+
+    def remove_post_for_page(self, page):
         del self.data[page]
 
         if self.paginator.page == self.paginator.post_count - 1:
             self.paginator.page = 0
+
+        if self.paginator.page > page:
+            self.paginator.page -= 1
 
         self.paginator.post_count -= 1
 

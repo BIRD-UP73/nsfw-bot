@@ -28,18 +28,13 @@ class FavoritesMessage(PostMessage):
         if event.user.id == self.author.id and event.post_entry not in self.fetcher.data:
             self.fetcher.data.append(event.post_entry)
             self.fetcher.fetch_count()
-
             await self.update_message()
 
     async def on_favorite_remove(self, event: FavoriteEvent):
         if event.user.id == self.author.id and event.post_entry in self.fetcher.data:
-            self.fetcher.data.remove(event.post_entry)
+            self.fetcher.remove_post(event.post_entry)
             self.fetcher.fetch_count()
-
-            if self.fetcher.paginator.post_count == 0:
-                await self.clear_message()
-            else:
-                await self.update_message()
+            await self.update_message()
 
     async def add_favorite(self, user: User):
         if user != self.author:
@@ -60,16 +55,19 @@ class FavoritesMessage(PostMessage):
 
         post_repository.remove_favorite(user, old_post)
         await self.channel.send(f'{user.mention}, removed favorite successfully.')
-        self.fetcher.remove_post(self.fetcher.paginator.page)
+        self.fetcher.remove_post_for_page(self.fetcher.paginator.page)
 
-        if self.fetcher.paginator.post_count == 0:
-            return await self.clear_message()
-
-        self.fetcher.fetch_for_page(self.fetcher.paginator.page, self.channel)
         await self.update_message()
 
         removed_entry = PostEntry(old_post.board_url, old_post.post_id, datetime.now())
         self.bot.dispatch('favorite_remove', FavoriteEvent(removed_entry, user))
+
+    async def update_message(self):
+        if self.fetcher.paginator.post_count == 0:
+            return await self.clear_message()
+
+        self.fetcher.fetch_for_page(self.fetcher.paginator.page, self.channel)
+        await super().update_message()
 
     async def clear_message(self):
         self.bot.remove_listener(self.on_reaction_add)
