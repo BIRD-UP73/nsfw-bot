@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Union, Optional, List
 
 from discord import Reaction, Member, Message, DMChannel, TextChannel, RawReactionActionEvent
@@ -5,8 +6,10 @@ from discord.abc import User
 from discord.ext.commands import Context, Bot
 
 from db import post_repository
+from posts.events.favorite_event import FavoriteEvent
 from posts.fetcher.post_entry_fetcher import PostEntryFetcher
 from posts.fetcher.post_fetcher import PostFetcher
+from posts.post_entry import PostEntry
 from posts.post_message.post_message_content import MessageContent
 
 
@@ -21,11 +24,13 @@ class PostMessage:
         self.message: Optional[Message] = None
 
     async def create_message(self):
-        await self.original_message.delete()
         self.fetcher.fetch_count()
         self.fetcher.fetch_current_page(self.channel)
 
         self.message = await self.channel.send(**self.page_content().to_dict())
+
+        if self.original_message.guild:
+            await self.original_message.delete()
 
         if self.message.guild:
             self.bot.add_listener(self.on_reaction_add)
@@ -42,15 +47,16 @@ class PostMessage:
         """
         This listener is used for DMs to bypass having to use member intents
         """
+        message = await self.channel.fetch_message(event.message_id)
         reaction_data = dict(me=False, count=0)
-        reaction = Reaction(message=self.message, data=reaction_data, emoji=str(event.emoji))
+        reaction = Reaction(message=message, data=reaction_data, emoji=str(event.emoji))
 
         user = await self.bot.fetch_user(event.user_id)
 
         await self.on_reaction_add(reaction, user)
 
     async def on_reaction_add(self, reaction: Reaction, user: Union[Member, User]):
-        if user == self.bot.user or self.message.id != reaction.message.id:
+        if user.id == self.bot.user.id or self.message.id != reaction.message.id:
             return
 
         delete_reaction = await self.handle_reaction(reaction, user)
@@ -91,6 +97,9 @@ class PostMessage:
     async def add_favorite(self, user: User):
         if post_repository.store_favorite(user, self.fetcher.get_post()):
             await self.channel.send(f'{user.mention}, successfully stored favorite.')
+
+        new_entry = PostEntry(self.fetcher.url, self.fetcher.get_post().post_id, datetime.now())
+        self.bot.dispatch('favorite_add', FavoriteEvent(new_entry, user))
 
     async def update_message(self):
         await self.message.edit(**self.page_content().to_dict())

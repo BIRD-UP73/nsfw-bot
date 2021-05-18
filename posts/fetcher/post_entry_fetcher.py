@@ -1,4 +1,4 @@
-from typing import List, Union
+from typing import List, Union, Optional
 
 from discord import TextChannel, DMChannel
 
@@ -13,33 +13,51 @@ from posts.post_history import PostHistory
 class PostEntryFetcher(AbstractPostFetcher):
     def __init__(self, data: List[PostEntry], paginator: Paginator):
         super().__init__(paginator)
-        self.data = data
+        self.data: List[PostEntry] = data
 
-    def fetch_current_page(self, source: Union[DMChannel, TextChannel]):
+    def fetch_current_page(self, source: Union[DMChannel, TextChannel], update_hist=True):
         self.fetch_for_page(self.paginator.page, source)
 
-    def fetch_for_page(self, page: int, source: Union[TextChannel, DMChannel]):
+    def fetch_for_page(self, page: int, source: Union[TextChannel, DMChannel], update_hist=True):
+        if len(self.data) == 0:
+            return None
+
         entry = self.data[page]
         post_entry_key = PostEntryKey(entry.post_id, entry.url)
 
         post_data = PostEntryCache().get_post(post_entry_key)
         entry.post_data = post_data
 
-        PostHistory().add_to_history(source, post_data)
+        if update_hist:
+            PostHistory().add_to_history(source, post_data)
 
-    def get_post(self) -> Post:
+    def get_post(self) -> Optional[Post]:
+        if len(self.data) == 0:
+            return None
+
         return self.data[self.paginator.page].post_data
 
     def fetch_count(self):
         self.paginator.post_count = len(self.data)
 
-    def remove_post(self, page):
+    def remove_post(self, post_entry: PostEntry):
+        if post_entry in self.data:
+            post_index = self.data.index(post_entry)
+            self.remove_post_for_page(post_index)
+
+    def remove_post_for_page(self, page):
         del self.data[page]
 
         if self.paginator.page == self.paginator.post_count - 1:
             self.paginator.page = 0
 
+        if self.paginator.page > page:
+            self.paginator.page -= 1
+
         self.paginator.post_count -= 1
 
-    def current_entry(self) -> PostEntry:
+    def current_entry(self) -> Optional[PostEntry]:
+        if len(self.data) == 0:
+            return None
+
         return self.data[self.paginator.page]

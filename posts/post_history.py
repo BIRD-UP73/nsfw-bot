@@ -3,14 +3,20 @@ from collections import deque
 from typing import Dict, Deque, Union, List
 
 from discord import DMChannel, TextChannel
+from discord.ext.commands import Bot
 
 from posts.data.post_data import Post
+from posts.events.history_event import HistoryEvent
 from posts.post_entry import PostEntry
 from posts.singleton import Singleton
 
 
 class PostHistory(metaclass=Singleton):
     history: Dict[int, Deque[PostEntry]] = {}
+    bot: Bot = None
+
+    def add_bot(self, bot: Bot):
+        self.bot = bot
 
     def add_to_history(self, channel: Union[DMChannel, TextChannel], post: Post):
         if post.is_error():
@@ -30,6 +36,7 @@ class PostHistory(metaclass=Singleton):
         logging.info(log_msg)
 
         self.history[channel_id].append(post_entry)
+        self.bot.dispatch('history_add', HistoryEvent(post, channel))
 
     def hist(self, channel: Union[DMChannel, TextChannel]) -> List[PostEntry]:
         channel_id = channel.id if isinstance(channel, DMChannel) else channel.guild.id

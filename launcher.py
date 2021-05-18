@@ -5,7 +5,7 @@ import sys
 from discord.ext import commands
 
 from commands.other.help import CustomHelpCommand
-from commands.other.listeners import Listeners
+from posts.post_history import PostHistory
 
 config = configparser.RawConfigParser()
 config.read('config.properties')
@@ -28,6 +28,8 @@ bot = commands.Bot(
 bot.load_extension('commands.nsfw._setup')
 bot.load_extension('commands.nsfw.site._setup')
 bot.load_extension('commands.other._setup')
+
+PostHistory().add_bot(bot)
 
 if __name__ == "__main__":
     bot.run(token)
