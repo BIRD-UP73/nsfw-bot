@@ -9,6 +9,8 @@ def json_post_by_id(base_url: str, post_id: int) -> dict:
 
     resp = requests.get(url)
 
+    resp.raise_for_status()
+
     return resp.json()
 
 
@@ -28,9 +30,7 @@ def send_json_request(base_url: str, tags: str, limit: int = 1, page: int = 0) -
 
 
 def fetch_counts(base_url: str, tags: str) -> int:
-    params = {
-        'tags': tags
-    }
+    params = {'tags': tags}
 
     logging.info(f'Fetching post counts for url={base_url}, tags={tags}')
 
