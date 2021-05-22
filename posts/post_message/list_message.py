@@ -1,6 +1,6 @@
 from typing import List
 
-from discord import User
+from discord import User, Color
 from discord.ext.commands import Context
 
 from posts.fetcher.post_entry_fetcher import PostEntryFetcher
@@ -21,6 +21,6 @@ class ListMessage(PostMessage):
 
     def page_content(self) -> MessageContent:
         if len(self.fetcher.data) == 0:
-            return MessageContent(True, 'Nothing found.')
+            return MessageContent(title='Error', description='No posts found.', color=Color.red())
 
         return super().page_content()

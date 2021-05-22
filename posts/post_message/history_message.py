@@ -30,8 +30,6 @@ class HistoryMessage(ListMessage):
 
     def page_content(self) -> MessageContent:
         message_content = super().page_content()
-
-        if embed := message_content.embed:
-            embed.title = 'Post history'
+        message_content.title = 'Post history'
 
         return message_content

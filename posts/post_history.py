@@ -11,6 +11,9 @@ from posts.post_entry import PostEntry
 from posts.singleton import Singleton
 
 
+max_queue_len = 25
+
+
 class PostHistory(metaclass=Singleton):
     history: Dict[int, Deque[PostEntry]] = {}
     bot: Bot = None
@@ -24,7 +27,7 @@ class PostHistory(metaclass=Singleton):
 
         channel_id = channel.id if isinstance(channel, DMChannel) else channel.guild.id
 
-        self.history.setdefault(channel_id, deque(maxlen=25))
+        self.history.setdefault(channel_id, deque(maxlen=max_queue_len))
 
         post_entry = PostEntry.from_post_data(post)
         log_msg = f'Adding post to history, url={post_entry.url}, id={post_entry.post_id}, ' \

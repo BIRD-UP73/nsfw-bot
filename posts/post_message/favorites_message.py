@@ -69,16 +69,13 @@ class FavoritesMessage(ListMessage):
     def page_content(self) -> MessageContent:
         message_content = super().page_content()
 
-        if embed := message_content.embed:
-            embed.title = 'Favorites'
-            embed.description = f'Favorites for {self.author.mention}'
+        message_content.title = 'Favorites'
+        message_content.description = f'Favorites for {self.author.mention}'
 
-            current_entry = self.fetcher.current_entry()
-            embed.timestamp = current_entry.saved_at
+        current_entry = self.fetcher.current_entry()
+        message_content.timestamp = str(current_entry.saved_at)
 
-            page = self.fetcher.paginator.display_page()
-            post_count = self.fetcher.paginator.post_count
-
-            embed.set_footer(text=f'Page {page} of {post_count} • Score: {current_entry.post_data.score}')
+        message_content.page = self.fetcher.paginator.display_page()
+        message_content.post_count = self.fetcher.paginator.post_count
 
         return message_content

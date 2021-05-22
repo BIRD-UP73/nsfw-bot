@@ -1,7 +1,4 @@
-import datetime
-
-from dateutil import parser
-from discord import Embed, Color
+from discord import Color
 
 from posts.post_message.post_message_content import MessageContent
 from url.urls import URL
@@ -29,23 +26,7 @@ class Post:
         return tag_util.is_video(self.file_ext)
 
     def to_message_content(self) -> MessageContent:
-        embed = Embed()
-        embed.colour = Color.green()
-
-        if self.source:
-            embed.add_field(name='Source', value=self.source, inline=False)
-        if self.created_at:
-            if self.created_at.isnumeric():
-                embed.timestamp = datetime.datetime.fromtimestamp(int(self.created_at))
-            else:
-                embed.timestamp = parser.parse(self.created_at)
-        if self.score:
-            embed.set_footer(text=f'Score: {self.score}')
-
-        if self.file_url:
-            embed.set_image(url=self.file_url)
-
-        return MessageContent(self.is_animated(), self.file_url, embed)
+        return MessageContent(**self.__dict__)
 
 
 class ErrorPost(Post):
@@ -63,13 +44,7 @@ class ErrorPost(Post):
         return True
 
     def to_message_content(self) -> MessageContent:
-        embed = Embed()
-        embed.colour = Color.red()
-        embed.description = ''
-
-        embed.add_field(name='Error', value=self.message)
-
-        return MessageContent(embed=embed)
+        return MessageContent(title='Error', description=self.message, color=Color.red())
 
 
 class NonExistentPost(ErrorPost):

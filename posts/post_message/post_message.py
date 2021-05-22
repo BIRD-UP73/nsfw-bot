@@ -114,9 +114,7 @@ class PostMessage:
         """
         message_content = self.fetcher.get_post().to_message_content()
 
-        if embed := message_content.embed:
-            current_page = self.fetcher.paginator.display_page()
-            post_count = self.fetcher.paginator.post_count
-            embed.description = f'Post **{current_page}** of **{post_count}**'
+        message_content.page = self.fetcher.paginator.display_page()
+        message_content.total_pages = self.fetcher.paginator.post_count
 
         return message_content
