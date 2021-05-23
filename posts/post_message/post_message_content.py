@@ -15,6 +15,7 @@ class MessageContent:
     page: int = 0
     total_pages: int = 0
     default_color: Color = Color.green()
+    default_time = datetime.now()
 
     def __init__(self, **kwargs):
         self.score: int = kwargs.get('score', 0)
@@ -22,7 +23,7 @@ class MessageContent:
         self.description: str = kwargs.get('description')
         self.file_url: str = kwargs.get('file_url')
         self.file_ext: str = kwargs.get('file_ext')
-        self.timestamp: str = kwargs.get('timestamp') or kwargs.get('created_at') or datetime.now()
+        self.timestamp: Union[str, datetime] = kwargs.get('timestamp') or kwargs.get('created_at', self.default_time)
         self.source: str = kwargs.get('source')
         self.artist_tag: str = kwargs.get('artist_tag')
         self.character_tag: str = kwargs.get('character_tag')
@@ -30,13 +31,17 @@ class MessageContent:
         self.color: Color = kwargs.get('color', self.default_color)
 
     def to_dict(self) -> Dict[str, Union[str, Embed]]:
-        if tag_util.is_video(self.file_ext):
+        if self.is_video():
             return dict(content=self.to_content(), embed=None)
 
         return dict(content=None, embed=self.to_embed())
 
     def to_content(self) -> str:
-        content_lines = [self.page_counter(), self.file_url]
+        content_lines = [self.page_counter()]
+
+        if self.file_url:
+            content_lines.append(self.file_url)
+
         return '\n'.join(content_lines)
 
     def to_embed(self) -> Embed:
@@ -65,10 +70,19 @@ class MessageContent:
 
         return embed
 
+    def is_video(self):
+        if not self.file_ext:
+            return False
+
+        return tag_util.is_video(self.file_ext)
+
     def page_counter(self):
         return f'Page {self.page} of {self.total_pages}'
 
     def parse_timestamp(self):
+        if isinstance(self.timestamp, datetime):
+            return self.timestamp
+
         if self.timestamp.isnumeric():
             return datetime.fromtimestamp(int(self.timestamp))
 

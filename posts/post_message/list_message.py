@@ -23,4 +23,7 @@ class ListMessage(PostMessage):
         if len(self.fetcher.data) == 0:
             return MessageContent(title='Error', description='No posts found.', color=Color.red())
 
-        return super().page_content()
+        message_content = super().page_content()
+        message_content.timestamp = self.fetcher.current_entry().saved_at
+
+        return message_content

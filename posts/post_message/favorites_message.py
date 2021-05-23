@@ -70,12 +70,10 @@ class FavoritesMessage(ListMessage):
         message_content = super().page_content()
 
         message_content.title = 'Favorites'
+
+        if self.fetcher.get_post().is_error():
+            return self.fetcher.get_post().to_message_content()
+
         message_content.description = f'Favorites for {self.author.mention}'
-
-        current_entry = self.fetcher.current_entry()
-        message_content.timestamp = str(current_entry.saved_at)
-
-        message_content.page = self.fetcher.paginator.display_page()
-        message_content.post_count = self.fetcher.paginator.post_count
 
         return message_content
