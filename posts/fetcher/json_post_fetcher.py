@@ -27,6 +27,6 @@ class JsonPostFetcher(PostFetcher):
             logging.warning(f'JSON post not found, url={self.url}, tags={self.tags}, page={page}')
             self.post_data = ErrorPost('Could not find post.')
         else:
-            self.post_data = JsonPost(self.url, **resp_json[0])
+            self.post_data = JsonPost.from_dict(board_url=self.url, **resp_json[0])
 
         PostHistory().add_to_history(source, self.post_data)

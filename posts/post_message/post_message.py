@@ -1,11 +1,12 @@
 from datetime import datetime
 from typing import Union, Optional, List
 
-from discord import Reaction, Member, Message, DMChannel, TextChannel, RawReactionActionEvent
+from discord import Reaction, Member, Message, DMChannel, TextChannel, RawReactionActionEvent, Color
 from discord.abc import User
 from discord.ext.commands import Context, Bot
 
 from db import post_repository
+from posts.data.post_data import ErrorPost
 from posts.events.favorite_event import FavoriteEvent
 from posts.fetcher.post_entry_fetcher import PostEntryFetcher
 from posts.fetcher.post_fetcher import PostFetcher
@@ -27,7 +28,7 @@ class PostMessage:
         self.fetcher.fetch_count()
         self.fetcher.fetch_current_page(self.channel)
 
-        self.message = await self.channel.send(**self.page_content().to_dict())
+        self.message = await self.channel.send(**self.generic_display().to_dict())
 
         if self.original_message.guild:
             await self.original_message.delete()
@@ -102,21 +103,29 @@ class PostMessage:
         self.bot.dispatch('favorite_add', FavoriteEvent(new_entry, user))
 
     async def update_message(self):
-        await self.message.edit(**self.page_content().to_dict())
+        content = self.generic_display().to_dict()
+        await self.message.edit(**content)
 
-    def page_content(self) -> MessageContent:
-        """
-        Returns the content of the current page of the embed
-        This should be in the form of a :type mapping: dict
-        with both a 'content' and an 'embed' field
+    def generic_display(self) -> MessageContent:
+        post = self.fetcher.get_post()
 
-        :return: the content of the page
-        """
-        message_content = self.fetcher.get_post().to_message_content()
+        if not post:
+            return self.error_content(MessageContent(), None)
 
-        if embed := message_content.embed:
-            current_page = self.fetcher.paginator.display_page()
-            post_count = self.fetcher.paginator.post_count
-            embed.description = f'Post **{current_page}** of **{post_count}**'
+        message_content = post.to_message_content()
 
+        message_content.page = self.fetcher.paginator.display_page()
+        message_content.total_pages = self.fetcher.paginator.post_count
+
+        if isinstance(post, ErrorPost):
+            return self.error_content(message_content, post)
+
+        return self.success_content(message_content)
+
+    def error_content(self, message_content: MessageContent, error_post: Optional[ErrorPost]) -> MessageContent:
+        message_content.color = Color.red()
+        message_content.add_field(name='Error', value=error_post.message)
+        return message_content
+
+    def success_content(self, message_content: MessageContent) -> MessageContent:
         return message_content

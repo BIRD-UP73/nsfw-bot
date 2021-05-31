@@ -25,17 +25,22 @@ class PostEntryFetcher(AbstractPostFetcher):
         entry = self.data[page]
         post_entry_key = PostEntryKey(entry.post_id, entry.url)
 
-        post_data = PostEntryCache().get_post(post_entry_key)
-        entry.post_data = post_data
+        entry.post_data = PostEntryCache().get_post(post_entry_key)
 
         if update_hist:
-            PostHistory().add_to_history(source, post_data)
+            PostHistory().add_to_history(source, entry.post_data)
 
     def get_post(self) -> Optional[Post]:
         if len(self.data) == 0:
             return None
 
         return self.data[self.paginator.page].post_data
+
+    def current_entry(self) -> Optional[PostEntry]:
+        if len(self.data) == 0:
+            return None
+
+        return self.data[self.paginator.page]
 
     def fetch_count(self):
         self.paginator.post_count = len(self.data)
@@ -56,12 +61,11 @@ class PostEntryFetcher(AbstractPostFetcher):
 
         self.paginator.post_count -= 1
 
-    def current_entry(self) -> Optional[PostEntry]:
-        if len(self.data) == 0:
-            return None
-
-        return self.data[self.paginator.page]
-
     @property
     def url(self):
-        return self.current_entry().url
+        post = self.get_post()
+
+        if not post:
+            return None
+
+        return post.board_url

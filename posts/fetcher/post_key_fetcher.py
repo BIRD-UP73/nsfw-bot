@@ -13,7 +13,7 @@ from url.urls import Danbooru
 class PostKeyFetcher:
     @staticmethod
     def fetch(post_key: PostEntryKey) -> Post:
-        if post_key.url == Danbooru:
+        if post_key.url == Danbooru():
             return PostKeyFetcher.get_json_post(post_key)
 
         return PostKeyFetcher.get_xml_post(post_key)
@@ -26,7 +26,7 @@ class PostKeyFetcher:
             logging.warning(f'JSON post not found, url={post_key.url}, id={post_key.post_id}')
             return NonExistentPost()
 
-        return JsonPost(post_key.url, **json_post)
+        return JsonPost.from_dict(board_url=post_key.url, **json_post)
 
     @staticmethod
     def get_xml_post(post_key: PostEntryKey) -> Post:

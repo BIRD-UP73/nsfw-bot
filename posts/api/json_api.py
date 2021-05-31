@@ -8,7 +8,6 @@ def json_post_by_id(base_url: str, post_id: int) -> dict:
     logging.info(f'Fetching post with id {post_id} request for url {url}')
 
     resp = requests.get(url)
-
     resp.raise_for_status()
 
     return resp.json()
