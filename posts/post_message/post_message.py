@@ -28,7 +28,7 @@ class PostMessage:
         self.fetcher.fetch_count()
         self.fetcher.fetch_current_page(self.channel)
 
-        self.message = await self.channel.send(**self.page_content().to_dict())
+        self.message = await self.channel.send(**self.generic_display().to_dict())
 
         if self.original_message.guild:
             await self.original_message.delete()
@@ -105,16 +105,6 @@ class PostMessage:
     async def update_message(self):
         content = self.generic_display().to_dict()
         await self.message.edit(**content)
-
-    def page_content(self) -> MessageContent:
-        """
-        Returns the content of the current page of the embed
-        This should be in the form of a :type mapping: dict
-        with both a 'content' and an 'embed' field
-
-        :return: the content of the page
-        """
-        return self.generic_display()
 
     def generic_display(self) -> MessageContent:
         post = self.fetcher.get_post()
