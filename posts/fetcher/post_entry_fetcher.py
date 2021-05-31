@@ -25,11 +25,10 @@ class PostEntryFetcher(AbstractPostFetcher):
         entry = self.data[page]
         post_entry_key = PostEntryKey(entry.post_id, entry.url)
 
-        post_data = PostEntryCache().get_post(post_entry_key)
-        entry.post_data = post_data
+        entry.post_data = PostEntryCache().get_post(post_entry_key)
 
         if update_hist:
-            PostHistory().add_to_history(source, post_data)
+            PostHistory().add_to_history(source, entry.post_data)
 
     def get_post(self) -> Optional[Post]:
         if len(self.data) == 0:

@@ -19,9 +19,6 @@ class Post:
     def is_error(self) -> bool:
         return False
 
-    def is_animated(self) -> bool:
-        return tag_util.is_video(self.file_ext)
-
     def to_message_content(self) -> MessageContent:
         return MessageContent(**self.__dict__)
 
@@ -43,9 +40,6 @@ class ErrorPost(Post):
     def __init__(self, message: str):
         super().__init__()
         self.message: str = message
-
-    def is_animated(self) -> bool:
-        return False
 
     def is_error(self) -> bool:
         return True
