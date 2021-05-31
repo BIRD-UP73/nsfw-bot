@@ -12,6 +12,16 @@ class URL:
     def create_api_params(**kwargs):
         return kwargs
 
+    def __hash__(self):
+        return hash((self.short_url, self.long_url, self.cheatsheet_url))
+
+    def __eq__(self, other):
+        if isinstance(other, URL):
+            return self.short_url == other.short_url and self.long_url == other.long_url\
+                and self.cheatsheet_url == other.cheatsheet_url
+
+        return False
+
     def __str__(self):
         return self.short_url
 
@@ -68,8 +78,8 @@ url_mapping = {
     Gelbooru.short_url: Gelbooru,
     Xbooru.short_url: Xbooru,
     Tbib.short_url: Tbib,
-    Danbooru.short_url: Danbooru,
-    Rule34Paheal.short_url: Rule34Paheal,
-    Hypnohub.short_url: Hypnohub,
-    KonachanCom.short_url: KonachanCom
+    Danbooru.short_url: Danbooru(),
+    Rule34Paheal.short_url: Rule34Paheal(),
+    Hypnohub.short_url: Hypnohub(),
+    KonachanCom.short_url: KonachanCom()
 }

@@ -9,7 +9,7 @@ class XmlPost(Post):
     def from_xml(cls, board_url: URL, el: ElementTree):
         file_url = el.get('file_url')
 
-        return cls(
+        return Post.from_dict(
             board_url=board_url,
             created_at=el.get('created_at'),
             file_url=file_url,

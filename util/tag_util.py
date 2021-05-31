@@ -1,5 +1,3 @@
-from typing import List
-
 img_fmts = ['png', 'jpg', 'jpeg', 'tiff', 'gif']
 disallowed_tags = ['loli', 'shota', 'underage']
 
@@ -17,8 +15,9 @@ def is_video(file_ext: str) -> bool:
     return file_ext not in img_fmts
 
 
-def get_disallowed_tags(tags: str) -> List[str]:
-    return [dt for dt in disallowed_tags if dt in tags]
+def get_disallowed_tags(tags: str) -> str:
+    tag_list = [dt for dt in disallowed_tags if dt in tags]
+    return ', '.join(tag_list)
 
 
 def has_disallowed_tags(tags: str) -> bool:

@@ -37,6 +37,12 @@ class PostEntryFetcher(AbstractPostFetcher):
 
         return self.data[self.paginator.page].post_data
 
+    def current_entry(self) -> Optional[PostEntry]:
+        if len(self.data) == 0:
+            return None
+
+        return self.data[self.paginator.page]
+
     def fetch_count(self):
         self.paginator.post_count = len(self.data)
 
@@ -56,12 +62,11 @@ class PostEntryFetcher(AbstractPostFetcher):
 
         self.paginator.post_count -= 1
 
-    def current_entry(self) -> Optional[PostEntry]:
-        if len(self.data) == 0:
-            return None
-
-        return self.data[self.paginator.page]
-
     @property
     def url(self):
-        return self.current_entry().url
+        post = self.get_post()
+
+        if not post:
+            return None
+
+        return post.board_url

@@ -60,20 +60,12 @@ class FavoritesMessage(ListMessage):
         self.bot.dispatch('favorite_remove', FavoriteEvent(removed_entry, user))
 
     async def update_message(self):
-        if self.fetcher.paginator.post_count == 0:
-            return await self.message.edit(content='No favorites.', embed=None)
-
         self.fetcher.fetch_for_page(self.fetcher.paginator.page, self.channel)
         await super().update_message()
 
-    def page_content(self) -> MessageContent:
-        message_content = super().page_content()
-
+    def generic_display(self) -> MessageContent:
+        message_content = super().generic_display()
         message_content.title = 'Favorites'
-
-        if self.fetcher.get_post().is_error():
-            return self.fetcher.get_post().to_message_content()
-
         message_content.description = f'Favorites for {self.author.mention}'
 
         return message_content

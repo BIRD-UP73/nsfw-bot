@@ -1,10 +1,24 @@
 from datetime import datetime
-from typing import Dict, Union
+from typing import Dict, Union, List
 
 from dateutil import parser
 from discord import Embed, Color
 
 from util import tag_util
+
+
+class MessageField:
+    def __init__(self, name: str, value: str, inline: bool = False):
+        self.name: str = name
+        self.value: str = value
+        self.inline: bool = inline
+
+    def to_dict(self):
+        return {
+            'name': self.name,
+            'value': self.value,
+            'inline': self.inline
+        }
 
 
 class MessageContent:
@@ -23,18 +37,22 @@ class MessageContent:
         self.description: str = kwargs.get('description')
         self.file_url: str = kwargs.get('file_url')
         self.file_ext: str = kwargs.get('file_ext')
-        self.timestamp: Union[str, datetime] = kwargs.get('timestamp') or kwargs.get('created_at', self.default_time)
+        self.timestamp: Union[str, datetime] = kwargs.get('timestamp') or kwargs.get('created_at') or self.default_time
         self.source: str = kwargs.get('source')
         self.artist_tag: str = kwargs.get('artist_tag')
         self.character_tag: str = kwargs.get('character_tag')
         self.copyright_tag: str = kwargs.get('copyright_tag')
         self.color: Color = kwargs.get('color', self.default_color)
+        self.embed_fields: List[MessageField] = kwargs.get('fields', [])
 
     def to_dict(self) -> Dict[str, Union[str, Embed]]:
         if self.is_video():
             return dict(content=self.to_content(), embed=None)
 
         return dict(content=None, embed=self.to_embed())
+
+    def add_field(self, name: str, value: str, inline: bool = False):
+        self.embed_fields.append(MessageField(name, value, inline))
 
     def to_content(self) -> str:
         content_lines = [self.page_counter()]
@@ -67,6 +85,9 @@ class MessageContent:
 
         if self.timestamp:
             embed.timestamp = self.parse_timestamp()
+
+        for field in self.embed_fields:
+            embed.add_field(**field.to_dict())
 
         return embed
 

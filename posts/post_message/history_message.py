@@ -28,8 +28,8 @@ class HistoryMessage(ListMessage):
             if self.message:
                 await self.update_message()
 
-    def page_content(self) -> MessageContent:
-        message_content = super().page_content()
+    def generic_display(self) -> MessageContent:
+        message_content = super().generic_display()
         message_content.title = 'Post history'
 
         return message_content

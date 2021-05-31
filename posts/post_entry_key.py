@@ -4,7 +4,7 @@ from url.urls import URL
 class PostEntryKey:
     def __init__(self, post_id: int, url: URL):
         self.post_id: int = post_id
-        self.url = url
+        self.url: URL = url
 
     def __eq__(self, other):
         if isinstance(other, PostEntryKey):

@@ -12,12 +12,9 @@ class PostEntry:
         self.saved_at: datetime = saved_at
         self.post_data: Optional[Post] = post_data
 
+    def __eq__(self, other):
+        return isinstance(other, PostEntry) and self.url == other.url and self.post_id == other.post_id
+
     @classmethod
     def from_post_data(cls, post: Post):
         return PostEntry(post.board_url, post.post_id, datetime.now())
-
-    def __eq__(self, other):
-        if isinstance(other, PostEntry):
-            return self.post_id == other.post_id and self.url == other.url
-
-        return False
