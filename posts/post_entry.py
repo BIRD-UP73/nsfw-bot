@@ -2,12 +2,12 @@ from datetime import datetime
 from typing import Optional
 
 from posts.data.post_data import Post
-from url.urls import URL
+from url.urls import UrlEnum
 
 
 class PostEntry:
-    def __init__(self, url: URL, post_id: int, saved_at: datetime, post_data: Post = None):
-        self.url: URL = url
+    def __init__(self, url: UrlEnum, post_id: int, saved_at: datetime, post_data: Post = None):
+        self.url: UrlEnum = url
         self.post_id: int = post_id
         self.saved_at: datetime = saved_at
         self.post_data: Optional[Post] = post_data

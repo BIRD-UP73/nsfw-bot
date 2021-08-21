@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Dict, Union, List
+from typing import Dict, Union, List, Optional
 
 from dateutil import parser
 from discord import Embed, Color
@@ -37,7 +37,7 @@ class MessageContent:
         self.description: str = kwargs.get('description')
         self.file_url: str = kwargs.get('file_url')
         self.file_ext: str = kwargs.get('file_ext')
-        self.timestamp: Union[str, datetime] = kwargs.get('timestamp') or kwargs.get('created_at') or self.default_time
+        self.timestamp: Union[str, datetime] = kwargs.get('timestamp', kwargs.get('created_at', self.default_time))
         self.source: str = kwargs.get('source')
         self.artist_tag: str = kwargs.get('artist_tag')
         self.character_tag: str = kwargs.get('character_tag')
@@ -46,10 +46,7 @@ class MessageContent:
         self.embed_fields: List[MessageField] = kwargs.get('fields', [])
 
     def to_dict(self) -> Dict[str, Union[str, Embed]]:
-        if self.is_video():
-            return dict(content=self.to_content(), embed=None)
-
-        return dict(content=None, embed=self.to_embed())
+        return dict(content=self.to_content(), embed=self.to_embed())
 
     def add_field(self, name: str, value: str, inline: bool = False):
         self.embed_fields.append(MessageField(name, value, inline))
@@ -62,7 +59,10 @@ class MessageContent:
 
         return '\n'.join(content_lines)
 
-    def to_embed(self) -> Embed:
+    def to_embed(self) -> Optional[Embed]:
+        if self.is_video():
+            return None
+
         embed = Embed(title=self.title, color=self.color, description=self.description)
 
         if self.file_url:

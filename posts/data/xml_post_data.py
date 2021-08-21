@@ -1,12 +1,12 @@
 from xml.etree import ElementTree
 
 from posts.data.post_data import Post
-from url.urls import URL
+from url.urls import UrlInfo
 
 
 class XmlPost(Post):
     @classmethod
-    def from_xml(cls, board_url: URL, el: ElementTree):
+    def from_xml(cls, board_url: UrlInfo, el: ElementTree):
         file_url = el.get('file_url')
 
         return Post.from_dict(

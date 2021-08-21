@@ -7,7 +7,7 @@ from discord import User
 from db.model import session, Post as DBPost
 from posts.data.post_data import Post
 from posts.post_entry import PostEntry
-from url.urls import URL
+from url.urls import UrlEnum
 
 
 def get_favorites(user: User) -> List[PostEntry]:
@@ -21,7 +21,7 @@ def get_favorites(user: User) -> List[PostEntry]:
 
     logging.info(f'Fetched favorites, user={user}')
 
-    return [PostEntry(URL.find(db_post.url), db_post.post_id, db_post.saved_at) for db_post in posts]
+    return [PostEntry(UrlEnum.value(db_post.url), db_post.post_id, db_post.saved_at) for db_post in posts]
 
 
 def remove_favorite(user: User, post: Post):

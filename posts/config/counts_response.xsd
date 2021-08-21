@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+<xs:element name="posts" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:complexType>
+        <xs:attribute name="count" type="xs:int" />
+        <xs:attribute name="offset" type="xs:int" />
+    </xs:complexType>
+</xs:element>
+
+</xs:schema>

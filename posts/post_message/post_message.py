@@ -72,7 +72,7 @@ class PostMessage:
         if reaction.emoji not in self.emojis:
             return True
 
-        if reaction.emoji == '⭐':
+        if reaction.emoji == '⭐' and user != self.author:
             await self.add_favorite(user)
             return True
 

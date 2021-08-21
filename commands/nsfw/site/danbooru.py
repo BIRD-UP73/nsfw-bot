@@ -4,12 +4,12 @@ from commands.nsfw.site.nsfw_command import NsfwCommand
 from posts.fetcher.json_post_fetcher import JsonPostFetcher
 from posts.fetcher.post_fetcher import PostFetcher
 from posts.paginator.json_post_paginator import JsonPostPaginator
-from url.urls import Danbooru
+from url.urls import UrlEnum
 
 
 class DanbooruCommand(NsfwCommand):
     name = 'danbooru'
-    url = Danbooru
+    url = UrlEnum.DANBOORU
     aliases = ['dbooru']
 
     @staticmethod
@@ -17,7 +17,7 @@ class DanbooruCommand(NsfwCommand):
         return JsonPostPaginator()
 
     def fetcher(self, parsed_tags: str, score: int) -> PostFetcher:
-        return JsonPostFetcher(self.url(), parsed_tags, self.paginator())
+        return JsonPostFetcher(self.url, parsed_tags, self.paginator())
 
     def parsed_tags(self, tags: str, score: int) -> str:
         split_tags = tags.split(' ')

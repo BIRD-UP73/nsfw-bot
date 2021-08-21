@@ -1,15 +1,13 @@
-from url.urls import URL
+from url.urls import UrlEnum
 
 
 class PostEntryKey:
-    def __init__(self, post_id: int, url: URL):
+    def __init__(self, post_id: int, url: UrlEnum):
         self.post_id: int = post_id
-        self.url: URL = url
+        self.url: UrlEnum = url
 
     def __eq__(self, other):
-        if isinstance(other, PostEntryKey):
-            return self.url == other.url and self.post_id == other.post_id
-        return False
+        return isinstance(other, PostEntryKey) and self.url == other.url and self.post_id == other.post_id
 
     def __hash__(self):
         return hash((self.post_id, self.url))

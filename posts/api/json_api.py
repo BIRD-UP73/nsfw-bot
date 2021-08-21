@@ -13,14 +13,8 @@ def json_post_by_id(base_url: str, post_id: int) -> dict:
     return resp.json()
 
 
-def send_json_request(base_url: str, tags: str, limit: int = 1, page: int = 0) -> dict:
-    params = {
-        'limit': limit,
-        'tags': tags,
-        'page': page
-    }
-
-    logging.info(f'Fetching post for url={base_url}, tags={tags}, page={page}, limit={limit}')
+def send_json_request(base_url: str, params: dict) -> dict:
+    logging.info(f'Fetching post for url={base_url}, params={params}')
 
     resp = requests.get(f'{base_url}/posts.json', params)
     resp.raise_for_status()

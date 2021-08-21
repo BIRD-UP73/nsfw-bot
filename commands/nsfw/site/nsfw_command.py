@@ -2,10 +2,7 @@ from typing import List, Optional
 
 from discord.ext.commands import Command, Context, is_nsfw, UserInputError
 
-from posts.fetcher.post_fetcher import PostFetcher
-from posts.fetcher.xml_post_fetcher import XmlPostFetcher
-from posts.paginator.paginator import Paginator
-from posts.post_message.post_message import PostMessage
+from posts.config.configuration import Configuration
 from url.urls import URL
 from util import tag_util
 
@@ -40,9 +37,8 @@ async def check_disallowed_tags(ctx: Context):
 class NsfwCommand(Command):
     name: str = None
     url: Optional[URL] = None
-    emojis: List[str] = default_emojis
+    config = Configuration()
     brief = None
-    max_posts: int = None
     default_score: int = 50
     default_tags: str = ''
     aliases: List[str] = []
@@ -63,23 +59,7 @@ class NsfwCommand(Command):
         score = score or self.default_score
         tags = tags or self.default_tags
 
-        parsed_tags = self.parsed_tags(tags, score)
-        fetcher = self.fetcher(parsed_tags, score)
-
-        await PostMessage(fetcher, ctx, self.emojis).create_message()
-
-    @staticmethod
-    def paginator():
-        return Paginator()
-
-    def fetcher(self, parsed_tags: str, score: int) -> PostFetcher:
-        return XmlPostFetcher(self.url, parsed_tags, score, self.paginator(), self.max_posts)
-
-    def parsed_tags(self, tags: str, score: int) -> str:
-        if 'score' not in tags:
-            return f'{tags} score:>={score}'
-
-        return tags
+        await self.config.create_post(ctx, tags, score, self.emojis)
 
 
 def create_description(url: Optional[URL], emojis: List[str]):

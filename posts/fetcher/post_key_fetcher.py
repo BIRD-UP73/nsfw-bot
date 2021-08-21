@@ -7,13 +7,13 @@ from posts.data.json_post_data import JsonPost
 from posts.data.post_data import Post, NonExistentPost
 from posts.data.xml_post_data import XmlPost
 from posts.post_entry_key import PostEntryKey
-from url.urls import Danbooru
+from url.urls import UrlEnum
 
 
 class PostKeyFetcher:
     @staticmethod
     def fetch(post_key: PostEntryKey) -> Post:
-        if post_key.url == Danbooru():
+        if post_key.url == UrlEnum.DANBOORU:
             return PostKeyFetcher.get_json_post(post_key)
 
         return PostKeyFetcher.get_xml_post(post_key)

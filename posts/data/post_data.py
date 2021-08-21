@@ -1,13 +1,13 @@
 from discord import Color
 
 from posts.post_message.post_message_content import MessageContent
-from url.urls import URL
+from url.urls import UrlEnum
 from util import tag_util
 
 
 class Post:
     def __init__(self, **kwargs):
-        self.board_url: URL = kwargs.get('board_url')
+        self.board_url: UrlEnum = kwargs.get('board_url')
         self.created_at: str = kwargs.get('created_at')
         self.file_ext: str = kwargs.get('file_ext')
         self.file_url: str = kwargs.get('file_url')

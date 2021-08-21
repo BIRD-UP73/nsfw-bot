@@ -2,8 +2,9 @@ import random
 
 
 class Paginator:
-    page: int = 0
-    post_count: int = 0
+    def __init__(self, post_count: int = 0, page: int = 0):
+        self.post_count: int = post_count
+        self.page: int = page
 
     def random_page(self):
         if self.post_count > 0:

@@ -33,10 +33,6 @@ class FavoritesMessage(ListMessage):
             self.fetcher.fetch_count()
             await self.update_message()
 
-    async def add_favorite(self, user: User):
-        if user != self.author:
-            await super().add_favorite(user)
-
     async def handle_reaction(self, reaction: Reaction, user: Union[Member, User]) -> Optional[bool]:
         if reaction.emoji == '⛔':
             await self.remove_favorite(user)

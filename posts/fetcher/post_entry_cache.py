@@ -5,13 +5,13 @@ from posts.data.post_data import Post
 from posts.fetcher.post_key_fetcher import PostKeyFetcher
 from posts.post_entry_key import PostEntryKey
 from posts.singleton import Singleton
-from url.urls import URL
+from url.urls import UrlEnum
 
 
 class PostEntryCache(metaclass=Singleton):
     entries: Dict[PostEntryKey, Post] = {}
 
-    def add_post_data(self, post_data: Post, url: URL):
+    def add_post_data(self, post_data: Post, url: UrlEnum):
         entry_key = PostEntryKey(post_data.post_id, url)
         self.entries[entry_key] = post_data
 
